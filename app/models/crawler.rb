@@ -7,7 +7,7 @@ class Crawler < ActiveRecord::Base
   store :setting, accessors: [ :schedule ]
 
   SCHEDULE_KEYS = [:at, :in, :every, :cron]
-  API_MANAGEMENT_KEYS = [:data_management_api_endpoint, :data_management_api_key, :data_name, :category]
+  API_MANAGEMENT_KEYS = [:description, :data_management_api_endpoint, :data_management_api_key, :data_name, :category]
   TEST_SETTING_KEYS = [ :save_to_db, :sync ]
 
   def klass

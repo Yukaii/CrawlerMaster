@@ -25,6 +25,9 @@
           th Name
           td= @crawler.name
         tr
+          th Description
+          td= @crawler.description
+        tr
           th Resource Url
           - resource_url = courses_path(organization_code: @crawler.organization_code)
           td= link_to resource_url, resource_url
@@ -95,7 +98,7 @@
             h3.panel-title
               a role="button" data-toggle="collapse" data-parent="#crawler-statistic" href="#workers-collapse2" aria-expanded="true" aria-controls="workers-collapse2"
                 i.fa.fa-angle-down
-                |  Crawler Workers
+                |  Workers Details
           #workers-collapse2.panel-collapse.collapse role="tabpanel" aria-labelledby="workers-heading"
             .panel-body
               .table-responsive

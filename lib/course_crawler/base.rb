@@ -1,6 +1,9 @@
 ##
 # A few general crawler methods
 #
+require 'rest-client'
+require 'thwait'
+require 'thread'
 
 module CourseCrawler
   class Base

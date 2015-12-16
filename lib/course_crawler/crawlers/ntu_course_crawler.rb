@@ -36,8 +36,8 @@ module CourseCrawler::Crawlers
       @search_url = "https://nol.ntu.edu.tw/nol/coursesearch/search_result.php"
       @base_url = "https://nol.ntu.edu.tw/nol/coursesearch/"
 
-      @year = params && params["year"].to_i || year || current_year
-      @term = params && params["term"].to_i || term || current_term
+      @year = year || current_year
+      @term = term || current_term
       @update_progress_proc = update_progress
       @after_each_proc = after_each
 

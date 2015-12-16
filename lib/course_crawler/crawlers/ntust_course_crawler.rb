@@ -1,7 +1,3 @@
-require 'rest-client'
-require 'thwait'
-require 'thread'
-
 module CourseCrawler::Crawlers
   class NtustCourseCrawler < CourseCrawler::Base
     attr_reader :semester_list, :courses_list, :query_url, :result_url
@@ -111,8 +107,10 @@ module CourseCrawler::Crawlers
       @host_url = "http://140.118.31.215"
       @query_url = "http://140.118.31.215/querycourse/ChCourseQuery/QueryCondition.aspx"
       @result_url = "http://140.118.31.215/querycourse/ChCourseQuery/QueryResult.aspx"
+
       @year = year || current_year
       @term = term || current_term
+
       @update_progress_proc = update_progress
       @after_each_proc = after_each
     end

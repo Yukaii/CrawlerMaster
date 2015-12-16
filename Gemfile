@@ -46,7 +46,7 @@ gem 'hirb-unicode', :require => false
 
 gem 'rest-client'
 gem 'httpclient'
-
+gem 'iconv'
 gem 'crawler_rocks'
 
 gem 'sidekiq', '~> 4.0'

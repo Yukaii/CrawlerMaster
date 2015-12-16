@@ -5,3 +5,5 @@ end
 Sidekiq.configure_server do |config|
   config.redis = { url: ENV['REDIS_URL'], namespace: ENV["REDIS_NAMESPACE"] }
 end
+
+# Todo: equeue all every job / cron job

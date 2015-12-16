@@ -20,5 +20,5 @@
           td= link_to crawler.name, crawler_path(crawler.organization_code)
           td= CourseCrawler::Crawlers.find_workers(crawler.name).count
           td= CourseCrawler::Crawlers.find_queued_jobs(crawler.name).count
-          td= crawler && crawler.courses.count
-          td= (crawler && crawler.courses.last).nil? ? 'not available' : crawler.courses.last.updated_at
+          td= link_to crawler.courses.count, courses_path(organization_code: crawler.organization_code)
+          td= (crawler.courses.last).nil? ? 'not available' : crawler.courses.last.updated_at
