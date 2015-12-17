@@ -9,15 +9,15 @@ CrawlerMaster
 
 * index => 列出所有的 crawlers
   - [x] endpoint: /crawlers
-  - [ ] show last_run_at
+  - [*] show last_run_at
   - [x] show running workers in queue (Sidekiq::Queue find class name)
   - [*] show how many courses each crawler had done
 
 * show => 顯示單一爬蟲的資訊 name / crawling status
   - [x] endpoint: /crawlers/ntust, /crawler/{school name}
-  - [ ] track each worker job progress and status
+  - [*] track each worker job progress and status
   - [x] Start crawler anytime => track job ids => maybe save it to another model?
-  - [ ] ScheduledSet / RetrySet / DeadSet status (filtered by class name)
+  - [*] ScheduledSet / RetrySet / DeadSet status (filtered by class name) (<- just a tab in sidekiq web)
   - [ ] Limiting queueing crawler (eg. each class for 5 instances)
   - [x] Manage/Track Rufus Scheduled Job
   - [x] Unschedule EveryJob / CronJob(EveryJob first)
@@ -38,13 +38,13 @@ CrawlerMaster
   - [*] Sync data to Core
 
 * 後期調教
-  - [ ] Redis Namespace
+  - [*] Redis Namespace
   - [x] queue namespace(Sidekiq::Client push specific queue name)
   - [x] Limiting retry count
   - [ ] limit queue number
   - [x] we can't kill workers orz
   - [ ] sidekiq-limit_fetch set limit
-  - [ ] Check sidekiq proccess
+  - [ ] download json course data
 
 ```ruby
 Sidekiq::Client.push('queue' => 'NtustCourseCrawler', 'class' => CourseCrawler::Worker, 'args' => ['NtustCourseCrawler'])

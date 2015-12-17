@@ -44,10 +44,15 @@ gem 'awesome_print', :require => false
 gem 'hirb', :require => false
 gem 'hirb-unicode', :require => false
 
+# crawler dependencies
 gem 'rest-client'
 gem 'httpclient'
 gem 'iconv'
 gem 'crawler_rocks'
+gem 'hashie'
+gem 'capybara'
+gem 'poltergeist'
+gem 'minitar'
 
 gem 'sidekiq', '~> 4.0'
 gem 'sidekiq-limit_fetch'

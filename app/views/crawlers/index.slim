@@ -1,12 +1,13 @@
 = render partial: 'partials/navbar'
 
 .col-lg-8.col-lg-offset-2.col-md-10.col-md-offset-1.col-s-12
-  h3 爬蟲列表
+  h3 Crawler List
   .table-responsive
     table.table.table-hover
       tr
         th #
         th category
+        th name
         th class
         th workers
         th queueing
@@ -17,6 +18,7 @@
         tr
           td= index+1
           td= crawler.category
+          td= crawler.description
           td= link_to crawler.name, crawler_path(crawler.organization_code)
           td= CourseCrawler::Crawlers.find_workers(crawler.name).count
           td= CourseCrawler::Crawlers.find_queued_jobs(crawler.name).count
