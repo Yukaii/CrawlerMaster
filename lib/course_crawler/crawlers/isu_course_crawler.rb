@@ -60,7 +60,7 @@ class IsuCourseCrawler < CourseCrawler::Base
       threads << Thread.new do
         # 系所
         majr_no = majr_option[i].text[0..1]
-        print "#{majr_option[i].text}\n"
+        # print "#{majr_option[i].text}\n"
         # binding.pry if majr_no == '10'
         r  = %x(curl -s 'http://netreg.isu.edu.tw/wapp/wapp_sha/wap_s140001.asp' --data 'lange_sel=zh_TW&qry_setyear=#{@year-1911}&qry_setterm=#{@term}&grade_beg=#{grade_beg}&grade_end=#{grade_end}&majr_no=#{majr_no}&divi_A=#{divi_A}&divi_M=#{divi_M}&divi_I=#{divi_I}&divi_D=#{divi_D}&divi_B=#{divi_B}&divi_G=#{divi_G}&divi_T=#{divi_T}&divi_F=#{divi_F}&cr_code=&cr_name=&yepg_sel=+&crdnum_beg=0&crdnum_end=6&apt_code=+&submit1=%B0e%A5X' --compressed)
         doc = Nokogiri::HTML(@ic.iconv(r))
@@ -147,7 +147,7 @@ class IsuCourseCrawler < CourseCrawler::Base
               lecturer = temp && temp.text
 
               @courses[code][:lecturer] = lecturer
-              print "|"
+              # print "|"
             end # end lecturer_threads
 
           end # end parse lecturer
@@ -159,7 +159,7 @@ class IsuCourseCrawler < CourseCrawler::Base
     ThreadsWait.all_waits(*threads)
     ThreadsWait.all_waits(*lecturer_threads)
 
-    print "start updating....."
+    set_progress "start updating....."
 
     update_threads = []
     @courses.values.each do |course|

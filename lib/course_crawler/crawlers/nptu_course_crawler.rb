@@ -4,7 +4,9 @@ class NptuCourseCrawler < CourseCrawler::Base
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
-    @search_url = "http://webs8.nptu.edu.tw/selectn/search.asp"
+    @search_url = "http://webap.nptu.edu.tw/web/A04/A0428S3Page.aspx"
+
+    # @search_url = "http://webs8.nptu.edu.tw/selectn/search.asp"
     @result_url = "http://webs8.nptu.edu.tw/selectn/clist.asp"
 
     @year = year || current_year
@@ -17,7 +19,50 @@ class NptuCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-    ic = Iconv.new("utf-8//translit//IGNORE","big5")
+    ic = Iconv.new("utf-8//translit//IGNORE","utf-8")
+
+    get_url = "http://webap.nptu.edu.tw/web/Message/Main.aspx?MENU_ID=GST&MENU_CNAME=%5bGST%5d_%e8%a8%aa%e5%ae%a2%e4%b8%bb%e9%81%b8%e5%96%ae"
+    post_url = "http://webap.nptu.edu.tw/web/Message/SubMenuPage.aspx?1crQ8eHQpq2r5MGqVDhAUYbd8pUy2EQE1BWi9OdJf5M%3d"
+
+    ##################
+
+    doc = Nokogiri::HTML(http_client.get_content(@search_url))
+
+    dynamic_url = URI.join("http://webap.nptu.edu.tw/web/Secure/", doc.css('form')[0][:action]).to_s
+
+    menu_doc = Nokogiri::HTML(http_client.get_content(dynamic_url))
+    view_state = Hash[menu_doc.css('input[type="hidden"]').map{|input| [ input[:name], input[:value] ]}]
+
+
+    r = http_client.post(dynamic_url, view_state.merge({
+      "LoginDefault:ibtLoginGuest.x" => "75",
+      "LoginDefault:ibtLoginGuest.y" => "35",
+      "LoginDefault:txtScreenWidth" => "1920",
+      "LoginDefault:txtScreenHeight" => "1080"
+      })
+    )
+
+    r = http_client.post(post_url, view_state)
+    binding.pry
+
+    guest_menu_doc = Nokogiri::HTML(http_client.get_content "http://webap.nptu.edu.tw/Web1/Message/Main.aspx")
+    view_state = Hash[menu_doc.css('input[type="hidden"]').map{|input| [ input[:name], input[:value] ]}]
+
+    r = http_client.post "http://webap.nptu.edu.tw/Web1/Message/Main.aspx", view_state.merge({
+      "CommonHeader:txtMsg" => "目前學年期為 104學年第 1 學期",
+      "CommonHeader:txtUsed" => "",
+      "MenuDefault:dgData:_ctl3:ibtMENU_ID.x" => '83',
+      "MenuDefault:dgData:_ctl3:ibtMENU_ID.y" => '18'
+    })
+
+
+    {
+      'A0425Q3:ddlSYSE' => "#{@year-1911}#{@term}",
+      'A0425Q3:ddlDEPT_ID' => 10
+    }
+
+
+
 
     visit @search_url
     deps = @doc.css('select[name="dept"] option:not(:first-child)').map{|opt| opt.text.strip}

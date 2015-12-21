@@ -1,6 +1,6 @@
 require 'rubygems/package'
-require 'archive/tar/minitar'
 require 'zlib'
+require 'archive/tar/minitar'
 require 'fileutils'
 require 'open-uri'
 
@@ -29,8 +29,8 @@ class CcuCourseCrawler < CourseCrawler::Base
     @download_path = "https://kiki.ccu.edu.tw/~ccmisp06/Course/zipfiles/"
     @filename = "#{@year-1911}#{@term}.tgz"
 
-    @file_path = Rails.root.join('tmp', @filename)
-    @dir_name = Rails.root.join('tmp', "#{@year-1911}#{@term}")
+    @file_path = Rails.root.join('tmp', @filename).to_s
+    @dir_name = Rails.root.join('tmp', "#{@year-1911}#{@term}").to_s
   end
 
   def courses
@@ -38,9 +38,8 @@ class CcuCourseCrawler < CourseCrawler::Base
     @threads = []
 
     # if not Dir.exist?(@dir_name)
-      FileUtils.mkdir_p @dir_name
-
-      File.write(@file_path, open("#{@download_path}#{@filename}", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read)
+      # FileUtils.mkdir_p @dir_name
+      File.write(@file_path, open("#{@download_path}#{@filename}", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read.force_encoding("utf-8"))
 
       tgz = Zlib::GzipReader.open(@file_path)
       Minitar.unpack tgz, @dir_name

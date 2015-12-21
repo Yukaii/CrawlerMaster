@@ -175,8 +175,8 @@ class NthuCourseCrawler < CourseCrawler::Base
     Dir.mkdir(Rails.root.join('tmp')) if not Dir.exist?(Rails.root.join('tmp'))
 
     image_url = URI.join(url, @doc.css('img')[0][:src]).to_s
-    File.write(Rails.root.join("tmp/#{@acixstore}.png"), open(image_url).read)
-    img = RTesseract.new(Rails.root.join("tmp/#{@acixstore}.png"), psm: 8, options: :digits)
+    File.write(Rails.root.join("tmp/#{@acixstore}.png").to_s, open(image_url).read)
+    img = RTesseract.new(Rails.root.join("tmp/#{@acixstore}.png").to_s, psm: 8, options: :digits)
 
     return img.to_s.strip
   end

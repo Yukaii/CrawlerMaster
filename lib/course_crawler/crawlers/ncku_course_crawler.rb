@@ -41,6 +41,8 @@ class NckuCourseCrawler < CourseCrawler::Base
       [m[:dep], m[:dep_c]]
     end]
 
+    done_departments_count = 0
+
     deps_h.each do |dep_n, dep_c|
       sleep(1) until (
         @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
@@ -49,7 +51,7 @@ class NckuCourseCrawler < CourseCrawler::Base
 
       @threads << Thread.new do
         begin
-          print "(#{dep_c}) #{dep_n}\n"
+          # print "(#{dep_c}) #{dep_n}\n"
           r = RestClient.get "#{@query_url}?dept_no=#{URI.encode(dep_c)}&syear=#{(@year-1911).to_s.rjust(4, '0')}&sem=#{@term}".gsub(/\s+/, '')
           doc = Nokogiri::HTML r.to_s
 
@@ -129,6 +131,9 @@ class NckuCourseCrawler < CourseCrawler::Base
             @after_each_proc.call(:course => course) if @after_each_proc
             @courses << course
           end # doc.css each row
+
+          done_departments_count += 1
+          set_progress "#{done_departments_count} / #{dep_n.count}"
 
         rescue Exception => e
           sleep 3

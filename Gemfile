@@ -52,7 +52,7 @@ gem 'crawler_rocks'
 gem 'hashie'
 gem 'capybara'
 gem 'poltergeist'
-gem 'minitar'
+gem 'archive-tar-minitar'
 
 gem 'sidekiq', '~> 4.0'
 gem 'sidekiq-limit_fetch'
@@ -91,4 +91,3 @@ group :production do
   gem 'newrelic_rpm'
   gem 'rails_12factor'
 end
-

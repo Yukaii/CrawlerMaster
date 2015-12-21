@@ -36,7 +36,7 @@ class CycuCourseCrawler < CourseCrawler::Base
 
     url = "http://itouch.cycu.edu.tw/active_system/CourseQuerySystem/GetCourses.jsp?yearTerm=#{@year-1911}#{@term}"
 
-    r = Curl.get(url).body_str.force_encoding('utf-8')
+    r = HTTPClient.new.get_content(url).force_encoding('utf-8')
     data = r.strip
     rows = data.split('@@')
 

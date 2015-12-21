@@ -24,5 +24,8 @@ module CourseCrawler
       "progress:#{self.class}_#{job_id}"
     end
 
+    def http_client
+      @http_clnt ||= HTTPClient.new
+    end
   end
 end

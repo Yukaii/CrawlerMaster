@@ -152,7 +152,7 @@ class TtuCourseCrawler < CourseCrawler::Base
         end # Thread do
       end # group.keys do
 
-      print "done: #{dep_index} / #{departments.count}\n"
+      set_progress "done: #{dep_index} / #{departments.count}"
     end # departments.keys do
 
     ThreadsWait.all_waits(*@threads)

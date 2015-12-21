@@ -297,7 +297,8 @@ class NtnuCourseCrawler < CourseCrawler::Base
         # ThreadsWait.all_waits(*course_detail_threads)
 
         done_departments_count += 1
-        print "(#{done_departments_count}/#{DEPARTMENTS.count}) done #{dep_code}\n"
+        # print "(#{done_departments_count}/#{DEPARTMENTS.count}) done #{dep_code}\n"
+        set_progress "(#{done_departments_count}/#{DEPARTMENTS.count})"
       end # end Thread
     end
     ThreadsWait.all_waits(*@threads)
@@ -347,7 +348,7 @@ class NtnuCourseCrawler < CourseCrawler::Base
     end
 
     def normalize(courses)
-      print "start normalize course\n"
+      set_progress "start normalize course"
       new_courses = []
       @update_threads = []
 

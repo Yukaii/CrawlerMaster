@@ -48,7 +48,7 @@ class NutcCourseCrawler < CourseCrawler::Base
         sleep 2
         opt = all('select[name="show_select1"] option')[i]
         opt.select_option
-        puts opt.text
+        # puts opt.text
         click_on '開始查詢資料'
 
         # parse table

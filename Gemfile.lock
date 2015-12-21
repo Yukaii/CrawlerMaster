@@ -46,6 +46,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    archive-tar-minitar (0.5.2)
     arel (6.0.3)
     autoprefixer-rails (6.1.2)
       execjs
@@ -175,7 +176,6 @@ GEM
     method_source (0.8.2)
     mime-types (2.6.1)
     mini_portile (0.6.2)
-    minitar (0.5.4)
     minitest (5.8.3)
     multi_json (1.11.2)
     nenv (0.2.0)
@@ -348,6 +348,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  archive-tar-minitar
   awesome_print
   better_errors
   binding_of_caller
@@ -370,7 +371,6 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   kaminari
-  minitar
   newrelic_rpm
   pg
   poltergeist

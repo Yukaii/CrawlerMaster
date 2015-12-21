@@ -13,6 +13,7 @@ class CrawlersController < ApplicationController
   end
 
   def show
+    @title = "#{@crawler.name} | CrawlerMaster"
   end
 
   def setting

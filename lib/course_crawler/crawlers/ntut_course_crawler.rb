@@ -1,6 +1,5 @@
 module CourseCrawler::Crawlers
 class NtutCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
 
   DAYS = {
     "1" => 1,
@@ -37,10 +36,11 @@ class NtutCourseCrawler < CourseCrawler::Base
     @courses = []
     @threads = []
 
-    visit @query_url
+    r = http_client.get_content @query_url
+    doc = Nokogiri::HTML(@ic.iconv(r))
 
-    deps_h = Hash[@doc.css('select[name="unit"] option:not(:first-child)').map{|opt| [opt[:value], opt.text]}]
-    matric_h = Hash[@doc.css('select[name="matric"] option:not(:first-child)').map{|opt| [opt[:value], opt.text]}]
+    deps_h = Hash[doc.css('select[name="unit"] option:not(:first-child)').map{|opt| [opt[:value], opt.text]}]
+    matric_h = Hash[doc.css('select[name="matric"] option:not(:first-child)').map{|opt| [opt[:value], opt.text]}]
 
     matric_h.each do |mat_c, mat_n|
     deps_h.each do |dep_c, dep_n|
@@ -52,7 +52,7 @@ class NtutCourseCrawler < CourseCrawler::Base
 
         update_threads = []
 
-        r = RestClient.post @result_url, {
+        r = http_client.post @result_url, {
           "stime" => 0,
           "year" => @year-1911,
           "sem" => @term,
@@ -64,9 +64,9 @@ class NtutCourseCrawler < CourseCrawler::Base
           "unit" => dep_c,
           "D0" => "ON", "D1" => "ON", "D2" => "ON", "D3" => "ON", "D4" => "ON", "D5" => "ON", "D6" => "ON", "P1" => "ON", "P2" => "ON", "P3" => "ON", "P4" => "ON", "P5" => "ON", "P6" => "ON", "P7" => "ON", "P8" => "ON", "P9" => "ON", "P10" => "ON", "P11" => "ON", "P12" => "ON", "P13" => "ON",
           "search" => CGI.escape('開始查詢'.encode('big5')),
-        }, cookies: @cookies
+        }
 
-        doc = Nokogiri::HTML(@ic.iconv(r))
+        doc = Nokogiri::HTML(@ic.iconv(r.body))
         doc.css('table tr:not(:first-child)').each do |row|
           datas = row.css('td')
 
@@ -90,15 +90,18 @@ class NtutCourseCrawler < CourseCrawler::Base
           required_raw = datas[5] && datas[5].text.strip
           required = required_raw != '☆' && required_raw != '★'
           url = datas[1] && !datas[1].css('a').empty? && "#{@base_url}#{datas[1].css('a')[0][:href]}"
-          code = CGI.parse(URI(url).query)["code"][0]
 
           lecturer = datas[7] && datas[7].text.strip.tr("\n", ',').tr("　", '')
           lecturer_code = lecturer && Digest::MD5.hexdigest(lecturer)
 
+          code = CGI.parse(URI(url).query)["code"][0]
+          general_code = "#{code}-#{lecturer_code && lecturer_code[0..4]}#{lecturer_code && lecturer_code[-5..-1]}"
+
           course = {
             year: @year,
             term: @term,
-            code: "#{@year}-#{@term}-#{code}-#{lecturer_code && lecturer_code[0..4]}#{lecturer_code && lecturer_code[-5..-1]}",
+            code: "#{@year}-#{@term}-#{general_code}",
+            general_code: general_code,
             name: datas[1] && datas[1].text.strip,
             department: datas[6] && datas[6].text.split("\n"),
             course_department: dep_n,
@@ -148,7 +151,7 @@ class NtutCourseCrawler < CourseCrawler::Base
           @courses << course
         end
         ThreadsWait.all_waits(*update_threads)
-        print "#{dep_n}\n"
+        # print "#{dep_n}\n"
       end # end new theads
     end # end each deps
     end # end each matric

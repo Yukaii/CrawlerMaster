@@ -9,15 +9,15 @@ CrawlerMaster
 
 * index => 列出所有的 crawlers
   - [x] endpoint: /crawlers
-  - [*] show last_run_at
+  - [x] show last_run_at
   - [x] show running workers in queue (Sidekiq::Queue find class name)
-  - [*] show how many courses each crawler had done
+  - [x] show how many courses each crawler had done
 
 * show => 顯示單一爬蟲的資訊 name / crawling status
   - [x] endpoint: /crawlers/ntust, /crawler/{school name}
-  - [*] track each worker job progress and status
+  - [x] track each worker job progress and status
   - [x] Start crawler anytime => track job ids => maybe save it to another model?
-  - [*] ScheduledSet / RetrySet / DeadSet status (filtered by class name) (<- just a tab in sidekiq web)
+  - [x] ScheduledSet / RetrySet / DeadSet status (filtered by class name) (<- just a tab in sidekiq web)
   - [ ] Limiting queueing crawler (eg. each class for 5 instances)
   - [x] Manage/Track Rufus Scheduled Job
   - [x] Unschedule EveryJob / CronJob(EveryJob first)
@@ -32,13 +32,13 @@ CrawlerMaster
   - [ ] initializer setup existing scheduling behavior
 
 * Course Model
-  - [*] Copy and Paste from Colorgy/Book :p
+  - [x] Copy and Paste from Colorgy/Book :p
   - [ ] Check data integrity (no blank class name / no blank class period data / no invalid period data......)
   - [ ] Check course_code
-  - [*] Sync data to Core
+  - [x] Sync data to Core
 
 * 後期調教
-  - [*] Redis Namespace
+  - [x] Redis Namespace
   - [x] queue namespace(Sidekiq::Client push specific queue name)
   - [x] Limiting retry count
   - [ ] limit queue number

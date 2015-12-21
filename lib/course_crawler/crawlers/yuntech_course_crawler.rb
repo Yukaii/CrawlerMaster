@@ -50,8 +50,8 @@ class YuntechCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-    visit @query_url
 
+    visit @query_url
     year_term = "#{@year-1911}#{@term}"
 
     first("select[name=\"ctl00$ContentPlaceHolder1$AcadSeme\"] option[value=\"#{year_term}\"]").select_option
@@ -85,20 +85,21 @@ class YuntechCourseCrawler < CourseCrawler::Base
 
         department = dep_option.text
         department_code = dep_option[:value]
-        print "#{department}: "
+        # print "#{department}: "
         click_on '執行查詢'
 
         # parse each page
         total_page = find('#ctl00_ContentPlaceHolder1_PageControl1_TotalPage').text.to_i
         (1..total_page).each do |page_count|
-          print "#{page_count}, "
+          # print "#{page_count}, "
           find("select[name=\"ctl00$ContentPlaceHolder1$PageControl1$Pages\"] option[value=\"#{page_count}\"]").select_option
           # sleep longer if crawl error
           sleep 2
 
           @courses.concat parse_course(html, department, department_code)
+          print "#{page_count} / #{total_page}\n"
         end # end each page
-        puts
+        # puts
       end # all dept option do
     end # all college option do
 
