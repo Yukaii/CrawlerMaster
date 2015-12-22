@@ -96,8 +96,8 @@ class CsmuCourseCrawler < CourseCrawler::Base
             name:         data[2],    # 課程名稱
             lecturer:     data[7],    # 授課教師
             credits:      data[5].to_i,    # 學分數
-            code:         "#{@year}-#{@term}-#{course_id}-?(#{data[1]})?",
-            general_code: "#{course_id}-?(#{data[1]})?",
+            code:         "#{@year}-#{@term}-#{data[1]}",
+            general_code: "#{data[1]}",
             # general_code: data[1],    # 選課代碼
             url:          "#{@query_url}#{data[-1]}",    # 課程大綱之類的連結
             required:     data[4].include?('必'),    # 必修或選修

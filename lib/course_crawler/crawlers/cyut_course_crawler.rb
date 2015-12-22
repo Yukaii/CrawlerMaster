@@ -93,12 +93,12 @@ class CyutCourseCrawler < CourseCrawler::Base
 	]
 
 	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
-		@year = year
-    	@term = term
-    	#@post_url = "https://admin.cyut.edu.tw/crsinfo/"
-    	@update_progress_proc = update_progress
-        @after_each_proc = after_each
-        @ic = Iconv.new('utf-8//IGNORE', 'big5') #
+		@year = year || current_year
+		@term = term || current_term
+		#@post_url = "https://admin.cyut.edu.tw/crsinfo/"
+		@update_progress_proc = update_progress
+		@after_each_proc = after_each
+		@ic = Iconv.new('utf-8//IGNORE', 'big5') #
 	end
 
 	def courses
@@ -107,7 +107,7 @@ class CyutCourseCrawler < CourseCrawler::Base
 		DEP.each do |dep|
 			H_SECID.each do |secid|
 				H_SUBID.each do |subid|
-					r = `curl "https://admin.cyut.edu.tw/crsinfo/cur_01.asp" -H "Cookie: ASPSESSIONIDAGTSCDSB=IHFPJDLCBHFABAGFLIMINNEI" -H "Origin: https://admin.cyut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: https://admin.cyut.edu.tw/crsinfo/cur_01.asp" -H "Connection: keep-alive" --data "h_status=run&h_acy=#{@year-1911}&h_sem=#{@term}&h_depno=#{dep}&h_secid=#{secid}&h_subid=#{subid}&h_year=all&h_class=all" --compressed`
+					r = `curl -s "https://admin.cyut.edu.tw/crsinfo/cur_01.asp" -H "Cookie: ASPSESSIONIDAGTSCDSB=IHFPJDLCBHFABAGFLIMINNEI" -H "Origin: https://admin.cyut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: https://admin.cyut.edu.tw/crsinfo/cur_01.asp" -H "Connection: keep-alive" --data "h_status=run&h_acy=#{@year-1911}&h_sem=#{@term}&h_depno=#{dep}&h_secid=#{secid}&h_subid=#{subid}&h_year=all&h_class=all" --compressed`
 					doc = Nokogiri::HTML(@ic.iconv(r))
 
 					puts "Department: " + DEP.size.to_s + " / " + (DEP.index(dep)+1).to_s + " H_SECID: " + H_SECID.size.to_s + " / " + (H_SECID.index(secid)+1).to_s + " H_SUBID : " + H_SUBID.size.to_s + " / " + (H_SUBID.index(subid)+1).to_s

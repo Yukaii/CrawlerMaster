@@ -107,8 +107,8 @@ class AsiaCourseCrawler < CourseCrawler::Base
           name:         data[2],    # 課程名稱
           lecturer:     data[6],    # 授課教師
           credits:      data[4].to_i,    # 學分數
-          code:         "#{@year}-#{@term}-#{course_id}-?(#{data[1]})?",
-          general_code: "#{course_id}-?(#{data[1]})?",
+          code:         "#{@year}-#{@term}-#{course_id}-#{data[1]}",
+          general_code: "#{data[1]}",
           # general_code: data[1],    # 選課代碼
           url:          syllabus_url,    # 課程大綱之類的連結
           required:     data[3].include?('必'),    # 必修或選修

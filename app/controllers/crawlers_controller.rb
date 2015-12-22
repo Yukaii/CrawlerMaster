@@ -9,7 +9,7 @@ class CrawlersController < ApplicationController
       Crawler.find_or_create_by(name: crawler_name)
     end
 
-    @crawlers = Crawler.where(name: available_crawler_names).order(:category, :name)
+    @crawlers = Crawler.where(name: available_crawler_names).order(:name)
   end
 
   def show

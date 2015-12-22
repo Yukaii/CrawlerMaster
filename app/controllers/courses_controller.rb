@@ -7,5 +7,8 @@ class CoursesController < ApplicationController
     else
       @courses = Course.page(params[:page]).per(params[:paginate_by])
     end
+
+    @title = "All Courses | CrawlerMaster"
+    @title = "#{params[:organization_code]} Courses | CrawlerMaster" if params[:organization_code]
   end
 end

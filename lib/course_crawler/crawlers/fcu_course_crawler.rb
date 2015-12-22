@@ -37,7 +37,7 @@ class FcuCourseCrawler < CourseCrawler::Base
     @after_each_proc      = after_each
 
 		@query_url = 'http://sdsweb.oit.fcu.edu.tw/coursequest/condition.jsp'
-		@ic = Iconv.new('utf-8//IGNORE//translit', 'big5')
+		@ic = Iconv.new('utf-8//IGNORE//translit', 'utf-8')
 	end
 
 	def courses
@@ -69,31 +69,35 @@ class FcuCourseCrawler < CourseCrawler::Base
       end
 
       time_period_regex = /\((?<day>[一二三四五六日])\)(?<period>.+)/
-      course_time_location = Hash[data[8].split(' ').map{|s| s.scan(time_period_regex)}]
-
+      course_time_location = Hash[data[7].split(' ').inject([]){|arr, s| arr.concat(s.scan(time_period_regex))}]
 
       # 把 course_time_location 轉成資料庫可以儲存的格式
       course_days, course_periods, course_locations = [], [], []
       course_time_location.each do |k, v|
-        for i in 1..k[1].split('-').count - 1
-          course_days << DAYS[k[0]]
-          course_periods << PERIODS[k[1].split('-')[i]]
-          course_locations << v
+        periods = v.split('-').map(&:to_i)
+        if periods.count == 1
+          course_days << DAYS[k]
+          course_periods << periods[0]
+        else
+          (periods[0]..periods[1]).each do |period|
+            course_days << DAYS[k]
+            course_periods << period
+          end
         end
       end
 
       course = {
         year:         @year,    # 西元年
         term:         @term,    # 學期 (第一學期=1，第二學期=2)
-        name:         data[1].split('  ')[1],    # 課程名稱
-        lecturer:     nil,    # 授課教師
+        name:         data[1].split(/\s+/).last,    # 課程名稱
+        lecturer:     "",    # 授課教師
         credits:      data[3].to_i,    # 學分數(需要轉換成數字，可以用.to_i)
-        code:         "#{@year}-#{@term}-#{course_code}-?(#{data[0]})?",
-        general_code: "#{course_code}-?(#{data[0]})?",
+        code:         "#{@year}-#{@term}-#{course_code}-#{data[0]}", # course_code 科目代碼，data[0] 選課代碼，要問逢甲的同學
+        general_code: "#{course_code}-#{data[0]}",
         # general_code: data[0],    # 選課代碼
         url:          syllabus_url,    # 課程大綱之類的連結(如果有的話)
         required:     nil,    # 必修或選修
-        department:   data[7],    # 開課系所
+        department:   data[6],    # 開課系所
         # note: data[11],
         # department_term: data[2],
         # mid_exam: data[4],

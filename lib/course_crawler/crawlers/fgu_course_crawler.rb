@@ -114,11 +114,10 @@ class FguCourseCrawler < CourseCrawler::Base
 
 
 	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
-		@year = year
-    	@term = term
-    	@update_progress_proc = update_progress
-    	@after_each_proc = after_each
-
+    @year                 = year || current_year
+    @term                 = term || current_term
+    @update_progress_proc = update_progress
+    @after_each_proc      = after_each
 	end
 
 	def courses
@@ -129,7 +128,7 @@ class FguCourseCrawler < CourseCrawler::Base
 
 
 		DEP.each do |department|
-			puts "Department: " + DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
+			set_progress DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
 			@url = "http://selcourse2.fgu.edu.tw/course_plan/cs_cont_all.aspx?in_years=#{year-1911}&in_semes=#{term}&in_depid="+department+"&out="
 			r = RestClient.get @url
 			doc = Nokogiri::HTML(r)
@@ -148,9 +147,11 @@ class FguCourseCrawler < CourseCrawler::Base
 
 	    		time_loc_regex = /(?<day>[一二三四五六日])\.(?<period>(\d{0,2}\,?)+)\((?<loc>.+)\)/
 	    		datas[10].text.strip.scan(time_loc_regex).each do |array|
-		    		course_days << DAYS[array[0]]
-						course_periods.concat array[1].split(',').map(&:to_i)
-						course_locations << array[2]
+						array[1].split(',').map(&:to_i).each do |period|
+							course_days << DAYS[array[0]]
+							course_periods << period
+							course_locations << array[2]
+						end
 					end
 
 					course = {

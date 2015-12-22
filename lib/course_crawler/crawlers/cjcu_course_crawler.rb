@@ -207,7 +207,7 @@ class CjcuCourseCrawler < CourseCrawler::Base
 		end
 
     puts "End"
-		@courses
+		@courses.uniq
 	end
 
 end
