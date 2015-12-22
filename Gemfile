@@ -53,6 +53,7 @@ gem 'hashie'
 gem 'capybara'
 gem 'poltergeist'
 gem 'archive-tar-minitar'
+gem 'spreadsheet'
 
 gem 'sidekiq', '~> 4.0'
 gem 'sidekiq-limit_fetch'
