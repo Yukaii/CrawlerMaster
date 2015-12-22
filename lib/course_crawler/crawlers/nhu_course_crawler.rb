@@ -83,7 +83,7 @@ class NhuCourseCrawler < CourseCrawler::Base
             credits:      data[7],    # 學分數
             code:         "#{@year}-#{@term}-#{data[1].scan(/\d+/)[0]}-?(#{data[0]})?",
             # general_code: old_course.cos_code,    # 選課代碼
-            general_code: "#{data[1].scan(/\d+/)[0]}-?(#{data[0]})?"
+            general_code: "#{data[1].scan(/\d+/)[0]}-?(#{data[0]})?",
             url:          syllabus_url,    # 課程大綱之類的連結
             required:     data[6].include?('必'),    # 必修或選修
             department:   dep_n,    # 開課系所

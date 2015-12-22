@@ -1,5 +1,5 @@
 module CourseCrawler::Crawlers
-class KnuCrouseCrawler < CourseCrawler::Base
+class KnuCourseCrawler < CourseCrawler::Base
 
 	DEP = [ 4, 9, 5, 6, 7, 8, 10, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 48, 24 ]
 	DEGREE = [ 1006, 1010, 1009, 1007, 1008 ]
