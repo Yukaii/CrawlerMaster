@@ -1,10 +1,13 @@
+# 國立高雄餐旅大學
+# 選課網址： http://classic.nkuht.edu.tw/PUB/PubCur.asp
+
 module CourseCrawler::Crawlers
 class NkuhtCourseCrawler < CourseCrawler::Base
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-    @year = year || current_year
-    @term = term || current_term
+    @year = year
+    @term = term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
