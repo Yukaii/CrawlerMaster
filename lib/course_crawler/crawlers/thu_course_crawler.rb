@@ -18,7 +18,7 @@ class ThuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc      = after_each
 
-    @url = "http://course.service.thu.edu.tw/view-dept/#{year-1911}/#{term}/everything"
+    @url = "http://course.thu.edu.tw/view-dept/#{@year-1911}/#{term}/everything"
 
     @ic = Iconv.new('utf-8//translit//IGNORE', 'utf-8') #
   end
@@ -59,7 +59,7 @@ class ThuCourseCrawler < CourseCrawler::Base
           name:         "#{datas[1].text.strip}",
           year:         @year,
           term:         @term,
-          code:         "#{@year}-#{@term}-"+ code,
+          code:         "#{@year}-#{@term}-#{code}",
           general_code: code,
           credits:      "#{datas[2].text[0]}",
           lecturer:     "#{datas[4].text.strip}",

@@ -56,8 +56,9 @@ class TcuCourseCrawler < CourseCrawler::Base
           name:         data[3].split('開課教師：')[0],    # 課程名稱
           lecturer:     data[3].split('開課教師：')[1],    # 授課教師
           credits:      data[5].to_i,    # 學分數
-          code:         "#{@year}-#{@term}-#{data[0]}-?(#{data[2]})?",
-          general_code: "#{data[0]}-?(#{data[2]})?",    # 選課代碼
+          serial_no:    data[0],
+          code:         "#{@year}-#{@term}-#{data[2]}",
+          general_code: data[2],    # 選課代碼
           # url: data[9],    # 課程大綱之類的連結(抓下來的是HTML語法，網頁要用POST的才能顯示)
           required:     data[6].include?('必'),    # 必修或選修
           department:   dept_n + data[4],    # 開課系所

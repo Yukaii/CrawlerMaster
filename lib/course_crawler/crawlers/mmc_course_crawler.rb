@@ -1,24 +1,8 @@
 module CourseCrawler::Crawlers
 class MmcCourseCrawler < CourseCrawler::Base
 
-	DEP = [
-		910,
-		500,
-		510,
-		520,
-		610,
-		620,
-		630,
-	]
-	GRADE = [
-		1,
-		2,
-		3,
-		4,
-		5,
-		6,
-		7,
-	]
+	DEP = [ 910, 500, 510, 520, 610, 620, 630 ]
+	GRADE = [ 1, 2, 3, 4, 5, 6, 7 ]
 
 	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
     @year = year || current_year

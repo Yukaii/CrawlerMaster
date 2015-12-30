@@ -25,38 +25,37 @@ class NquCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
 
-    r = RestClient.post(@query_url, {
+    r = http_client.post(@query_url, {
       "uid" => "guest",
       "pwd" => "123",
-      })
-    cookie = "JSESSIONID=#{r.cookies["JSESSIONID"]}"
+    })
 
     @query_url = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_01.jsp"
-    r = RestClient.get(@query_url, {"Cookie" => cookie })
+    r = http_client.get_content(@query_url)
     doc = Nokogiri::HTML(r)
 
     dep = Hash[doc.css('select[name="unit_id"] option').map{|opt| [opt[:value],opt.text]}]
     dep.each do |dep_c, dep_n|
 
       @query_url = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_02.jsp"
-      r = RestClient.post(@query_url, {
+      r = http_client.post(@query_url, {
         "yms_year" => @year - 1911,
         "yms_sms" => @term,
         "unit_id" => dep_c,
         "unit_serch" => "%E6%9F%A5+%E8%A9%A2",
-        }, {"Cookie" => cookie })
-      doc = Nokogiri::HTML(r)
+      })
+      doc = Nokogiri::HTML(r.body)
 
       degree = Hash[doc.css('table tr:not(:first-child) td[style="font-size: 9pt;color:blue;"] div').map{|td| [td[:onclick].split('\'')[1], td.text]}]
       degree.each do |degree_c, degree_n|
 
         @query_url = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_03.jsp"
-        r = RestClient.post(@query_url, {
+        r = http_client.post(@query_url, {
           "arg01" => @year - 1911,
           "arg02" => @term,
           "arg" => degree_c,
-          }, {"Cookie" => cookie })
-        doc = Nokogiri::HTML(r)
+          })
+        doc = Nokogiri::HTML(r.body)
 
         next if doc.css('table')[0] == nil
         doc.css('table')[0].css('tr:not(:first-child)').map{|tr| tr}.each do |tr|

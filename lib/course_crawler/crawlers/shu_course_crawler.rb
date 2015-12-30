@@ -88,8 +88,8 @@ class ShuCourseCrawler < CourseCrawler::Base
         name:         data[2].scan(/(?<name>(\S+\s?)+)/)[0][0],    # 課程名稱
         lecturer:     data[6].scan(/(?<name>(\S+\s?)+)/)[0][0],        # 授課教師
         credits:      data[4].to_i,         # 學分數
-        code:         "#{@year}-#{@term}-#{data[0].scan(/\w+/)[0]}-?(#{data[1].scan(/\S+/)[0]})?",
-        general_code: "#{data[0].scan(/\w+/)[0]}-?(#{data[1].scan(/\S+/)[0]})?",
+        code:         "#{@year}-#{@term}-#{data[1].scan(/\S+/)[0]}",
+        general_code: data[1].scan(/\S+/)[0],
         # general_code: data[1],    # 選課代碼
         url:          syllabus_url,    # 課程大綱之類的連結(如果有的話)
         required:     data[5].include?('必'),    # 必修或選修

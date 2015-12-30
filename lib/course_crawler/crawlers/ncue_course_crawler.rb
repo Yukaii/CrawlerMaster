@@ -55,7 +55,7 @@ class NcueCourseCrawler < CourseCrawler::Base
     dept_names = doc.css('select[name="sel_cls_id"] option').map{|opt| opt.text }[1..-1] #也要存資料用的，也可以當辨識
 
     post_dept_values.each_with_index do |dept_value, index|
-      print "#{index+1} / #{post_dept_values.count}\n"
+      set_progress "#{index+1} / #{post_dept_values.count}\n"
       r = RestClient.post(@post_url, {
         "sel_cls_branch" => "D",
         "sel_yms_year" => "104",
@@ -91,15 +91,11 @@ class NcueCourseCrawler < CourseCrawler::Base
 
             location = m[:loc]
 
-  # begin
             (start_period..end_period).each do |period|
               course_days << day
               course_periods << period
               course_locations << location
             end
-  # rescue Exception => e
-  #   binding.pry
-  # end
           end
 
 

@@ -83,7 +83,7 @@ class ScuCourseCrawler < CourseCrawler::Base
 
     # post_datas.select{|h| h[:_department].include? '經濟學系'}.each_with_index do |post_data, index|
     post_datas.each_with_index do |post_data, index|
-      print "#{index} / #{post_datas.count}\n"
+      set_progress "#{index+1} / #{post_datas.count}"
 
       r = RestClient.post( @result_url, {
           clsid1: post_data[:clsid1],
@@ -107,7 +107,7 @@ class ScuCourseCrawler < CourseCrawler::Base
 
       doc = Nokogiri::HTML(@ic.iconv(r))
       if doc.text.include?('請於 15 分鐘內登入系統')
-        print "流量引爆，休息一下吧\n"
+        # print "流量引爆，休息一下吧\n"
         sleep 45
         redo
       end

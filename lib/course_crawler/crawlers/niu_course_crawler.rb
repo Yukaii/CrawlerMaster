@@ -1,6 +1,23 @@
 module CourseCrawler::Crawlers
 class NiuCourseCrawler < CourseCrawler::Base
 
+	PERIODS = {
+		"00" => 1,
+		"01" => 2,
+		"02" => 3,
+		"03" => 4,
+		"04" => 5,
+		"05" => 6,
+		"06" => 7,
+		"07" => 8,
+		"08" => 9,
+		"09" => 10,
+		"0A" => 11,
+		"0B" => 12,
+		"0C" => 13,
+		"0D" => 14
+	}
+
 	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
     @year                 = year || current_year
     @term                 = term || current_term
@@ -36,7 +53,7 @@ class NiuCourseCrawler < CourseCrawler::Base
 		}), cookies: @cookies
 
     # Dir.mkdir('tmp') unless Dir.exist?('tmp')
-    File.write(Rails.root.join('tmp/tmp.xls'), response)
+    File.write(Rails.root.join('tmp/tmp.xls'), response.to_s.force_encoding('utf-8'))
 
 		@courses = []
 
@@ -51,27 +68,11 @@ class NiuCourseCrawler < CourseCrawler::Base
 
 			# puts row[2]+index.to_s
 
-			# 等一下要分割地點loc_temp
-
-			time_temp = []
-			time_temp2 = []
-			loc_temp = []
-			course_days = []
-			course_periods = []
-			course_locations = []
-
-      time_temp = row[9].to_s
-      time_temp2 = time_temp.split(",")
-
-      # begin
-      # rescue Exception => e
-      # end
-      loc_temp = row[10].split(",")
-			time_temp2.each_with_index do |content,index|
-				# puts index
-				course_days << time_temp[index][0].to_s
-				course_periods << time_temp[index][1..-1]
-				course_locations << loc_temp[index]
+			course_days, course_periods, course_locations = [], [], []
+			row[10].to_s.split(',').each_with_index do |period, i|
+				course_days << period[0].to_i
+				course_periods << PERIODS[period[1..2]]
+				course_locations << row[11].split(',')[i]
 			end
 
 			course ={
@@ -81,9 +82,9 @@ class NiuCourseCrawler < CourseCrawler::Base
         term:         @term,
         code:         "#{@year}-#{@term}-#{row[1]}",
         general_code: row[1],
-        credits:      row[6],
-        lecturer:     row[8],
-        required:     row[7].include?('必'),
+        credits:      row[7].to_i,
+        lecturer:     row[9],
+        required:     row[8].include?('必'),
         day_1:        course_days[0],
         day_2:        course_days[1],
         day_3:        course_days[2],
@@ -117,6 +118,8 @@ class NiuCourseCrawler < CourseCrawler::Base
 
 			@courses << course
 		end # sheet1 do
+
+		@courses
 	end # end courses
 end # class
 end

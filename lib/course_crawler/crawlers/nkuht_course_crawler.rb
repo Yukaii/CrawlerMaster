@@ -28,17 +28,13 @@ class NkuhtCourseCrawler < CourseCrawler::Base
         data = tr.css('td').map{|td| td.text}
         syllabus_url = @query_url + "Sel_Teaching.asp?Years=#{@year - 1911}&Term=#{@term}&EntryYear=&DeptName=#{URI.escape(Iconv.conv('Big5', 'utf-8', dept.split('\'')[5]))}&TeamNo=&OpClass=#{dept.split('\'')[9]}&Op_Class=#{dept.split('\'')[9]}&Serial=#{tr.css('a').map{|a| a[:onclick]}[0].split('\'')[7]}&Cos_ID=#{data[1]}&PageNo="
 
-        time_period_regex = /(?<d_p>([1-7]\d\d\(?\S?\)?[\s\ ])+)\/\ (?<loc>(\S+\s?)+)?/
-        course_time_location = data[4].scan(time_period_regex)
-
+        periods, location = data[4].split('/').map(&:strip)
         course_days, course_periods, course_locations = [], [], []
-        course_time_location.each do |d_p, loc|
-          next if d_p == nil
-          d_p.scan(/(?<day>[1-7])(?<period>\d\d)/).each do |day, period|
-            course_days << day.to_i
-            course_periods << period.to_i
-            course_locations << loc
-          end
+
+        periods.split(' ').each do |period_raw|
+          course_days << period_raw[0].to_i
+          course_periods << period_raw[1..2].to_i
+          course_locations << location
         end
 
         course = {
@@ -47,8 +43,8 @@ class NkuhtCourseCrawler < CourseCrawler::Base
           name:         data[2],    # 課程名稱
           lecturer:     data[3],    # 授課教師
           credits:      data[5].to_i,    # 學分數
-          code:         "#{@year}-#{@term}-#{data[0]}-?(#{data[1]})?",
-          general_code: "#{data[0]}-?(#{data[1]})?",
+          code:         "#{@year}-#{@term}-#{data[1]}",
+          general_code: "#{data[1]}",
           # general_code: data[1],    # 選課代碼
           url:          syllabus_url,    # 課程大綱之類的連結(如果有的話)
           required:     data[8].include?('必'),    # 必修或選修

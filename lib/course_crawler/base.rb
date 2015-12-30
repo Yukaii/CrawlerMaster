@@ -17,7 +17,7 @@ module CourseCrawler
     end
 
     def job_id
-      "#{worker.jid}"
+      "#{worker && worker.jid}"
     end
 
     def progress_key

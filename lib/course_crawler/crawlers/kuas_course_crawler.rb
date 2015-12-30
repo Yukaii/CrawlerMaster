@@ -31,8 +31,8 @@ class KuasCourseCrawler < CourseCrawler::Base
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil, params: nil
 
-    @year = year
-    @term = term
+    @year = year || current_year
+    @term = term || current_term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 

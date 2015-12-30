@@ -54,8 +54,9 @@ class NtsuCourseCrawler < CourseCrawler::Base
         name:         data[3],    # 課程名稱
         lecturer:     data[6],    # 授課教師
         credits:      data[8].to_i,    # 學分數
-        code:         "#{@year}-#{@term}-#{data[0]}-?(#{data[2].scan(/\S+/)[0]})?",
-        general_code: "#{data[0]}-?(#{data[2].scan(/\S+/)[0]})?",
+        code:         "#{@year}-#{@term}-#{data[2].scan(/\S+/)[0]}",
+        general_code: data[2].scan(/\S+/)[0],
+        serial_no:    data[0],
         # general_code: data[2].scan(/\S+/)[0],    # 選課代碼
         required:     data[9].include?('必'),    # 必修或選修
         department:   "#{data[4]}" + " " + "#{data[5]}",             # 開課系所

@@ -27,7 +27,7 @@ class NfuCourseCrawler < CourseCrawler::Base
 
 		#do search datas
 		dep.each do |dep_no|
-			puts dep.size.to_s + " / " + (dep.index(dep_no)+1).to_s
+			set_progress "#{dep.index(dep_no)+1} / #{dep.size.to_s}"
 
 			r = RestClient.post( @post_url , {
 					pselyr: all_yt,
@@ -58,7 +58,9 @@ class NfuCourseCrawler < CourseCrawler::Base
 						end
 					end
 
-					 course = {
+					next if datas[1].text.strip.empty?
+
+					course = {
             name:         "#{datas[1].text.strip}",
             year:         @year,
             term:         @term,

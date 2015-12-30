@@ -135,8 +135,9 @@ class NpustCourseCrawler < CourseCrawler::Base
           name:         data[5],    # 課程名稱
           lecturer:     data[3],    # 授課教師
           credits:      data[11].to_i,    # 學分數
-          code:         "#{@year}-#{@term}-#{data[4]}-?(#{data[1]})?",
-          general_code: "#{data[4]}-?(#{data[1]})?",    # 選課代碼
+          serial_no:    data[4],
+          code:         "#{@year}-#{@term}-#{data[1]}",
+          general_code: data[1],    # 選課代碼
           department:   "#{data[0]}#{data[8]}",    # 開課系所
           # department_code: dept_c,
           day_1:        course_days[0],

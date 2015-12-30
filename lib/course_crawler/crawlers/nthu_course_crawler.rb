@@ -1,3 +1,6 @@
+require 'rmagick'
+require 'rtesseract'
+
 module CourseCrawler::Crawlers
 class NthuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
@@ -77,6 +80,7 @@ class NthuCourseCrawler < CourseCrawler::Base
 
     @threads = []
     # 拿到 auth_num 及對應 acixstore，可以開始招搖撞騙了
+    done_deps_count = 0
     depts_h.keys.each do |dep_c|
       sleep(1) until (
         @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
@@ -97,7 +101,9 @@ class NthuCourseCrawler < CourseCrawler::Base
         }
 
         parse_course(Nokogiri::HTML(@ic.iconv(r)), dep_c, depts_h[dep_c])
-        print "#{depts_h[dep_c]}\n"
+        # print "#{depts_h[dep_c]}\n"
+        done_deps_count += 1
+        set_progress "#{done_deps_count} / #{depts_h.count}"
       end
     end
     ThreadsWait.all_waits(*@threads)
@@ -175,7 +181,7 @@ class NthuCourseCrawler < CourseCrawler::Base
     Dir.mkdir(Rails.root.join('tmp')) if not Dir.exist?(Rails.root.join('tmp'))
 
     image_url = URI.join(url, @doc.css('img')[0][:src]).to_s
-    File.write(Rails.root.join("tmp/#{@acixstore}.png").to_s, open(image_url).read)
+    File.write(Rails.root.join("tmp/#{@acixstore}.png").to_s, open(image_url).read.force_encoding('utf-8'))
     img = RTesseract.new(Rails.root.join("tmp/#{@acixstore}.png").to_s, psm: 8, options: :digits)
 
     return img.to_s.strip

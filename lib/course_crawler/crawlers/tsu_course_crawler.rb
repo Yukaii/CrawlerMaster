@@ -9,6 +9,8 @@ class TsuCourseCrawler < CourseCrawler::Base
     @term = term || current_term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
+
+		@ic = Iconv.new('utf-8//translit//IGNORE', 'utf-8')
   end
 
   def courses
@@ -23,26 +25,31 @@ class TsuCourseCrawler < CourseCrawler::Base
     # from Curl
     r = `curl -s 'http://eportfolio.tsu.edu.tw/bin/index.php?Plugin=coursemap&Action=course&TagName=id_YSK_search_result' -H 'id_YSK_search_result=%2Fbin%2Findex.php%3FPlugin%3Dcoursemap%26Action%3Dcourse%26TagName%3Did_YSK_search_result; PageLang=zh-tw; _counter=137857' --data 'rs=sajaxSubmit&rsargs[]=%3CInput%3E%3CF%3E%3CK%3Eyear%3C/K%3E%3CV%3E#{year-1911}%3C/V%3E%3C/F%3E%3CF%3E%3CK%3Esemester%3C/K%3E%3CV%3E#{term}%3C/V%3E%3C/F%3E%3CF%3E%3CK%3Edegree%3C/K%3E%3CV%3E%3C/V%3E%3C/F%3E%3CF%3E%3CK%3Ecollege%3C/K%3E%3CV%3E%3C/V%3E%3C/F%3E%3CF%3E%3CK%3Edept%3C/K%3E%3CV%3E%3C/V%3E%3C/F%3E%3CF%3E%3CK%3Egrade%3C/K%3E%3CV%3E%3C/V%3E%3C/F%3E%3CF%3E%3CK%3Ebyteacher%3C/K%3E%3CV%3E0%3C/V%3E%3C/F%3E%3CF%3E%3CK%3Eundefined%3C/K%3E%3CV%3Eundefined%3C/V%3E%3C/F%3E%3CF%3E%3CK%3Ekeyword%3C/K%3E%3CV%3E%25E8%25AB%258B%25E8%25BC%25B8%25E5%2585%25A5%25E9%2597%259C%25E9%258D%25B5%25E5%25AD%2597%3C/V%3E%3C/F%3E%3CF%3E%3CK%3E%3C/K%3E%3CV%3E%25E6%259F%25A5%25E8%25A9%25A2%3C/V%3E%3C/F%3E%3CF%3E%3CK%3EdgrName%3C/K%3E%3CV%3E%3C/V%3E%3C/F%3E%3CF%3E%3CK%3EcollegeName%3C/K%3E%3CV%3E%3C/V%3E%3C/F%3E%3CF%3E%3CK%3EdeptName%3C/K%3E%3CV%3E%3C/V%3E%3C/F%3E%3CF%3E%3CK%3EOp%3C/K%3E%3CV%3EsBySch%3C/V%3E%3C/F%3E%3C/Input%3E' --compressed`
 
-    doc = Nokogiri::HTML(r)
+    doc = Nokogiri::HTML(@ic.iconv(r))
 
     index_class = doc.css('table[class="cstable"]').css('tr')[1..-1]
      index_class.each do |row|
     	datas = row.css('td')
-    	puts  "課程進度: "+index_class.size.to_s + "/" +  (index_class.index(row)+1).to_s
+    	set_progress "#{index_class.index(row)+1} / #{index_class.size}"
 
     	course_days = []   # no days , periods and locations
     	course_periods = []
     	course_locations = []
 
+			name = datas[3].text.strip
+			lecturer = datas[9].text.strip
+			general_code = Base64.urlsafe_encode64("#{name}-#{lecturer}")[0..7]
+
     	course = {
-			  name: "#{datas[3].text.strip}",
+			  name: name,
 			  year: @year,
 			  term: @term,
-			  code: nil,
+			  code: "#{@year}-#{@term}-#{general_code}",
+				general_code: general_code,
 			  degree: "#{datas[0].text.strip}",
 			  class_: "#{datas[2].text.strip}",
 			  credits: "#{datas[7].text.strip}",
-			  lecturer: "#{datas[9].text.strip}",
+			  lecturer: lecturer,
 			  day_1: course_days[0],
 			  day_2: course_days[1],
 			  day_3: course_days[2],

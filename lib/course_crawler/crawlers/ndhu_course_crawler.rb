@@ -23,7 +23,6 @@ class NdhuCourseCrawler < CourseCrawler::Base
 
     @cookies = r.cookies
 
-
     colleges_hash = Hash[
       doc.css('select[name="ddlCOLLEGE"] option')[1..-1].map{|option| [option[:value], option.content]}
     ]
@@ -31,7 +30,7 @@ class NdhuCourseCrawler < CourseCrawler::Base
     colleges_hash.keys[0..-1].each do |college_post_value|
 
       #collge_name = colleges_hash[college_post_value]
-      dept_post_value,degree_post_value = 'NA'
+      dept_post_value, degree_post_value = 'NA'
       doc = web_post(doc,college_post_value,dept_post_value,degree_post_value)
 
 
@@ -40,7 +39,8 @@ class NdhuCourseCrawler < CourseCrawler::Base
       ]
 
       dept_hash.each_with_index do |(dept_post_value,dept_name), dep_index|
-        print "#{dep_index+1} / #{dept_hash.keys.count}: #{dept_name}\n"
+        # print "#{dep_index+1} / #{dept_hash.keys.count}: #{dept_name}\n"
+
 
         degree_post_value = 'NA'
         doc = web_post(doc,college_post_value,dept_post_value,degree_post_value)
@@ -230,7 +230,7 @@ class NdhuCourseCrawler < CourseCrawler::Base
     Hash[doc.css('input[type="hidden"]').map{|input| [input[:name], input[:value]]}]
   end
 
-  def web_post doc, college_post_value,dept_post_value, degree_post_value, check:nil
+  def web_post doc, college_post_value, dept_post_value, degree_post_value, check: nil
     r = RestClient.post(@query_url, view_state(doc).merge({
       "ddlYEAR" => '104/1',
       "ddlCOLLEGE" => college_post_value,

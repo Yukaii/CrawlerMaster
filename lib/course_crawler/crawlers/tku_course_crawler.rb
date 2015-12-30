@@ -57,7 +57,7 @@ class TkuCourseCrawler < CourseCrawler::Base
         (0..all('select[name="dept"] option').count-1).each do |dep_option_index|
           dep_o = all('select[name="dept"] option')[dep_option_index]
           deps_option ||= all('select[name="depts"] option')[deps_option_index]
-          puts dep_o.text
+          # puts dep_o.text
           begin
             @dep_post_datas << {
               deps: deps_option[:value],
@@ -82,7 +82,7 @@ class TkuCourseCrawler < CourseCrawler::Base
       (0..all('select[name="others"] option').count-1).each do |others_option_index|
         others_option = all('select[name="others"] option')[others_option_index]
         other_option ||= all('select[name="other"] option')[other_option_index]
-        puts others_option.text
+        # puts others_option.text
 
         begin
           @others_post_datas << {
@@ -105,7 +105,7 @@ class TkuCourseCrawler < CourseCrawler::Base
         @threads.count < ( (ENV['MAX_THREADS'] && ENV['MAX_THREADS'].to_i) || 30)
       )
       @threads << Thread.new do
-        print "#{post_data_index} / #{@dep_post_datas.count}, #{post_data[:deps_name]}-#{post_data[:dep_name]}\n"
+        set_progress "#{post_data_index} / #{@dep_post_datas.count}, #{post_data[:deps_name]}-#{post_data[:dep_name]}"
         r = RestClient.post @result_url, {
           "func" => "go",
           "R1" => "1",
@@ -126,7 +126,7 @@ class TkuCourseCrawler < CourseCrawler::Base
         @threads.count < ( (ENV['MAX_THREADS'] && ENV['MAX_THREADS'].to_i) || 30)
       )
       @threads << Thread.new do
-        print "#{post_data_index} / #{@others_post_datas.count}, #{post_data[:other_name]}-#{post_data[:others_name]}\n"
+        set_progress "#{post_data_index} / #{@others_post_datas.count}, #{post_data[:other_name]}-#{post_data[:others_name]}"
         r = RestClient.post @result_url, {
           "func" => "go",
           "R1" => "5",
@@ -197,13 +197,10 @@ class TkuCourseCrawler < CourseCrawler::Base
 
 
       lecturer = ""
-      if datas[13].nil?
-        binding.pry
-      end
       datas[13] && datas[13].text.match(/(?<lec>.+)?\ \([\d|\*]+\)/) do |m|
         lecturer = m[:lec]
       end
-
+      # lecturer = datas[13] && datas[13].text.rpartition('(')[0]
 
       course_days = []
       course_periods = []

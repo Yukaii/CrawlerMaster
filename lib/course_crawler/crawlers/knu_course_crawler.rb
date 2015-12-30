@@ -18,9 +18,16 @@ class KnuCourseCrawler < CourseCrawler::Base
 	def courses
 		@courses = []
 
+		done_list = 0
+		total_list = DEGREE.count * DEP.count
+
 		DEGREE.each do |deg|
 			DEP.each do |dep|
-				puts "degree: " + DEGREE.size.to_s + "/" + (DEGREE.index(deg)+1).to_s + " , dep:" + DEP.size.to_s + "/" + (DEP.index(dep)+1).to_s
+				done_list += 1
+				# puts "degree: " + DEGREE.size.to_s + "/" + (DEGREE.index(deg)+1).to_s + " , dep:" + DEP.size.to_s + "/" + (DEP.index(dep)+1).to_s
+
+				set_progress "#{done_list} / #{total_list}"
+
 
 				r = RestClient.post( @post_url , { #post network
           :cosrec_year   => @year-1911,

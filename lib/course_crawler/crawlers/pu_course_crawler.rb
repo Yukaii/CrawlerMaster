@@ -83,6 +83,8 @@ class PuCourseCrawler < CourseCrawler::Base
         end
 
         ###!!!課程代碼重複是因為一個課程有多位教師(官方設定的)!!!
+        general_code = data[0].scan(/\w+/)[0]
+        next if general_code.nil?
 
         course = {
           year:         @year,    # 西元年
@@ -90,8 +92,8 @@ class PuCourseCrawler < CourseCrawler::Base
           name:         data[3].scan(/(?<name>(\S+\s?)+)/)[0][0],    # 課程名稱
           lecturer:     data[6].scan(/\S+/)[0],        # 授課教師
           credits:      data[5],    # 學分數
-          code:         "#{@year}-#{@term}-#{dep_c}-?(#{data[0].scan(/\w+/)[0]})?",
-          general_code: data[0].scan(/\w+/)[0],
+          code:         "#{@year}-#{@term}-#{general_code}",
+          general_code: general_code,
           # general_code: data[0],    # 選課代碼
           url:          syllabus_url,    # 課程大綱之類的連結
           required:     data[2].include?('必'),    # 必修或選修

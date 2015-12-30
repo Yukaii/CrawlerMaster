@@ -115,7 +115,7 @@ class DyuCourseCrawler < CourseCrawler::Base
         name:         data[3],    # 課程名稱
         lecturer:     data[4],    # 授課教師
         credits:      data[1].split('/')[0].to_i,    # 學分數
-        code:         "#{@year}-#{@term}-#{data[2]}-?(#{course_code})?",
+        code:         "#{@year}-#{@term}-#{data[2]}-#{course_code}",
         general_code: course_code,    # 選課代碼
         url:          data[-1],    # 課程大綱之類的連結
         required:     data[1].split('/')[-1].include?('必'),    # 必修或選修

@@ -87,8 +87,9 @@ class NtunhsCourseCrawler < CourseCrawler::Base
           name:         data[3],    # 課程名稱
           lecturer:     data[7],    # 授課教師
           credits:      data[11].to_i,    # 學分數
-          code:         "#{@year}-#{@term}-#{data[0]}-?(#{data[-1]})?",
-          general_code: "#{data[0]}-?(#{data[-1]})?",
+          serial_no:    data[0],
+          code:         "#{@year}-#{@term}-#{data[-1]}",
+          general_code: data[-1],
           # general_code: data[-1],    # 選課代碼
           required:     data[12].include?('必'),    # 必修或選修
           department:   "#{data[1]} #{data[2]}",    # 開課系所

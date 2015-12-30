@@ -31,13 +31,17 @@ module CourseCrawler
       @klass_instance.worker = self
       courses = @klass_instance.courses
 
+      # maybe we should throw an exception?
+      return if courses.empty?
+
       # Save course datas into database
       inserted_column_names = [:ucode] + Course.inserted_column_names + [ :created_at, :updated_at ]
 
       courses_inserts = courses.map do |c|
         c[:name] && c[:name].gsub!("'", "''")
-        c[:lecturer_name] && c[:lecturer_name].gsub!("'", "''") || c[:lecturer] && c[:lecturer].gsub!("'", "''")
-        c[:lecturer_name] = c[:lecturer_name].nil? ? "" : c[:lecturer_name]
+        c[:lecturer_name] = c[:lecturer_name] || c[:lecturer] || ""
+        c[:lecturer_name].gsub!("'", "''")
+
         c[:required] = c[:required].nil? ? "NULL" : c[:required]
 
         # 去頭去尾
@@ -57,6 +61,8 @@ module CourseCrawler
         ActiveRecord::Base.transaction {
           Course.where(organization_code: org).destroy_all
           ActiveRecord::Base.connection.execute(sql)
+
+          Rails.logger.info("#{args[0]}: Succesfully save to database.")
         }
       end
 

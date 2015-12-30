@@ -71,7 +71,7 @@ class McuCourseCrawler < CourseCrawler::Base
           type = datas[0].text
 
           serial_no ||= nil; course_name ||= nil
-          datas[1].text.match /(?<serial>\d{5})\s(?<name>.+)/ do |m|
+          datas[1].text.match /(?<serial>.{5})\s(?<name>.+)/ do |m|
             serial_no = m[:serial]
             course_name = m[:name]
           end
@@ -171,8 +171,8 @@ class McuCourseCrawler < CourseCrawler::Base
             # :book => book
           }
         end # rows.each do
-        puts "done #{@processed_department_count} / #{@total_department_count}"
         @processed_department_count += 1
+        set_progress "#{@processed_department_count} / #{@total_department_count}"
       # end # Thread.new
     end # schs.each_with_index do
     @courses.uniq!

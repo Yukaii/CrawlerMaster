@@ -29,8 +29,8 @@ class NhuCourseCrawler < CourseCrawler::Base
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-    @year = year
-    @term = term
+    @year = year || current_year
+    @term = term || current_term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
@@ -81,9 +81,9 @@ class NhuCourseCrawler < CourseCrawler::Base
             name:         data[2],    # 課程名稱
             lecturer:     data[5],    # 授課教師
             credits:      data[7],    # 學分數
-            code:         "#{@year}-#{@term}-#{data[1].scan(/\d+/)[0]}-?(#{data[0]})?",
+            code:         "#{@year}-#{@term}-#{data[1].scan(/\d+/)[0]}-#{data[0]}",
             # general_code: old_course.cos_code,    # 選課代碼
-            general_code: "#{data[1].scan(/\d+/)[0]}-?(#{data[0]})?",
+            general_code: data[0],
             url:          syllabus_url,    # 課程大綱之類的連結
             required:     data[6].include?('必'),    # 必修或選修
             department:   dep_n,    # 開課系所
