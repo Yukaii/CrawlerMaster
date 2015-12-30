@@ -1,3 +1,5 @@
+# 南華大學
+# 選課網址： http://203.72.2.6/acad2008NET4/QrySemCourses.aspx
 module CourseCrawler::Crawlers
 class NhuCourseCrawler < CourseCrawler::Base
 
@@ -29,8 +31,8 @@ class NhuCourseCrawler < CourseCrawler::Base
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-    @year = year || current_year
-    @term = term || current_term
+    @year = year
+    @term = term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
