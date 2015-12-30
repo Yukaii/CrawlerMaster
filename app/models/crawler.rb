@@ -1,3 +1,20 @@
+# t.string   "name"
+# t.string   "short_name"
+# t.string   "class_name"
+# t.string   "organization_code"
+# t.string   "setting"
+# t.datetime "created_at",                                   null: false
+# t.datetime "updated_at",                                   null: false
+# t.string   "data_management_api_endpoint"
+# t.string   "data_management_api_key"
+# t.string   "data_name"
+# t.boolean  "save_to_db",                   default: false
+# t.boolean  "sync",                         default: false
+# t.string   "category"
+# t.string   "description"
+# t.integer  "year"
+# t.integer  "term"
+
 class Crawler < ActiveRecord::Base
 
   before_create :setup
@@ -7,7 +24,7 @@ class Crawler < ActiveRecord::Base
   store :setting, accessors: [ :schedule ]
 
   SCHEDULE_KEYS = [:at, :in, :every, :cron]
-  API_MANAGEMENT_KEYS = [:description, :data_management_api_endpoint, :data_management_api_key, :data_name, :category]
+  API_MANAGEMENT_KEYS = [:year, :term, :description, :data_management_api_endpoint, :data_management_api_key, :data_name, :category]
   TEST_SETTING_KEYS = [ :save_to_db, :sync ]
 
   def klass
@@ -21,6 +38,11 @@ class Crawler < ActiveRecord::Base
   def run_up(job_type, args={})
     time_str = self.schedule[job_type]
     return nil if time_str.nil? || time_str.empty?
+
+    args.merge!({
+      year: self.year,
+      term: self.term
+    });
 
     j = Rufus::Scheduler.s.send(:"schedule_#{job_type}", time_str) do
       Sidekiq::Client.push(

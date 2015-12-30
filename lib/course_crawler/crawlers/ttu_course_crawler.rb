@@ -54,7 +54,7 @@ class TtuCourseCrawler < CourseCrawler::Base
       })
       groups = Hash[@doc.css('select[name="SelCl"] option').map {|s| [s[:value], s.text]}]
       groups.keys.each_with_index do |group_code, group_index|
-        print "#{dep_code} - #{group_code}\n"
+        # print "#{dep_code} - #{group_code}\n"
 
         sleep(1) until (
           @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
@@ -102,7 +102,7 @@ class TtuCourseCrawler < CourseCrawler::Base
                 day = DAYS[days]
                 period = PERIODS[PERIODS.keys[periods]]
 
-                print "parsing #{c_hash}...\n"
+                # print "parsing #{c_hash}...\n"
 
                 @courses[c_hash] = {} if @courses[c_hash].nil?
                 @courses[c_hash][:code] = c_hash
@@ -248,7 +248,7 @@ class TtuCourseCrawler < CourseCrawler::Base
       @courses[c_hash][:reference] = power_strip(_ref.css('td').last.text)
     end
 
-    print "parse_syllabus done: #{course_code}\n"
+    # print "parse_syllabus done: #{course_code}\n"
   end
 
   def parse_detail(course_code, c_hash)
@@ -259,7 +259,7 @@ class TtuCourseCrawler < CourseCrawler::Base
     @courses[c_hash][:required] = !(doc.css('tr:contains("選別") td').first.text.strip == '選修')
     @courses[c_hash][:credits] = Integer doc.css('tr:contains("學分數") td').first.text.strip
 
-    print "parse_detail done: #{course_code}\n"
+    # print "parse_detail done: #{course_code}\n"
   end
 
   def power_strip str

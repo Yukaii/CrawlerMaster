@@ -97,9 +97,10 @@ class YuntechCourseCrawler < CourseCrawler::Base
           sleep 2
 
           @courses.concat parse_course(html, department, department_code)
-          print "#{page_count} / #{total_page}\n"
+          # print "#{page_count} / #{total_page}\n"
         end # end each page
         # puts
+        set_progress "#{dept_index} / #{dept_count}"
       end # all dept option do
     end # all college option do
 
@@ -131,12 +132,14 @@ class YuntechCourseCrawler < CourseCrawler::Base
       course_days = []
       course_periods = []
       course_locations = []
-      m = time && time.match(/(?<d>\d)\-(?<p>.+)\/(?<loc>.+)/)
-      if !!m
-        m[:p].split("").each do |period|
-          course_days << m[:d].to_i
-          course_periods << PERIODS[period]
-          course_locations << m[:loc]
+      time && time.split(';').map do |t|
+        m = t.match(/(?<d>\d)\-(?<p>.+)\/(?<loc>.+)/)
+        if !!m
+          m[:p].split("").each do |period|
+            course_days << m[:d].to_i
+            course_periods << PERIODS[period]
+            course_locations << m[:loc]
+          end
         end
       end
 
@@ -151,48 +154,48 @@ class YuntechCourseCrawler < CourseCrawler::Base
       end
 
       {
-        year: @year,
-        term: @term,
-        code: code,
-        general_code: curriculum_no,
-        department: dept_n,
+        year:            @year,
+        term:            @term,
+        code:            code,
+        general_code:    curriculum_no,
+        department:      dept_n,
         department_code: dept_c,
-        name: datas[2] && datas[2].text.strip.gsub(/\s+/, ' '),
-        lecturer: datas[8] && datas[8].text.strip,
-        url: url,
-        class_id: datas[3] && datas[3].text.strip,
-        team: datas[4] && datas[4].text.strip,
-        required: datas[5] && datas[5].text.strip.gsub(/\s+/, ' ').include?('必'),
-        credits: datas[6] && datas[6].text.strip.split('-').last.to_i,
-        class_member: datas[9] && datas[9].text.strip,
-        note: datas[11] && datas[11].text.strip.gsub(/\s+/, ' '),
-        day_1: course_days[0],
-        day_2: course_days[1],
-        day_3: course_days[2],
-        day_4: course_days[3],
-        day_5: course_days[4],
-        day_6: course_days[5],
-        day_7: course_days[6],
-        day_8: course_days[7],
-        day_9: course_days[8],
-        period_1: course_periods[0],
-        period_2: course_periods[1],
-        period_3: course_periods[2],
-        period_4: course_periods[3],
-        period_5: course_periods[4],
-        period_6: course_periods[5],
-        period_7: course_periods[6],
-        period_8: course_periods[7],
-        period_9: course_periods[8],
-        location_1: course_locations[0],
-        location_2: course_locations[1],
-        location_3: course_locations[2],
-        location_4: course_locations[3],
-        location_5: course_locations[4],
-        location_6: course_locations[5],
-        location_7: course_locations[6],
-        location_8: course_locations[7],
-        location_9: course_locations[8],
+        name:            datas[2] && datas[2].text.strip.gsub(/\s+/, ' '),
+        lecturer:        datas[8] && datas[8].text.strip,
+        url:             url,
+        class_id:        datas[3] && datas[3].text.strip,
+        team:            datas[4] && datas[4].text.strip,
+        required:        datas[5] && datas[5].text.strip.gsub(/\s+/, ' ').include?('必'),
+        credits:         datas[6] && datas[6].text.strip.split('-').last.to_i,
+        class_member:    datas[9] && datas[9].text.strip,
+        note:            datas[11] && datas[11].text.strip.gsub(/\s+/, ' '),
+        day_1:           course_days[0],
+        day_2:           course_days[1],
+        day_3:           course_days[2],
+        day_4:           course_days[3],
+        day_5:           course_days[4],
+        day_6:           course_days[5],
+        day_7:           course_days[6],
+        day_8:           course_days[7],
+        day_9:           course_days[8],
+        period_1:        course_periods[0],
+        period_2:        course_periods[1],
+        period_3:        course_periods[2],
+        period_4:        course_periods[3],
+        period_5:        course_periods[4],
+        period_6:        course_periods[5],
+        period_7:        course_periods[6],
+        period_8:        course_periods[7],
+        period_9:        course_periods[8],
+        location_1:      course_locations[0],
+        location_2:      course_locations[1],
+        location_3:      course_locations[2],
+        location_4:      course_locations[3],
+        location_5:      course_locations[4],
+        location_6:      course_locations[5],
+        location_7:      course_locations[6],
+        location_8:      course_locations[7],
+        location_9:      course_locations[8],
       }
     end
   end

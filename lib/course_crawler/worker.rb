@@ -20,10 +20,13 @@ module CourseCrawler
       org = args[0].match(/(.+?)CourseCrawler/)[1].upcase
       crawler_model = Crawler.find_by(organization_code: org)
 
+      year = args[1][:year] || crawler_model.year || (Time.now.month.between?(1, 7) ? Time.now.year - 1 : Time.now.year)
+      term = args[1][:term] || crawler_model.term || (Time.now.month.between?(2, 7) ? 2 : 1)
+
       @klass_instance =
         klass.new(
-          year: args[1][:year],
-          term: args[1][:term],
+          year: year,
+          term: term,
           update_progress: args[1][:update_progress],
           after_each: args[1][:after_each]
         )
@@ -59,7 +62,7 @@ module CourseCrawler
 
       if crawler_model.save_to_db
         ActiveRecord::Base.transaction {
-          Course.where(organization_code: org).destroy_all
+          Course.where(organization_code: org, year: year, term: term).destroy_all
           ActiveRecord::Base.connection.execute(sql)
 
           Rails.logger.info("#{args[0]}: Succesfully save to database.")
@@ -72,9 +75,10 @@ module CourseCrawler
 
       http_client = HTTPClient.new
 
-      courses = Course.where(organization_code: org)
+      courses = Course.where(organization_code: org, year: year, term: term)
       courses_count = courses.count
 
+      # execute sync
       if crawler_model.sync
         courses.find_in_batches(batch_size: 200) do |courses|
           courses.map{|c| Hash[c.attributes.map{|k, v| [k.to_sym, v]}].slice(*api_put_columns) }.each_with_index do |course, index|

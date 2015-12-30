@@ -34,8 +34,8 @@ class UtaipeiCourseCrawler < CourseCrawler::Base
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-    @year = year
-    @term = term
+    @year = year || current_year
+    @term = term || current_term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
@@ -101,14 +101,17 @@ class UtaipeiCourseCrawler < CourseCrawler::Base
                 data[8] = teacher
               end
 # !!!上課時間跟老師的資料存起來有問題!!!超過九個課...
+
+              general_code = data[0].scan(/\w+/)[0]
+
               course = {
                 year: @year,    # 西元年
                 term: @term,    # 學期 (第一學期=1，第二學期=2)
                 name: data[1],    # 課程名稱
                 lecturer: data[8],    # 授課教師
                 credits: data[3].to_i,    # 學分數
-                code: "#{@year}-#{@term}-#{department_code}-?(#{data[0].scan(/\w+/)[0]})?",
-                general_code: data[0].scan(/\w+/)[0],
+                code: "#{@year}-#{@term}-#{department_code}-#{general_code}",
+                general_code: general_code,
                 # general_code: old_course.cos_code,    # 選課代碼
                 url: data[11],    # 課程大綱之類的連結
                 required: data[5].include?('必'),    # 必修或選修
