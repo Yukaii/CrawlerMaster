@@ -4,13 +4,13 @@
 # execution method.
 #
 # Example:
-#   CourseCrawler::Worker.perform_async "NtustCourseCrawler", { year: 2015, term: 2 }
+#   CourseCrawler::CourseWorker.perform_async "NtustCourseCrawler", { year: 2015, term: 2 }
 #
 # The class CourseCrawler::Crawler::NtustCourseCrawler will be loaded and create an instance
 # then call default method "courses".
 
 module CourseCrawler
-  class Worker
+  class CourseWorker
     include Sidekiq::Worker
     sidekiq_options :retry => 1
 
@@ -55,15 +55,22 @@ module CourseCrawler
         }, '#{Time.now}', '#{Time.now}' )"
       end
 
-      sql = <<-eof
-        INSERT INTO courses (#{inserted_column_names.join(', ')})
-        VALUES #{courses_inserts.join(', ')}
-      eof
+      sqls = courses_inserts.in_groups_of(500, false).map { |cis|
+        <<-eof
+          INSERT INTO courses (#{inserted_column_names.join(', ')})
+          VALUES #{cis.join(', ')}
+        eof
+      }
+
+      # sql = <<-eof
+      #   INSERT INTO courses (#{inserted_column_names.join(', ')})
+      #   VALUES #{courses_inserts.join(', ')}
+      # eof
 
       if crawler_model.save_to_db
         ActiveRecord::Base.transaction {
           Course.where(organization_code: org, year: year, term: term).destroy_all
-          ActiveRecord::Base.connection.execute(sql)
+          sqls.map{|sql| ActiveRecord::Base.connection.execute(sql) }
 
           Rails.logger.info("#{args[0]}: Succesfully save to database.")
         }

@@ -47,7 +47,7 @@ class Crawler < ActiveRecord::Base
     j = Rufus::Scheduler.s.send(:"schedule_#{job_type}", time_str) do
       Sidekiq::Client.push(
         'queue' => self.name,
-        'class' => CourseCrawler::Worker,
+        'class' => CourseCrawler::CourseWorker,
         'args' => [
           self.name,
           args
