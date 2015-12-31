@@ -46,7 +46,7 @@ gem 'hirb-unicode', :require => false
 
 # crawler dependencies
 gem 'rest-client'
-gem 'httpclient'
+gem 'httpclient', '~> 2.7'
 gem 'iconv'
 gem 'crawler_rocks'
 gem 'hashie'

@@ -77,26 +77,21 @@ module CourseCrawler
       end
 
       ## Sync to Core
-      # get crawler settings
-      api_put_columns = (Course.inserted_column_names + [ :created_at, :updated_at ])
-
-      http_client = HTTPClient.new
-
-      courses = Course.where(organization_code: org, year: year, term: term)
-      courses_count = courses.count
-
-      # execute sync
       if crawler_model.sync
-        courses.find_in_batches(batch_size: 200) do |courses|
-          courses.map{|c| Hash[c.attributes.map{|k, v| [k.to_sym, v]}].slice(*api_put_columns) }.each_with_index do |course, index|
+        j = Rufus::Scheduler.s.send(:"schedule_in", '1s') do
+          Sidekiq::Client.push(
+            'queue' => "CourseCrawler::CourseSyncWorker",
+            'class' => CourseCrawler::CourseSyncWorker,
+            'args' => [
+              org:        org,
+              year:       year,
+              term:       term,
+              class_name: @klass_instance.class.to_s
+            ]
+          )
+        end
+        crawler_model.rufus_jobs.create(jid: j.id, type: 'in', original: j.original)
 
-            http_client.put("#{crawler_model.data_management_api_endpoint}/#{course[:code]}?key=#{crawler_model.data_management_api_key}",
-              { crawler_model.data_name => course }
-            )
-
-            @klass_instance.set_progress("syncing: #{index+1} / #{courses_count}")
-          end # end courses.each_with_index
-        end # end courses.find_in_batches
       end # end if crwaler_model.sync
 
     end
