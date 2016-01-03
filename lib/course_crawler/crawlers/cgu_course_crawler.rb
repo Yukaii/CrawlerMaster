@@ -1,3 +1,6 @@
+# 長庚大學
+# 選課網址: http://www.is.cgu.edu.tw/portal/DesktopDefault.aspx?tabindex=1&tabid=61
+
 module CourseCrawler::Crawlers
 class CguCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
