@@ -1,3 +1,6 @@
+# 亞洲大學
+# 選課網址: http://webs.asia.edu.tw/courseinfo/default.asp
+
 module CourseCrawler::Crawlers
 class AsiaCourseCrawler < CourseCrawler::Base
 
@@ -50,8 +53,8 @@ class AsiaCourseCrawler < CourseCrawler::Base
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-    @year                 = year || current_year
-    @term                 = term || current_term
+    @year                 = year
+    @term                 = term
     @update_progress_proc = update_progress
     @after_each_proc      = after_each
 
