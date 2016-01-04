@@ -1,3 +1,6 @@
+# 國立交通大學
+# 選課網址: http://timetable.nctu.edu.tw/
+
 require_relative './nctu_course_crawler/nctu_course'
 
 module CourseCrawler::Crawlers
