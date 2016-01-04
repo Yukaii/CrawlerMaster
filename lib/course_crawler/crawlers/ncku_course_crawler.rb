@@ -1,3 +1,6 @@
+# 國立成功大學
+# 選課網址: http://course-query.acad.ncku.edu.tw/qry/
+
 module CourseCrawler::Crawlers
 class NckuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
