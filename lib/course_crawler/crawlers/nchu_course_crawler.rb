@@ -1,3 +1,6 @@
+# 國立中興大學
+# 選課網址: https://onepiece.nchu.edu.tw/cofsys/plsql/crseqry_home
+
 module CourseCrawler::Crawlers
 class NchuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
