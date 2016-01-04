@@ -1,3 +1,6 @@
+# 國立政治大學
+# 選課網址: http://wa.nccu.edu.tw/QryTor/
+
 module CourseCrawler::Crawlers
 class NccuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
