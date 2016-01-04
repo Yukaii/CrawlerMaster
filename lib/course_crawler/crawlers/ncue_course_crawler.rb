@@ -1,3 +1,6 @@
+# 國立彰化師範大學
+# 選課網址: http://webap0.ncue.edu.tw/deanv2/other/ob010
+
 module CourseCrawler::Crawlers
 class NcueCourseCrawler < CourseCrawler::Base
 
@@ -58,8 +61,8 @@ class NcueCourseCrawler < CourseCrawler::Base
       set_progress "#{index+1} / #{post_dept_values.count}\n"
       r = RestClient.post(@post_url, {
         "sel_cls_branch" => "D",
-        "sel_yms_year" => "104",
-        "sel_yms_smester" => "1",
+        "sel_yms_year" => @year-1911,
+        "sel_yms_smester" => @term,
         "sel_cls_id" => dept_value,
         "X-Requested-With" => "XMLHttpRequest"
       })
