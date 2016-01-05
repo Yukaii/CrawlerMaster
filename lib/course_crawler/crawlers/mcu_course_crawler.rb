@@ -1,3 +1,8 @@
+##
+# 銘傳課程爬蟲
+# 查詢：http://www.mcu.edu.tw/student/new-query/sel-query/index.html
+#
+
 module CourseCrawler::Crawlers
 class McuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
@@ -126,12 +131,14 @@ class McuCourseCrawler < CourseCrawler::Base
 
           datas[4] && datas[4].search('br').each{|br| br.replace("\n")}
           lecturer = datas[4] && datas[4].text.split("\n").map{|txt| txt.rpartition(':')[-1].strip}.join(',')
+          credits = datas[9].text.to_i
 
           @courses << {
             year: @year,
             term: @term,
             code: "#{@year}-#{@term}-#{serial_no}-#{group_code}",
             general_code: serial_no,
+            credits: credits,
             name: course_name,
             lecturer: lecturer,
             department: department,

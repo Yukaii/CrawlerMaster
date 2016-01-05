@@ -1,3 +1,8 @@
+##
+# 虎科大課程爬蟲
+# http://osa.nfu.edu.tw/query/class.php
+#
+
 module CourseCrawler::Crawlers
 class NfuCourseCrawler < CourseCrawler::Base
 

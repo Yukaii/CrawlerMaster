@@ -1,3 +1,8 @@
+##
+# 東華課程爬蟲
+# http://sys.ndhu.edu.tw/aa/class/course/Default.aspx
+#
+
 module CourseCrawler::Crawlers
 class NdhuCourseCrawler < CourseCrawler::Base
 
@@ -89,8 +94,8 @@ class NdhuCourseCrawler < CourseCrawler::Base
               term:         @term,
               code:         "#{@year}-#{@term}-#{columns[4].text.strip}",
               general_code: columns[4].text.strip,
-              credits:      columns[11].text,
-              lecturer:     columns[12].text.strip,
+              credits:      columns[11].text.split('/')[0].gsub(/[^\d]/, '').to_i,
+              lecturer:     columns[12].text.strip.strip.split(/[\/\/]/).reject(&:empty?).join(','),
               day_1:        course_days[0],
               day_2:        course_days[1],
               day_3:        course_days[2],
@@ -159,8 +164,8 @@ class NdhuCourseCrawler < CourseCrawler::Base
               term:         @term,
               code:         "#{@year}-#{@term}-#{columns[5].text.strip}",
               general_code: columns[5].text.strip,
-              credits:      columns[12].text,
-              lecturer:     columns[13].text.strip,
+              credits:      columns[12].text.split('/')[0].gsub(/[^\d]/, '').to_i,
+              lecturer:     columns[13].text.strip.split(/[\/\/]/).reject(&:empty?).join(','),
               day_1:        course_days[0],
               day_2:        course_days[1],
               day_3:        course_days[2],

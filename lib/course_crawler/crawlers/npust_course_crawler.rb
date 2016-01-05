@@ -16,7 +16,7 @@ class NpustCourseCrawler < CourseCrawler::Base
     "10" => 12,
     "11" => 13,
     "12" => 14,
-    }
+  }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 

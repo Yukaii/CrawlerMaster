@@ -1,3 +1,8 @@
+##
+# 竹教大課程查詢
+# http://140.126.22.95/wbcmsc/cmain1.asp
+#
+
 module CourseCrawler::Crawlers
 class NhcueCourseCrawler < CourseCrawler::Base
 
@@ -30,7 +35,7 @@ class NhcueCourseCrawler < CourseCrawler::Base
     @cookies = r.cookies
     doc = Nokogiri::HTML(@ic.iconv(r))
 
-    r = `curl -s 'http://140.126.22.95/wbcmsc/cdptgd1.asp' -H 'Cookie: ASPSESSIONIDQQTDCDAD=BCPPNCKDPDONCDOEBDFKBKNO' -H 'Origin: http://140.126.22.95' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Cache-Control: max-age=0' -H 'Referer: http://140.126.22.95/wbcmsc/cdptgd1.asp' -H 'Connection: keep-alive' --data 'submit2=0&qdptcd=&qdivis=0&qgd=&qschyy=104&qsmt=1&action=%BDT%A9w' --compressed`
+    r = `curl -s 'http://140.126.22.95/wbcmsc/cdptgd1.asp' -H 'Origin: http://140.126.22.95' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Cache-Control: max-age=0' -H 'Referer: http://140.126.22.95/wbcmsc/cdptgd1.asp' -H 'Connection: keep-alive' --data 'submit2=0&qdptcd=&qdivis=0&qgd=&qschyy=#{@year-1911}&qsmt=#{@term}&action=%BDT%A9w' --compressed`
 
       # department = dept_names[index]
     doc = Nokogiri::HTML(@ic.iconv(r))
@@ -74,9 +79,9 @@ class NhcueCourseCrawler < CourseCrawler::Base
         code:         "#{@year}-#{@term}-#{row.css('td')[1].text.strip}",
         general_code: row.css('td')[1].text.strip,
         # #{這個裡面放變數}
-        credits:      row.css('td')[3].text.strip,
+        credits:      row.css('td')[3].text.strip.to_i,
         required:     row.css('td')[6].text.include?('必'),
-        lecturer:     row.css('td')[4].text.strip,
+        lecturer:     row.css('td')[4].text.gsub(/\ /, '').strip,
         day_1:        course_days[0],
         day_2:        course_days[1],
         day_3:        course_days[2],

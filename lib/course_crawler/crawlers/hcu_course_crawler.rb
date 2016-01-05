@@ -1,3 +1,7 @@
+##
+# 玄奘課程爬蟲
+# http://hrs.hcu.edu.tw/strategy/std/index.asp
+#
 module CourseCrawler::Crawlers
 class HcuCourseCrawler < CourseCrawler::Base
 

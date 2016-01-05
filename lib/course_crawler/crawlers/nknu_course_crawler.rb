@@ -1,3 +1,8 @@
+##
+# 高師課程爬蟲
+# http://www.nknu.edu.tw/~course/choose/
+#
+
 module CourseCrawler::Crawlers
 class NknuCourseCrawler < CourseCrawler::Base
 

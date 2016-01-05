@@ -1,3 +1,8 @@
+##
+# 馬偕醫學院課程爬蟲
+# http://portal.mmc.edu.tw/VC2/global_cos.aspx
+#
+
 module CourseCrawler::Crawlers
 class MmcCourseCrawler < CourseCrawler::Base
 

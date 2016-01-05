@@ -1,3 +1,8 @@
+##
+# 金門課程爬蟲
+# http://select1.nqu.edu.tw/kmkuas/index_main.html
+#
+
 module CourseCrawler::Crawlers
 class NquCourseCrawler < CourseCrawler::Base
 
@@ -20,10 +25,14 @@ class NquCourseCrawler < CourseCrawler::Base
     @after_each_proc = after_each
 
     @query_url = 'http://select1.nqu.edu.tw/kmkuas/perchk.jsp'
+    @query_url2 = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_02.jsp"
+    @query_url3 = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_03.jsp"
   end
 
   def courses
     @courses = []
+
+    http_client.receive_timeout = 300
 
     r = http_client.post(@query_url, {
       "uid" => "guest",
@@ -31,14 +40,14 @@ class NquCourseCrawler < CourseCrawler::Base
     })
 
     @query_url = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_01.jsp"
-    r = http_client.get_content(@query_url)
-    doc = Nokogiri::HTML(r)
+
+    r = http_client.get(@query_url)
+    doc = Nokogiri::HTML(r.body)
 
     dep = Hash[doc.css('select[name="unit_id"] option').map{|opt| [opt[:value],opt.text]}]
     dep.each do |dep_c, dep_n|
 
-      @query_url = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_02.jsp"
-      r = http_client.post(@query_url, {
+      r = http_client.post(@query_url2, {
         "yms_year" => @year - 1911,
         "yms_sms" => @term,
         "unit_id" => dep_c,
@@ -49,8 +58,7 @@ class NquCourseCrawler < CourseCrawler::Base
       degree = Hash[doc.css('table tr:not(:first-child) td[style="font-size: 9pt;color:blue;"] div').map{|td| [td[:onclick].split('\'')[1], td.text]}]
       degree.each do |degree_c, degree_n|
 
-        @query_url = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_03.jsp"
-        r = http_client.post(@query_url, {
+        r = http_client.post(@query_url3, {
           "arg01" => @year - 1911,
           "arg02" => @term,
           "arg" => degree_c,

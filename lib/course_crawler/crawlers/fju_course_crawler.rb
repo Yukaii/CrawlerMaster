@@ -1,3 +1,8 @@
+##
+# 輔仁課程爬蟲
+# http://estu.fju.edu.tw/fjucourse/firstpage.aspx
+# http://estu.fju.edu.tw/fjucourse/Secondpage.aspx
+
 module CourseCrawler::Crawlers
 class FjuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
@@ -147,7 +152,7 @@ class FjuCourseCrawler < CourseCrawler::Base
         credits: datas[6] && datas[6].text.to_i,
         required: datas[7] && datas[7].text == '必',
         # full_semester: datas[8].text == '學年',
-        lecturer: datas[9] && datas[9].text,
+        lecturer: datas[9] && datas[9].css("#GV_CourseList_Lab_Tchcna_#{index}").text,
         # language: datas[10].text,
         day_1: course_days[0],
         day_2: course_days[1],

@@ -1,3 +1,7 @@
+##
+# 大葉大學課程爬蟲
+# 課程查詢：http://syl.dyu.edu.tw/
+
 module CourseCrawler::Crawlers
 class DyuCourseCrawler < CourseCrawler::Base
 

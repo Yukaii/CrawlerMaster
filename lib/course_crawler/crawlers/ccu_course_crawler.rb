@@ -1,3 +1,8 @@
+##
+# 中正大學課程爬蟲
+# 課程資料：https://kiki.ccu.edu.tw/~ccmisp06/Course/zipfiles/
+#
+
 require 'rubygems/package'
 require 'zlib'
 require 'archive/tar/minitar'
@@ -46,7 +51,7 @@ class CcuCourseCrawler < CourseCrawler::Base
     # end
 
     Dir.glob("#{@dir_name}/*.html").reject{|fn| fn.include?('index')}.each do |filename|
-      puts filename
+      # puts filename
       document = Nokogiri::HTML(File.read(filename).force_encoding('utf-8'))
       if not document.css('h1').text.include?("#{@year-1911}學年度第#{@term}學期")
         []

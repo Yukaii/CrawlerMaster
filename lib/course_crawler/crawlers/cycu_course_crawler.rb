@@ -1,3 +1,7 @@
+##
+# 中原大學課程爬蟲
+# 查詢：https://itouch.cycu.edu.tw/active_system/CourseQuerySystem/
+#
 module CourseCrawler::Crawlers
 class CycuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL

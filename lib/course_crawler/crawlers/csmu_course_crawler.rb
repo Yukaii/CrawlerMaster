@@ -1,3 +1,7 @@
+##
+# 中山醫課程爬蟲
+# 課程查詢：https://csads.csmu.edu.tw/schedule/ByTimeQueryX.asp
+#
 module CourseCrawler::Crawlers
 class CsmuCourseCrawler < CourseCrawler::Base
 

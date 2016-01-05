@@ -1,3 +1,9 @@
+##
+# 逢甲課程爬蟲
+# 選課網址：http://sdsweb.oit.fcu.edu.tw/coursequest/condition.jsp
+# 使用 guest/guest 登入
+# 登入後到進階查詢(http://sdsweb.oit.fcu.edu.tw/coursequest/advance.jsp)
+
 module CourseCrawler::Crawlers
 class FcuCourseCrawler < CourseCrawler::Base
 
@@ -90,7 +96,7 @@ class FcuCourseCrawler < CourseCrawler::Base
         year:         @year,    # 西元年
         term:         @term,    # 學期 (第一學期=1，第二學期=2)
         name:         data[1].split(/\s+/).last,    # 課程名稱
-        lecturer:     "",    # 授課教師
+        lecturer:     "",    # 授課教師，選課系統不提供
         credits:      data[3].to_i,    # 學分數(需要轉換成數字，可以用.to_i)
         code:         "#{@year}-#{@term}-#{course_code}-#{data[0]}", # course_code 科目代碼，data[0] 選課代碼，要問逢甲的同學
         general_code: "#{course_code}-#{data[0]}",

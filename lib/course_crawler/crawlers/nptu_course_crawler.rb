@@ -26,6 +26,7 @@ class NptuCourseCrawler < CourseCrawler::Base
 
     ##################
 
+
     doc = Nokogiri::HTML(http_client.get_content(@search_url))
 
     dynamic_url = URI.join("http://webap.nptu.edu.tw/web/Secure/", doc.css('form')[0][:action]).to_s
@@ -55,13 +56,12 @@ class NptuCourseCrawler < CourseCrawler::Base
       "MenuDefault:dgData:_ctl3:ibtMENU_ID.y" => '18'
     })
 
+    save_temp_html(r.body)
 
     {
       'A0425Q3:ddlSYSE' => "#{@year-1911}#{@term}",
       'A0425Q3:ddlDEPT_ID' => 10
     }
-
-
 
 
     visit @search_url
@@ -157,6 +157,10 @@ class NptuCourseCrawler < CourseCrawler::Base
         location_9: course_locations[8],
       }
     end # doc each row
+  end
+
+  def save_temp_html(html)
+    File.write(Rails.root.join('tmp', 'nptu_temp.html'), html)
   end
 end
 end

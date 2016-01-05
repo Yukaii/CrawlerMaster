@@ -1,5 +1,16 @@
+##
+# 宜大課程查詢
+# http://www.niu.edu.tw/acade/curriculum/course/course-sec.htm
+# 每個學期連結都不一樣，先寫死，有機會再來改寫成智慧選
+#
+
 module CourseCrawler::Crawlers
 class NiuCourseCrawler < CourseCrawler::Base
+
+  QUERY_URLS = {
+    "1041" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADUAMAAvAFQASwBFADUAMAAxADAAXwAwADEALgBhAHMAcAB4AD8AQQBZAEUAQQBSAFMATQBTAD0AMQAwADQAMQA=",
+    "1042" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFAAUgBHAC8AUABSAEcAMQAxADAAMABfADAAMQAuAGEAcwBwAHgAPwBhAHkAZQBhAHIAcwBtAHMAPQAxADAANAAyAA=="
+  }
 
 	PERIODS = {
 		"00" => 1,
@@ -25,12 +36,14 @@ class NiuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @ic                   = Iconv.new('utf-8//translit//IGNORE', 'utf-8')
 
-		@query = "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADUAMAAvAFQASwBFADUAMAAxADAAXwAwADEALgBhAHMAcAB4AD8AQQBZAEUAQQBSAFMATQBTAD0AMQAwADQAMQA="
+		@query = QUERY_URLS["#{@year-1911}#{@term}"]
 		@post_url= "https://acade.niu.edu.tw/NIU//Application/TKE/TKE50/TKE5010_01.aspx?AYEARSMS=#{@year-1911}#{@term}"
 
 	end
 
 	def courses
+    return if @query.nil?
+
 		r = RestClient.get @query
 		@cookies = r.cookies
 

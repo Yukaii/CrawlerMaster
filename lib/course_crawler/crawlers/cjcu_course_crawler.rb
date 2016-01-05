@@ -1,44 +1,14 @@
+##
+# 長榮大學課程爬蟲
+# 選課網址：https://eportal.cjcu.edu.tw/syllabus/home
+#
+
 module CourseCrawler::Crawlers
 class CjcuCourseCrawler < CourseCrawler::Base
 
-	DEP = [
-	'ABA',
-	'AIB',
-	'AAI',
-	'AAM',
-	'ALD',
-	'AFI',
-	'ATM',
-	'ASR',
-	'ALM',
-	'AEF',
-	'AME',
-	'AFB',
-	'AHA',
-	'ANS',
-	'ANU',
-	'AOH',
-	'ABT',
-	'AHP',
-	'AHD',
-	'AFS',
-	'APE',
-	]
-
-	Grade = [
-	'1'	,
-	'2' ,
-	'3' ,
-	'4' ,
-	]
-
-	Classes = [
-		'1',
-		'2',
-		'3',
-		'4',
-	]
-
+	DEP = [ 'ABA', 'AIB', 'AAI', 'AAM', 'ALD', 'AFI', 'ATM', 'ASR', 'ALM', 'AEF', 'AME', 'AFB', 'AHA', 'ANS', 'ANU', 'AOH', 'ABT', 'AHP', 'AHD', 'AFS', 'APE' ]
+	Grade = [ '1', '2', '3', '4' ]
+	Classes = [ '1', '2', '3', '4' ]
 
 	DAYS = {
 		'一' => 1,

@@ -1,3 +1,7 @@
+##
+# 高應大課程爬蟲
+# 課程查詢：http://140.127.113.224/kuas/
+#
 module CourseCrawler::Crawlers
 class KuasCourseCrawler < CourseCrawler::Base
 
@@ -123,15 +127,18 @@ class KuasCourseCrawler < CourseCrawler::Base
             end
           end
 
+          general_code = data[0] && data[0].strip;
+          next if general_code.nil?
+
           course = {
             year: @year,    # 西元年
             term: @term,    # 學期 (第一學期=1，第二學期=2)
             name: data[1],    # 課程名稱
             lecturer: data[8],    # 授課教師
             credits: data[3][0].to_i,    # 學分數
-            code: "#{@year}-#{@term}-#{dep_c}-#{data[0].scan(/\w+/)[0]}",
+            code: "#{@year}-#{@term}-#{dep_c}-#{general_code}",
             # general_code: data[0],    # 選課代碼
-            general_code: data[0].scan(/\w+/)[0],
+            general_code: general_code,
             url: syllabus_url,    # 課程大綱之類的連結(如果有的話)
             required: data[5].include?('必'),    # 必修或選修
             department: dep_n,    # 開課系所

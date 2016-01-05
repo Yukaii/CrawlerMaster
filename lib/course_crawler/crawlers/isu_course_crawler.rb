@@ -1,3 +1,8 @@
+##
+# 義守課程爬蟲
+# http://netreg.isu.edu.tw/wapp/wapp_sha/wap_s140000_bilingual.asp
+#
+
 module CourseCrawler::Crawlers
 class IsuCourseCrawler < CourseCrawler::Base
 
@@ -95,12 +100,12 @@ class IsuCourseCrawler < CourseCrawler::Base
             general_code: datas[1].strip,    # 課程代號
             code: code,
             name: datas[2].strip,    # 課程名稱
-            credits: datas[4].to_i,   # 學分數
-            required: datas[5].include?('必'),    # 修別(必選修)
+            credits: datas[5].to_i,   # 學分數
+            required: datas[6].include?('必'),    # 修別(必選修)
             people_limit: datas[6],    # 限制選修人數
             people: datas[7].to_i,    # 修課人數
             url: syllabus_url,    # 課程大綱之類的連結
-            lecturer: nil,    # 授課教師
+            lecturer: datas[4].strip,    # 授課教師
             day_1: course_days[0],
             day_2: course_days[1],
             day_3: course_days[2],

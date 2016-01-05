@@ -1,3 +1,7 @@
+##
+# 佛光課程爬蟲
+# http://selcourse2.fgu.edu.tw/course_plan/cs_cont_all.aspx
+#
 module CourseCrawler::Crawlers
 class FguCourseCrawler < CourseCrawler::Base
 

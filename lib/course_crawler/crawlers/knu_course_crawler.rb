@@ -1,3 +1,8 @@
+##
+# 開南課程爬蟲
+# http://coumap.eportfolio.knu.edu.tw/files/11-1001-83.php
+#
+
 module CourseCrawler::Crawlers
 class KnuCourseCrawler < CourseCrawler::Base
 
