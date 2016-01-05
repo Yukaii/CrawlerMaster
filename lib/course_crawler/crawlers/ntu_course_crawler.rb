@@ -1,3 +1,6 @@
+# 國立臺灣大學
+# 課程查詢網址：https://nol.ntu.edu.tw/nol/coursesearch/search_result.php
+
 module CourseCrawler::Crawlers
   class NtuCourseCrawler < CourseCrawler::Base
 

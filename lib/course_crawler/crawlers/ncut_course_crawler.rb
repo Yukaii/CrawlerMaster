@@ -1,3 +1,6 @@
+# 國立勤益科技大學
+# 選課網址: http://msd.ncut.edu.tw/wbcmsc/cmain.asp
+
 module CourseCrawler::Crawlers
 class NcutCourseCrawler < CourseCrawler::Base
 

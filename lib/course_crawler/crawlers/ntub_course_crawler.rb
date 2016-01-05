@@ -1,3 +1,6 @@
+# 國立臺北商業大學
+# 課程查詢網址：http://ntcbadm.ntub.edu.tw/pub/TchSchedule_Search.aspx
+
 module CourseCrawler::Crawlers
 class NtubCourseCrawler < CourseCrawler::Base
 

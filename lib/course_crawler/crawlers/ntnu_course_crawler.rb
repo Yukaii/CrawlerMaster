@@ -1,3 +1,6 @@
+# 國立臺灣師範大學
+# 選課網址： http://courseap.itc.ntnu.edu.tw/acadmOpenCourse/index.jsp
+
 module CourseCrawler::Crawlers
 class NtnuCourseCrawler < CourseCrawler::Base
 

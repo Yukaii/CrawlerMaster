@@ -149,8 +149,7 @@ class NttuCourseCrawler < CourseCrawler::Base
         lecturer:     data[11],    # 授課教師
         credits:      data[6].to_i,    # 學分數
         code:         "#{@year}-#{@term}-#{data[3]}",
-        general_code: data[3],
-        # general_code: data[3],    # 選課代碼
+        general_code: data[3],    # 選課代碼
         url:          syllabus_url,    # 課程大綱之類的連結
         required:     data[0].include?('必'),    # 必修或選修
         department:   data[1],    # 開課系所

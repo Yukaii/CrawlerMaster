@@ -1,3 +1,6 @@
+# 國立臺北大學
+# 選課網址： https://sea.cc.ntpu.edu.tw/pls/dev_stud/course_query_all.chi_main
+
 module CourseCrawler::Crawlers
 class NtpuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
