@@ -11,13 +11,21 @@
               span aria-hidden="true" &times;
             = fv
 
-      / Run button
-      form action=run_crawler_path(@crawler.organization_code) method="post"
-        = hidden_field_tag :authenticity_token, form_authenticity_token
-        h3
-          = @crawler.name
-          span
-            button.btn.btn-default style="margin: 0 1em;" type="submit" Run
+      .container
+        .row
+          h3
+            = @crawler.name
+          / Run button
+          form action=run_crawler_path(@crawler.organization_code) method="post" style="display: inline-block;"
+            = hidden_field_tag :authenticity_token, form_authenticity_token
+            span
+              button.btn.btn-primary style="margin: 0 1em;" type="submit" Run
+
+          / Sync button
+          form action=sync_crawler_path(@crawler.organization_code) method="post" style="display: inline-block;"
+            = hidden_field_tag :authenticity_token, form_authenticity_token
+            span
+              button.btn.btn-success style="margin: 0 1em;" type="submit" Sync
 
       h4 Status
       table.table

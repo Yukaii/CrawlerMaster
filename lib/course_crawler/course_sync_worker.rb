@@ -39,6 +39,9 @@ module CourseCrawler
       end # end courses.find_in_batches
 
       ThreadsWait.all_waits(*threads)
+
+      crawler_model.last_sync_at = Time.now
+      crawler_model.save
     end
   end
 end

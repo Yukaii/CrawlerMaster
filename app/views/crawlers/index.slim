@@ -4,23 +4,38 @@
   h3 Crawler List
   .table-responsive
     table.table.table-hover
-      tr
-        th #
-        th category
-        th name
-        th class
-        th workers
-        th queueing
-        th resource count
-        th last_run_at
+      form action=batch_run_crawler_path method="post"
+        = hidden_field_tag :authenticity_token, form_authenticity_token
+        button class="btn btn-default" style="margin: 10px;" 批次開始
 
-      - @crawlers.each_with_index do |crawler, index|
         tr
-          td= index+1
-          td= crawler.category
-          td= crawler.description
-          td= link_to crawler.name, crawler_path(crawler.organization_code)
-          td= CourseCrawler::Crawlers.find_workers(crawler.name).count
-          td= CourseCrawler::Crawlers.find_queued_jobs(crawler.name).count
-          td= link_to crawler.courses.count, courses_path(organization_code: crawler.organization_code)
-          td= (crawler.courses.last).nil? ? 'not available' : crawler.courses.last.updated_at
+          th
+            input type="checkbox" id="check_all" onClick="toggleAll(this)"
+          th #
+          th name
+          th class
+          th workers
+          th queueing
+          th resource count
+          th last_run_at
+          th last_sync_at
+
+        - @crawlers.each_with_index do |crawler, index|
+          tr
+            td= check_box_tag 'run_crawler[]', crawler.organization_code, false, id: "crawler_#{crawler.organization_code}"
+            td= link_to index+1, crawler_path(crawler.organization_code)
+            td= crawler.description
+            td= link_to crawler.name, crawler_path(crawler.organization_code)
+            td= CourseCrawler::Crawlers.find_workers(crawler.name).count
+            td= CourseCrawler::Crawlers.find_queued_jobs(crawler.name).count
+            td= link_to crawler.courses.count, courses_path(organization_code: crawler.organization_code)
+            td= (crawler.courses.last).nil? ? 'not available' : crawler.courses.last.updated_at
+            td= crawler.last_sync_at
+
+javascript:
+  var toggleAll = function(source) {
+    checkboxes = document.getElementsByName('run_crawler[]');
+    for(var i=0, n=checkboxes.length; i < n; i++) {
+      checkboxes[i].checked = source.checked;
+    }
+  }

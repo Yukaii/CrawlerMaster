@@ -1,6 +1,6 @@
 class CrawlersController < ApplicationController
   before_filter :authenticate_admin_user!
-  before_filter :find_crawler, only: [:show, :setting, :run, :unschedule_job]
+  before_filter :find_crawler, only: [:show, :setting, :run, :unschedule_job, :sync]
 
   def index
     available_crawler_names = CourseCrawler.crawler_list.map(&:to_s)
@@ -42,6 +42,20 @@ class CrawlersController < ApplicationController
 
     flash[:success] = "job_ids: #{jobs.map{|j| j && j.id}}"
 
+    redirect_to crawler_path(@crawler.organization_code)
+  end
+
+  def batch_run
+    Crawler.where(organization_code: params[:run_crawler]).each do |crawler|
+      crawler.run_up(:in, {})
+    end
+
+    redirect_to crawlers_path
+  end
+
+  def sync
+    j = @crawler.sync_to_core
+    flash[:success] = "job_id: #{j && j.id}"
     redirect_to crawler_path(@crawler.organization_code)
   end
 

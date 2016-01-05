@@ -35,14 +35,15 @@ class Crawler < ActiveRecord::Base
     self.organization_code.downcase
   end
 
-  def run_up(job_type, args={})
+  def run_up(job_type, args={}, year=self.year, term=self.term)
     time_str = self.schedule[job_type]
     return nil if time_str.nil? || time_str.empty?
 
-    args.merge!({
-      year: self.year,
-      term: self.term
-    });
+    default_args = {
+      year: year,
+      term: term
+    }
+    default_args.merge!(args)
 
     j = Rufus::Scheduler.s.send(:"schedule_#{job_type}", time_str) do
       Sidekiq::Client.push(
@@ -55,6 +56,24 @@ class Crawler < ActiveRecord::Base
       )
     end
     self.rufus_jobs.create(jid: j.id, type: job_type.to_s, original: j.original)
+
+    j
+  end
+
+  def sync_to_core(year=self.year, term=self.term)
+    j = Rufus::Scheduler.s.send(:"schedule_in", '1s') do
+    Sidekiq::Client.push(
+      'queue' => "CourseCrawler::CourseSyncWorker",
+      'class' => CourseCrawler::CourseSyncWorker,
+      'args' => [
+        org:        self.organization_code,
+        year:       year,
+        term:       term,
+        class_name: self.class.to_s
+      ]
+    )
+    end
+    self.rufus_jobs.create(jid: j.id, type: 'in', original: j.original)
 
     j
   end

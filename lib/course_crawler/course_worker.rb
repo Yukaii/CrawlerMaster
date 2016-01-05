@@ -78,21 +78,8 @@ module CourseCrawler
 
       ## Sync to Core
       if crawler_model.sync
-        j = Rufus::Scheduler.s.send(:"schedule_in", '1s') do
-          Sidekiq::Client.push(
-            'queue' => "CourseCrawler::CourseSyncWorker",
-            'class' => CourseCrawler::CourseSyncWorker,
-            'args' => [
-              org:        org,
-              year:       year,
-              term:       term,
-              class_name: @klass_instance.class.to_s
-            ]
-          )
-        end
-        crawler_model.rufus_jobs.create(jid: j.id, type: 'in', original: j.original)
-
-      end # end if crwaler_model.sync
+        @klass_instance.sync_to_core(year, term)
+      end
 
     end
   end
