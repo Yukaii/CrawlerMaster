@@ -1,3 +1,6 @@
+# 國立體育大學
+# 選課網址： http://one.ntsu.edu.tw/ntsu/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADIAMgAvAFQASwBFADIAMgAxADAAXwAuAGEAcwBwAHgAPwBwAHIAbwBnAGMAZAA9AFQASwBFADIAMgAxADAA
+
 module CourseCrawler::Crawlers
 class NtsuCourseCrawler < CourseCrawler::Base
 
@@ -40,6 +43,8 @@ class NtsuCourseCrawler < CourseCrawler::Base
 
     doc.css('table[id="DataGrid"] tr:not(:first-child)').map{|tr| tr}.each do |tr|
       data = tr.css('td').map{|td| td.text}
+      data[2] = tr.css('td a').map{|td| td.text}[0]
+      data[6] = tr.css('td a').map{|td| td.text}[1]
 
       course_days, course_periods, course_locations = [], [], []
       data[10].scan(/(?<day>[1234567])(?<period>\d+)/).each do |day, period|
@@ -49,17 +54,15 @@ class NtsuCourseCrawler < CourseCrawler::Base
       end
 
       course = {
-        year:         @year,    # 西元年
-        term:         @term,    # 學期 (第一學期=1，第二學期=2)
-        name:         data[3],    # 課程名稱
-        lecturer:     data[6],    # 授課教師
-        credits:      data[8].to_i,    # 學分數
-        code:         "#{@year}-#{@term}-#{data[2].scan(/\S+/)[0]}",
-        general_code: data[2].scan(/\S+/)[0],
-        serial_no:    data[0],
-        # general_code: data[2].scan(/\S+/)[0],    # 選課代碼
-        required:     data[9].include?('必'),    # 必修或選修
-        department:   "#{data[4]}" + " " + "#{data[5]}",             # 開課系所
+        year: @year,    # 西元年
+        term: @term,    # 學期 (第一學期=1，第二學期=2)
+        name: data[3],    # 課程名稱
+        lecturer: data[6],    # 授課教師
+        credits: data[8].to_i,    # 學分數
+        code: "#{@year}-#{@term}-#{data[0]}-?(#{data[2]})?",
+        general_code: data[2],    # 選課代碼
+        required: data[9].include?('必'),    # 必修或選修
+        department: "#{data[4]}" + " " + "#{data[5]}",             # 開課系所
         # lecturer_department: data[7],    # 教師聘任單位
         # people: data[12],                # 人數
         # people_limit: data[13],          # 人數上下限

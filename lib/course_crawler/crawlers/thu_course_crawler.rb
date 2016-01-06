@@ -1,3 +1,6 @@
+# 東海大學
+# 課程查詢網址：http://course.thu.edu.tw/
+
 module CourseCrawler::Crawlers
 class ThuCourseCrawler < CourseCrawler::Base
 

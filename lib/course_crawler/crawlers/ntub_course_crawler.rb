@@ -34,19 +34,18 @@ class NtubCourseCrawler < CourseCrawler::Base
 
 		@courses_list = Nokogiri::HTML(res.body)
 
-		@courses_list_trs = @courses_list.css('table#bgBase').css('table')[2].css('tr')[2..50]
+		@courses_list_trs = @courses_list.css('#dsCurList tr:not(:first-child)').map{|tr| tr}
 
 		@courses_list_trs.each do |row|
+      sleep(1) until (
+        @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
+        @threads.count < 20 ;
+      )
 
-			sleep(1) until (
-				@threads.delete_if { |t| !t.status };  # remove dead (ended) threads
-				@threads.count < 20 ;
-			)
+      @threads << Thread.new do
+        table_data = row.css('td')
 
-			@threads << Thread.new do
-    		table_data = row.css('td')
-
-    		#
+        #
         course_department = table_data[1].text.strip
         course_index = table_data[2].text.strip
         course_general_code = table_data[3].text.strip
@@ -65,10 +64,10 @@ class NtubCourseCrawler < CourseCrawler::Base
         course_days = []
         course_periods = []
         course_time.each do |i|
-        	i = i.match(/(?<day>\d)(?<period>.*)/)
-        	course_days << i[:day]
-        	course_periods << i[:period]
-        	course_locations << course_time_locations[1]
+          i = i.match(/(?<day>\d)(?<period>.*)/)
+          course_days << i[:day].to_i
+          course_periods << i[:period].to_i
+          course_locations << course_time_locations[1]
         end #end each
 
         course = {
@@ -82,25 +81,25 @@ class NtubCourseCrawler < CourseCrawler::Base
           :required     => course_required.include?('必'),    # 必修或選修
           :department   => course_department,    # 開課系所
 
-          :day_1        => course_days[0].to_i,
-          :day_2        => course_days[1].to_i,
-          :day_3        => course_days[2].to_i,
-          :day_4        => course_days[3].to_i,
-          :day_5        => course_days[4].to_i,
-          :day_6        => course_days[5].to_i,
-          :day_7        => course_days[6].to_i,
-          :day_8        => course_days[7].to_i,
-          :day_9        => course_days[8].to_i,
+          :day_1        => course_days[0],
+          :day_2        => course_days[1],
+          :day_3        => course_days[2],
+          :day_4        => course_days[3],
+          :day_5        => course_days[4],
+          :day_6        => course_days[5],
+          :day_7        => course_days[6],
+          :day_8        => course_days[7],
+          :day_9        => course_days[8],
 
-          :period_1     => course_periods[0].to_i,
-          :period_2     => course_periods[1].to_i,
-          :period_3     => course_periods[2].to_i,
-          :period_4     => course_periods[3].to_i,
-          :period_5     => course_periods[4].to_i,
-          :period_6     => course_periods[5].to_i,
-          :period_7     => course_periods[6].to_i,
-          :period_8     => course_periods[7].to_i,
-          :period_9     => course_periods[8].to_i,
+          :period_1     => course_periods[0],
+          :period_2     => course_periods[1],
+          :period_3     => course_periods[2],
+          :period_4     => course_periods[3],
+          :period_5     => course_periods[4],
+          :period_6     => course_periods[5],
+          :period_7     => course_periods[6],
+          :period_8     => course_periods[7],
+          :period_9     => course_periods[8],
 
           :location_1   => course_locations[0],
           :location_2   => course_locations[1],
@@ -111,15 +110,16 @@ class NtubCourseCrawler < CourseCrawler::Base
           :location_7   => course_locations[6],
           :location_8   => course_locations[7],
           :location_9   => course_locations[8]
-		    }
+        }
 
         @after_each_proc.call(course: course) if @after_each_proc
-		    @courses << course
-			end #end thread
-		end	#end each tr
+        @courses << course
+# binding.pry
+      end #end thread
+    end #end each tr
       ThreadsWait.all_waits(*@threads)
       @courses
-	end #end courses
+  end #end courses
 
 	def clnt
     @http_client ||= HTTPClient.new
