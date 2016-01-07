@@ -45,7 +45,7 @@ module CourseCrawler
         c[:lecturer_name] = c[:lecturer_name] || c[:lecturer] || ""
         c[:lecturer_name].gsub!("'", "''")
 
-        c[:required] = c[:required].nil? ? "NULL" : c[:required]
+        c[:required] = c[:required].nil? ? "FALSE" : c[:required]
 
         # 去頭去尾
         "( '#{org}-#{c[:code]}', '#{org}', #{
