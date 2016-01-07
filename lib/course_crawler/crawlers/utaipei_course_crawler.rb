@@ -1,3 +1,6 @@
+# 臺北市立大學
+# 課程查詢網址：http://210.71.24.139/utaipei/ag_pro/ag304_face.jsp?uid=null
+
 module CourseCrawler::Crawlers
 class UtaipeiCourseCrawler < CourseCrawler::Base
 
@@ -111,8 +114,7 @@ class UtaipeiCourseCrawler < CourseCrawler::Base
                 lecturer: data[8],    # 授課教師
                 credits: data[3].to_i,    # 學分數
                 code: "#{@year}-#{@term}-#{department_code}-#{general_code}",
-                general_code: general_code,
-                # general_code: old_course.cos_code,    # 選課代碼
+                general_code: general_code,     # 選課代碼
                 url: data[11],    # 課程大綱之類的連結
                 required: data[5].include?('必'),    # 必修或選修
                 department: doc.css('font')[1].text,    # 開課系所

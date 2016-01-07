@@ -1,3 +1,6 @@
+# 元智大學
+# 課程查詢網址：https://portal.yzu.edu.tw/cosSelect/Index.aspx?Lang=TW
+
 module CourseCrawler::Crawlers
 class YzuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL

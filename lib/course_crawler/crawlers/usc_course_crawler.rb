@@ -1,3 +1,6 @@
+# 實踐大學臺北校區
+# 課程查詢網址：http://studentsystem.usc.edu.tw/CourseSystem/Index.htm
+
 module CourseCrawler::Crawlers
 class UscCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL

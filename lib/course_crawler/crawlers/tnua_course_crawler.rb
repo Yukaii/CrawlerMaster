@@ -1,3 +1,6 @@
+# 國立臺北藝術大學
+# 課程查詢網址：http://203.71.172.85/Public/Public.aspx
+
 module CourseCrawler::Crawlers
 class TnuaCourseCrawler < CourseCrawler::Base
 

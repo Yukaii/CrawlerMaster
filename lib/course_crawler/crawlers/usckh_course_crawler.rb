@@ -1,3 +1,6 @@
+# 實踐大學高雄校區
+# 課程查詢網址：https://search.kh.usc.edu.tw/CourseSystem/Index.htm
+
 module CourseCrawler::Crawlers
 class UsckhCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
