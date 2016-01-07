@@ -1,3 +1,8 @@
+##
+# 中山課程爬蟲
+# http://selcrs.nsysu.edu.tw/menu1/qrycrsfrm.asp?HIS=2&eng=0
+#
+
 module CourseCrawler::Crawlers
 class NsysuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
@@ -25,7 +30,7 @@ class NsysuCourseCrawler < CourseCrawler::Base
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     @query_url = "http://selcrs.nsysu.edu.tw/menu1/dplycourse.asp"
-    @form_url = "http://selcrs.nsysu.edu.tw/menu1/qrycourse.asp?HIS=1&eng=&in_eng=&IDNO=&ITEM="
+    @form_url = "http://selcrs.nsysu.edu.tw/menu1/qrycourse.asp?HIS=2&eng=&in_eng=&IDNO=&ITEM="
 
     @year = year || current_year
     @term = term || current_term
@@ -46,8 +51,13 @@ class NsysuCourseCrawler < CourseCrawler::Base
     deps_h = Hash[ doc.css('select[name="D1"] option:not(:first-child)').map{|opt| [opt[:value], opt.text]} ]
 
     deps_h.each_key do |key|
-      print "#{deps_h[key]}\n"
-      doc = search_by(key, 1)
+      set_progress "#{deps_h[key]}"
+      begin
+        doc = search_by(key, 1)
+
+      rescue Exception => e
+        next
+      end
 
       page_num = 0
       doc.text.match(/第\ \d+\ \/\ (?<pn>\d+)\ 頁/) do |m| # 第 1 / 3 頁
@@ -62,7 +72,7 @@ class NsysuCourseCrawler < CourseCrawler::Base
         )
         @threads << Thread.new do
           begin
-          print "#{i},"
+          # print "#{i},"
 
           document = search_by(key, i)
           document.css('html table tr:nth-child(n+4)')[0..-3].each do |row|

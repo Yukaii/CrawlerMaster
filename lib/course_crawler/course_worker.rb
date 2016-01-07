@@ -78,7 +78,7 @@ module CourseCrawler
 
       ## Sync to Core
       if crawler_model.sync
-        @klass_instance.sync_to_core(year, term)
+        crawler_model.sync_to_core(year, term)
       end
 
     end

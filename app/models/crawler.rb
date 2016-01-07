@@ -51,7 +51,7 @@ class Crawler < ActiveRecord::Base
         'class' => CourseCrawler::CourseWorker,
         'args' => [
           self.name,
-          args
+          default_args
         ]
       )
     end

@@ -1,3 +1,8 @@
+##
+# 北科大課程爬持
+# http://aps.ntut.edu.tw/course/tw/QueryCurrPage.jsp"
+#
+
 module CourseCrawler::Crawlers
 class NtutCourseCrawler < CourseCrawler::Base
 
@@ -94,13 +99,13 @@ class NtutCourseCrawler < CourseCrawler::Base
           lecturer = datas[7] && datas[7].text.strip.tr("\n", ',').tr("　", '')
           lecturer_code = lecturer && Digest::MD5.hexdigest(lecturer)
 
-          code = CGI.parse(URI(url).query)["code"][0]
-          general_code = "#{code}-#{lecturer_code && lecturer_code[0..4]}#{lecturer_code && lecturer_code[-5..-1]}"
+          general_code = CGI.parse(URI(url).query)["code"][0]
+          code = "#{general_code}-#{lecturer_code && lecturer_code[0..4]}#{lecturer_code && lecturer_code[-5..-1]}"
 
           course = {
             year: @year,
             term: @term,
-            code: "#{@year}-#{@term}-#{general_code}",
+            code: "#{@year}-#{@term}-#{code}",
             general_code: general_code,
             name: datas[1] && datas[1].text.strip,
             department: datas[6] && datas[6].text.split("\n"),

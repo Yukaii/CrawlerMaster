@@ -1,3 +1,8 @@
+##
+# 世新課程爬蟲
+# https://ap2.shu.edu.tw/STU1/Loginguest.aspx
+#
+
 module CourseCrawler::Crawlers
 class ShuCourseCrawler < CourseCrawler::Base
 

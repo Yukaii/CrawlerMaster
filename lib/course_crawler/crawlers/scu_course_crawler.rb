@@ -1,3 +1,8 @@
+##
+# 東吳課程爬蟲
+# http://web.sys.scu.edu.tw/class401.asp
+#
+
 module CourseCrawler::Crawlers
 class ScuCourseCrawler < CourseCrawler::Base
   include Capybara::DSL

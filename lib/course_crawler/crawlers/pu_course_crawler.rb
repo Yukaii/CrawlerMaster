@@ -1,3 +1,8 @@
+##
+# 靜宜課程爬蟲
+# http://alcat.pu.edu.tw/2011courseAbstract/main.php?type=mutinew&lang=zh
+#
+
 module CourseCrawler::Crawlers
 class PuCourseCrawler < CourseCrawler::Base
 

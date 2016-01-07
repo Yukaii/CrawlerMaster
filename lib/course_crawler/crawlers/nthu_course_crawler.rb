@@ -1,3 +1,8 @@
+##
+# 清大課程爬蟲
+# https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/JH/6/6.2/6.2.3/JH623001.php
+# https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/JH/6/6.2/6.2.9/JH629001.php
+
 require 'rmagick'
 require 'rtesseract'
 

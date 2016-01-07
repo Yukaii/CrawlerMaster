@@ -37,18 +37,19 @@ class TcuCourseCrawler < CourseCrawler::Base
         data = tr.css('td:not(:last-child)').map{|td| td.text}
         # data[9] = tr.css('td:last-child')
 
-        time_period_regex = /[星][期](?<day>\d)[第](?<period>\d+\～?\d?\d?)/
+        time_period_regex = /[星][期](?<day>\d)[第](?<period>\d+[～∼]?\d?\d?)/
         course_time_location = Hash[ data[8].scan(time_period_regex) ]
 
         # 把 course_time_location 轉成資料庫可以儲存的格式
         course_days, course_periods, course_locations = [], [], []
         course_time_location.each do |k, v|
-          for i in v.split('～')[0].to_i..v.split('～')[1].to_i
+          for i in v.split(/[～∼]/)[0].to_i..v.split(/[～∼]/)[1].to_i
             course_days << k[0].to_i
             course_periods << i    # 1~12
             course_locations << data[7]
           end
         end
+
 
         course = {
           year:         @year,    # 西元年
