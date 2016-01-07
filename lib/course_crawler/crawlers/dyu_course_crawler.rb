@@ -53,17 +53,17 @@ class DyuCourseCrawler < CourseCrawler::Base
 
     doc.css('select[id="edu_no"] option:nth-child(n+2)').map{|opt| [opt[:value], opt.text]}.each do |edu_c, edu_n|
 
-      r = RestClient.post("http://syl.dyu.edu.tw/sl_college.php", {"edu" => edu_c })
+      r = rest_client_post("http://syl.dyu.edu.tw/sl_college.php", {"edu" => edu_c })
       doc = Nokogiri::HTML(r)
 
       doc.css('select[id="college_no"] option:nth-child(n+2)').map{|opt| [opt[:value], opt.text]}.each do |col_c, col_n|
 
-        r = RestClient.post("http://syl.dyu.edu.tw/sl_dept.php", {"col" => col_c }, cookies: r.cookies)
+        r = rest_client_post("http://syl.dyu.edu.tw/sl_dept.php", {"col" => col_c }, cookies: r.cookies)
         doc = Nokogiri::HTML(r)
 
         doc.css('select[id="dept_no"] option:nth-child(n+2)').map{|opt| [opt[:value], opt.text]}.each do |dept_c, dept_n|
 
-          r = RestClient.post("http://syl.dyu.edu.tw/sl_cour.php", {
+          r = rest_client_post("http://syl.dyu.edu.tw/sl_cour.php", {
             "smye" => year,
             "smty" => @term,
             "edu_no" => edu_c,
@@ -78,11 +78,11 @@ class DyuCourseCrawler < CourseCrawler::Base
     end
 
     # 共同教學中心 有日間部與進修部的區別(進修部在note會有"進修")
-    r = RestClient.post('http://syl.dyu.edu.tw/sl_group_all.php', {"smye" => year, "smty" => @term, "day_no" => 1})
+    r = rest_client_post('http://syl.dyu.edu.tw/sl_group_all.php', {"smye" => year, "smty" => @term, "day_no" => 1})
     doc = Nokogiri::HTML(r)
 
     doc.css('select[name="group_no"] option').map{|opt| [opt[:value], opt.text]}.each do |group_c, group_n|
-      r = RestClient.post('http://syl.dyu.edu.tw/sl_cour.php', {"smye" => year, "smty" => @term, "day_no" => 1, "group_no" => group_c })
+      r = rest_client_post('http://syl.dyu.edu.tw/sl_cour.php', {"smye" => year, "smty" => @term, "day_no" => 1, "group_no" => group_c })
       doc = Nokogiri::HTML(r)
 
       course_temp(doc, group_c, group_n)
@@ -158,6 +158,10 @@ class DyuCourseCrawler < CourseCrawler::Base
       @after_each_proc.call(course: course) if @after_each_proc
       @courses << course
     end
+  end
+
+  def rest_client_post(url, body, cookies: nil)
+    RestClient::Request.execute(method: :post, url: url, payload: body, cookies: cookies, timeout: 600)
   end
 end
 end

@@ -59,13 +59,15 @@ class NcueCourseCrawler < CourseCrawler::Base
 
     post_dept_values.each_with_index do |dept_value, index|
       set_progress "#{index+1} / #{post_dept_values.count}\n"
-      r = RestClient.post(@post_url, {
+
+      r = RestClient::Request.execute(method: :post, url: @post_url, timeout: 600, payload: {
         "sel_cls_branch" => "D",
         "sel_yms_year" => @year-1911,
         "sel_yms_smester" => @term,
         "sel_cls_id" => dept_value,
         "X-Requested-With" => "XMLHttpRequest"
       })
+
       department = dept_names[index]
       doc = Nokogiri::HTML(r)
 
