@@ -9,14 +9,13 @@ Rails.application.routes.draw do
   # root 'welcome#index'
   root 'crawlers#index'
 
-  get 'crawlers/:id' => 'crawlers#show', as: :crawler
-  post 'crawlers/:id/setting' => 'crawlers#setting', as: :setting_crawler
-  post 'crawlers/:id/run' => 'crawlers#run', as: :run_crawler
-  post 'crawlers/batch_run' => 'crawlers#batch_run', as: :batch_run_crawler
-  post 'crawlers/:id/sync' => 'crawlers#sync', as: :sync_crawler
-  get 'crawlers' => 'crawlers#index', as: :crawlers
-
-  delete 'crawlers/:id/jobs/:jid' => 'crawlers#unschedule_job', as: :unschedule_job
+  get    'crawlers/:id'           => 'crawlers#show'           ,as: :crawler
+  post   'crawlers/:id/setting'   => 'crawlers#setting'        ,as: :setting_crawler
+  post   'crawlers/:id/run'       => 'crawlers#run'            ,as: :run_crawler
+  post   'crawlers/batch_run'     => 'crawlers#batch_run'      ,as: :batch_run_crawler
+  post   'crawlers/:id/sync'      => 'crawlers#sync'           ,as: :sync_crawler
+  get    'crawlers'               => 'crawlers#index'          ,as: :crawlers
+  delete 'crawlers/:id/jobs/:jid' => 'crawlers#unschedule_job' ,as: :unschedule_job
 
   get 'courses' => 'courses#index', as: :courses
 

@@ -29,8 +29,8 @@
             td= CourseCrawler::Crawlers.find_workers(crawler.name).count
             td= CourseCrawler::Crawlers.find_queued_jobs(crawler.name).count
             td= link_to crawler.courses.count, courses_path(organization_code: crawler.organization_code)
-            td= (crawler.courses.last).nil? ? 'not available' : crawler.courses.last.updated_at
-            td= crawler.last_sync_at
+            td= (crawler.courses.last).nil? ? 'not available' : time_ago_in_words(crawler.courses.last.updated_at)
+            td= crawler.last_sync_at && time_ago_in_words(crawler.last_sync_at)
 
 javascript:
   var toggleAll = function(source) {
