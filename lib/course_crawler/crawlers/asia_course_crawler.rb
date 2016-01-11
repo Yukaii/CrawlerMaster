@@ -64,25 +64,38 @@ class AsiaCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
 
-    r = RestClient.post(@query_url + 'courselist.asp', {
-      "cos_setyear_q" => @year - 1911,
-      "cos_setterm_q" => @term,
-      "Qry" => "送出查詢",
-      })
+    r =
+      RestClient::Request.execute(
+        :method => :post,
+        :url => "#{@query_url}courselist.asp",
+        :timeout => 600,
+        :payload => {
+          "cos_setyear_q" => @year - 1911,
+          "cos_setterm_q" => @term,
+          "Qry" => "送出查詢",
+        }
+      )
+
     doc = Nokogiri::HTML(r)
 
     course_id = 1
 
     (1..doc.css('table[id="Table4"] td[align="center"]').text.split('/')[-1].to_i).each do |page|
       if page != 1
-        r = RestClient.post(@query_url + 'courselist.asp', {
-          "GoToPage1" => page-1,
-          "GoToPage2" => page-1,
-          "flg" => "Y",
-          "page" => page,
-          "cos_setyear_q" => @year - 1911,
-          "cos_setterm_q" => @term,
-          })
+        r = RestClient::Request.execute(
+          :method => :post,
+          :url => "#{@query_url}courselist.asp",
+          :timeout => 600,
+          :payload => {
+            "GoToPage1" => page-1,
+            "GoToPage2" => page-1,
+            "flg" => "Y",
+            "page" => page,
+            "cos_setyear_q" => @year - 1911,
+            "cos_setterm_q" => @term,
+          }
+        )
+
         doc = Nokogiri::HTML(r)
 
         course_id += 1

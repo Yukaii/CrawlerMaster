@@ -95,7 +95,7 @@ class CycuCourseCrawler < CourseCrawler::Base
         required: required, # 必選修
         # year: datas[12], # 全半年
         # datas[13] # ?
-        credits: datas[14], # 學分
+        credits: datas[14].to_i, # 學分
         lecturer: datas[15], # 授課教師
         # notes: datas[22], # 備註
         # department: datas[23], # 權責單位?

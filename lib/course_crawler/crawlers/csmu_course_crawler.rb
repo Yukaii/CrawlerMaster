@@ -54,23 +54,30 @@ class CsmuCourseCrawler < CourseCrawler::Base
 
       doc.css('select[name="pfx_ChClassDep"] option:nth-child(n+2)').map{|opt| opt[:value]}.each do |class_dep|
 
-        r = RestClient::Request.execute(method: :post, url: @query_url + 'ByTimeListX.asp', timeout: 600, payload: {
-            "pfx_ChYear" => @year - 1911,
-            "pfx_ChSeme" => @term,
-            "pfx_ChDayNight" => day_night,
-            "pfx_ChClassDep" => class_dep,
-            "pfx_ChDeptNo1" => "",
-            "pfx_ChDeptNo2" => "",
-            "xxx_Dept" => "",
-            "pfx_ChGrade" => "",
-            "pfx_ChClassNo" => "",
-            "ChTeaName" => "",
-            "day1" => "",
-            "day2" => "",
-            "class1" => "",
-            "class2" => "",
-            "chsubjname" => "",
-      })
+        r =
+          RestClient::Request.execute(
+            method: :post,
+            url: @query_url + 'ByTimeListX.asp',
+            timeout: 600,
+            payload: {
+              "pfx_ChYear"     => @year - 1911,
+              "pfx_ChSeme"     => @term,
+              "pfx_ChDayNight" => day_night,
+              "pfx_ChClassDep" => class_dep,
+              "pfx_ChDeptNo1"  => "",
+              "pfx_ChDeptNo2"  => "",
+              "xxx_Dept"       => "",
+              "pfx_ChGrade"    => "",
+              "pfx_ChClassNo"  => "",
+              "ChTeaName"      => "",
+              "day1"           => "",
+              "day2"           => "",
+              "class1"         => "",
+              "class2"         => "",
+              "chsubjname"     => ""
+            }
+          )
+
         cookies = r.cookies
 
         r = RestClient::Request.execute(method: :get, url: @query_url + "ByTimeListX.asp?nowPage=1&pagesize=2000", cookies: cookies, timeout: 600)

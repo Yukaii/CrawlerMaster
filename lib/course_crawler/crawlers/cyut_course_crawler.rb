@@ -57,15 +57,17 @@ class CyutCourseCrawler < CourseCrawler::Base
 									end
 								end
 
+                next if datas[0].nil? || datas[1].nil?
+
 								course = {
                   name:         "#{datas[1].text.strip}",
                   year:         @year,
                   term:         @term,
                   code:         "#{@year}-#{@term}-#{datas[0].text.strip}",
                   general_code: datas[0].text.strip,
-                  class_no:     "#{datas[9].text.strip}",
-                  credits:      "#{datas[4].text.strip}",
-                  lecturer:     "#{datas[8].text.strip}",
+                  class_no:     datas[9] && datas[9].text.strip,
+                  credits:      datas[4] && datas[4].text.strip && datas[4].text.strip.to_i,
+                  lecturer:     datas[8] && datas[8].text.strip,
                   day_1:        course_days[0],
                   day_2:        course_days[1],
                   day_3:        course_days[2],
