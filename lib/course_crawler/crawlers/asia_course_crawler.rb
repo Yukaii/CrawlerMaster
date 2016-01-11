@@ -86,6 +86,7 @@ class AsiaCourseCrawler < CourseCrawler::Base
           :method => :post,
           :url => "#{@query_url}courselist.asp",
           :timeout => 600,
+          :open_timeout => 60,
           :payload => {
             "GoToPage1" => page-1,
             "GoToPage2" => page-1,
