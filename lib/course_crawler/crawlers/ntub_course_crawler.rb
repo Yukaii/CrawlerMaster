@@ -75,7 +75,7 @@ class NtubCourseCrawler < CourseCrawler::Base
           :term         => @term,    # 學期 (第一學期=1，第二學期=2)
           :name         => course_name,    # 課程名稱
           :lecturer     => course_lecturer,    # 授課教師
-          :credits      => course_lecturer,    # 學分數
+          :credits      => course_credits,    # 學分數
           :code         => "#{@year}-#{@term}-#{course_general_code}",
           :general_code => course_general_code,    # 選課代碼
           :required     => course_required.include?('必'),    # 必修或選修

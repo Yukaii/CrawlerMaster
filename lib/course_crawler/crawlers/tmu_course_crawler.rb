@@ -55,7 +55,7 @@ class TmuCourseCrawler < CourseCrawler::Base
           code:         "#{@year}-#{@term}-#{datas[3].text.strip}",
           general_code: datas[3].text.strip,
           department:   "#{datas[1].text.strip}",
-          credits:      "#{datas[8].text.strip}",
+          credits:      datas[8].text.strip.to_i,
           lecturer:     "#{datas[13].text}",
           day_1:        course_days[0],
           day_2:        course_days[1],

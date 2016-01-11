@@ -18,6 +18,7 @@
 class Crawler < ActiveRecord::Base
 
   before_create :setup
+  after_create  :after_setup
   has_many :rufus_jobs
   has_many :courses, foreign_key: :organization_code, primary_key: :organization_code
 
@@ -86,6 +87,15 @@ class Crawler < ActiveRecord::Base
     self.class_name        = klass.name
     self.organization_code = self.name.match(/(.+?)CourseCrawler/)[1].upcase
     self.schedule          = {}
+  end
+
+  def after_setup
+    data = JSON.parse(RestClient.get("https://colorgy.io/api/v1/organizations/#{self.organization_code}.json"))
+    if data && data["name"]
+      self.description = data["name"]
+    end
+
+    save
   end
 
 end

@@ -21,8 +21,8 @@
           th last_sync_at
 
         - @crawlers.each_with_index do |crawler, index|
-          tr
-            td= check_box_tag 'run_crawler[]', crawler.organization_code, false, id: "crawler_#{crawler.organization_code}"
+          tr id="crawler_tr_#{crawler.organization_code}" onClick="toggleRow('#{crawler.organization_code}')"
+            td= check_box_tag 'run_crawler[]', crawler.organization_code, false, id: "crawler_checkbox_#{crawler.organization_code}"
             td= link_to index+1, crawler_path(crawler.organization_code)
             td= crawler.description
             td= link_to crawler.name, crawler_path(crawler.organization_code)
@@ -33,9 +33,16 @@
             td= crawler.last_sync_at && time_ago_in_words(crawler.last_sync_at)
 
 javascript:
+  // Check all / Uncheck all action
   var toggleAll = function(source) {
     checkboxes = document.getElementsByName('run_crawler[]');
     for(var i=0, n=checkboxes.length; i < n; i++) {
       checkboxes[i].checked = source.checked;
     }
+  }
+
+  // click row to toggle check
+  var toggleRow = function(code) {
+    checkbox = document.getElementById('crawler_checkbox_' + code)
+    checkbox.checked = !checkbox.checked;
   }

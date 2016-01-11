@@ -1,3 +1,7 @@
+##
+# 臺灣首府大學
+# 沒節次資料
+#
 module CourseCrawler::Crawlers
 class TsuCourseCrawler < CourseCrawler::Base
 
@@ -10,7 +14,7 @@ class TsuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-		@ic = Iconv.new('utf-8//translit//IGNORE', 'utf-8')
+		@ic = Iconv.new('utf-8//IGNORE//translit', 'utf-8')
   end
 
   def courses
@@ -48,7 +52,7 @@ class TsuCourseCrawler < CourseCrawler::Base
 				general_code: general_code,
 			  degree: "#{datas[0].text.strip}",
 			  class_: "#{datas[2].text.strip}",
-			  credits: "#{datas[7].text.strip}",
+			  credits: datas[7].text.strip.to_i,
 			  lecturer: lecturer,
 			  day_1: course_days[0],
 			  day_2: course_days[1],
