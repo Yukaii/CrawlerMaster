@@ -25,7 +25,7 @@ class NckuCourseCrawler < CourseCrawler::Base
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
-    @query_url = "http://course-query.acad.ncku.edu.tw/qry/qry002.php"
+    @query_url = "http://course-query.acad.ncku.edu.tw/qry/qry001.php"
 
     @year = year || current_year
     @term = term || current_term
@@ -52,11 +52,24 @@ class NckuCourseCrawler < CourseCrawler::Base
         @threads.count < (ENV['MAX_THREADS'] || 20)
       )
 
-      @threads << Thread.new do
+      # @threads << Thread.new do
         # begin
           # print "(#{dep_c}) #{dep_n}\n"
-          r = RestClient.get "#{@query_url}?dept_no=#{URI.encode(dep_c)}&syear=#{(@year-1911).to_s.rjust(4, '0')}&sem=#{@term}".gsub(/\s+/, '')
+
+
+          # r = nil;
+
+          # 3.times do
+          #   begin
+              r = RestClient.get "#{@query_url}?dept_no=#{URI.encode(dep_c)}&syear=#{(@year-1911).to_s.rjust(4, '0')}&sem=#{@term}".gsub(/\s+/, '')
+          #     break
+          #   rescue Exception => e
+          #     sleep 3;
+          #   end
+          # end
+
           doc = Nokogiri::HTML r.to_s
+
 
           doc.css('[class^=course_y]').each do |row|
             datas = row.css('td')
@@ -142,7 +155,7 @@ class NckuCourseCrawler < CourseCrawler::Base
         #   sleep 3
         #   redo
         # end
-      end # end thread do
+      # end # end thread do
     end # deps_h.each do
     ThreadsWait.all_waits(*@threads)
 

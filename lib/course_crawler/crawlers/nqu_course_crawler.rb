@@ -24,9 +24,9 @@ class NquCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    @query_url = 'http://select1.nqu.edu.tw/kmkuas/perchk.jsp'
-    @query_url2 = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_02.jsp"
-    @query_url3 = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_03.jsp"
+    @query_url = 'http://select2.nqu.edu.tw/kmkuas/perchk.jsp'
+    @query_url2 = "http://select2.nqu.edu.tw/kmkuas/ag_pro/ag304_02.jsp"
+    @query_url3 = "http://select2.nqu.edu.tw/kmkuas/ag_pro/ag304_03.jsp"
   end
 
   def courses
@@ -39,7 +39,7 @@ class NquCourseCrawler < CourseCrawler::Base
       "pwd" => "123",
     })
 
-    @query_url = "http://select1.nqu.edu.tw/kmkuas/ag_pro/ag304_01.jsp"
+    @query_url = "http://select2.nqu.edu.tw/kmkuas/ag_pro/ag304_01.jsp"
 
     r = http_client.get(@query_url)
     doc = Nokogiri::HTML(r.body)

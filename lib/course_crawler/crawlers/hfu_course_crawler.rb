@@ -1,4 +1,4 @@
-# 華梵大學 
+# 華梵大學
 # 選課網址: http://webcourse.hfu.edu.tw/acadann1.aspx
 
 module CourseCrawler::Crawlers
@@ -36,6 +36,11 @@ class HfuCourseCrawler < CourseCrawler::Base
 
     r = HTTPClient.get(@query_url).body
     doc = Nokogiri::HTML(r)
+
+    doc.css('#ctl00_Label1').text.match(/ (?<year>\d+) 學年度第 (?<term>\d) 學期全校課程表/) do |m|
+      @year = m[:year].to_i + 1911
+      @term = m[:term].to_i
+    end
 
     hidden = Hash[doc.css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
 
