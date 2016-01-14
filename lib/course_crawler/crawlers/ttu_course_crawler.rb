@@ -32,8 +32,6 @@ class TtuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    # Capybara.default_driver = :selenium
-    # Capybara.javascript_driver = :selenium
     @query_url = "http://selquery.ttu.edu.tw/Main/ViewClass.php"
 
     @courses = {}

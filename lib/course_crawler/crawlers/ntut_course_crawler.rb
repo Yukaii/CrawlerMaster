@@ -68,7 +68,7 @@ class NtutCourseCrawler < CourseCrawler::Base
           "tname" => nil,
           "unit" => dep_c,
           "D0" => "ON", "D1" => "ON", "D2" => "ON", "D3" => "ON", "D4" => "ON", "D5" => "ON", "D6" => "ON", "P1" => "ON", "P2" => "ON", "P3" => "ON", "P4" => "ON", "P5" => "ON", "P6" => "ON", "P7" => "ON", "P8" => "ON", "P9" => "ON", "P10" => "ON", "P11" => "ON", "P12" => "ON", "P13" => "ON",
-          "search" => CGI.escape('開始查詢'.encode('big5')),
+          "search" => '開始查詢'.encode('big5'),
         }
 
         doc = Nokogiri::HTML(@ic.iconv(r.body))
