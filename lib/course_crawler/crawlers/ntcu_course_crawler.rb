@@ -1,3 +1,7 @@
+##
+# 中教大課程爬蟲
+# http://campus.ntcu.edu.tw/ntctc/cur/cur0404.asp
+
 module CourseCrawler::Crawlers
 class NtcuCourseCrawler < CourseCrawler::Base
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil

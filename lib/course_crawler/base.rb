@@ -27,5 +27,9 @@ module CourseCrawler
     def http_client
       @http_clnt ||= HTTPClient.new
     end
+
+    def power_strip str
+      str.strip.gsub(/^[ |\s]*|[ |\s]*$/,'')
+    end
   end
 end
