@@ -42,8 +42,8 @@ module CourseCrawler
 
       courses_inserts = courses.map do |c|
         c[:name] && c[:name].gsub!("'", "''")
-        c[:lecturer_name] = c[:lecturer_name] || c[:lecturer] || ""
-        c[:lecturer_name].gsub!("'", "''")
+        c[:lecturer] = c[:lecturer_name] || c[:lecturer] || ""
+        c[:lecturer].gsub!("'", "''")
 
         c[:required] = c[:required].nil? ? "FALSE" : c[:required]
 
