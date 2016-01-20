@@ -135,7 +135,7 @@ class NutcCourseCrawler < CourseCrawler::Base
             location_6: course_locations[5],
             location_7: course_locations[6],
             location_8: course_locations[7],
-            location_9: course_locations[8],
+            location_9: course_locations[8]
           }
           sleep(1) until (
             @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
