@@ -1,6 +1,7 @@
 ##
 # 東吳課程爬蟲
 # http://web.sys.scu.edu.tw/class401.asp
+# 用舊版的部屬在 heroku 跑：https://github.com/Colorgy/crawler-SCU-course
 #
 
 module CourseCrawler::Crawlers
@@ -112,7 +113,7 @@ class ScuCourseCrawler < CourseCrawler::Base
 
       doc = Nokogiri::HTML(@ic.iconv(r))
       if doc.text.include?('請於 15 分鐘內登入系統')
-        # print "流量引爆，休息一下吧\n"
+        Rails.logger.debug "流量引爆，休息一下吧"
         sleep 45
         redo
       end

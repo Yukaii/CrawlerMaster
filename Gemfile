@@ -56,7 +56,7 @@ gem 'archive-tar-minitar'
 gem 'spreadsheet'
 gem 'rtesseract', :require => false
 gem 'rmagick', :require => false
-gem 'selenium-webdriver'
+gem 'selenium-webdriver', '~> 2.49'
 gem "capybara-webkit"
 
 gem 'sidekiq', '~> 4.0'

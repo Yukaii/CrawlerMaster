@@ -1,6 +1,6 @@
 ##
 # 北科大課程爬持
-# http://aps.ntut.edu.tw/course/tw/QueryCurrPage.jsp"
+# http://aps.ntut.edu.tw/course/tw/QueryCurrPage.jsp
 #
 
 module CourseCrawler::Crawlers
