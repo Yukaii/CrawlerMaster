@@ -1,0 +1,10 @@
+libicu52
+libjpeg8
+libfontconfig
+libwebp5
+libqt4-dev
+xvfb
+qt4-qmake
+libqt4-webkit
+qt4-default
+libwebkit-dev
