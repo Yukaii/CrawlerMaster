@@ -46,8 +46,8 @@ class McutCourseCrawler < CourseCrawler::Base
       # ex: 第1.0節~第1.0節
       beg, endd = datas[1].text.split('~').map{|s| s.match(/第(.+)節/)[1].to_i }
       (beg..endd).each do |p|
-        @courses[general_code][:course_days] << datas[0].text.to_i
-        @courses[general_code][:course_periods] << p
+        @courses[general_code][:course_days]      << datas[0].text.to_i
+        @courses[general_code][:course_periods]   << p
         @courses[general_code][:course_locations] << datas[11].text
       end
 

@@ -123,7 +123,7 @@ class NtueCourseCrawler < CourseCrawler::Base
           name: name,    # 課程名稱
           lecturer: data[6],    # 授課教師
           credits: data[9].to_i,    # 學分數
-          code: "#{@year}-#{@term}-#{course_count}-?(#{data[0]})?",
+          code: "#{@year}-#{@term}-#{course_count}_#{data[0]}",
           general_code: data[0],    # 選課代碼
           required: data[1].include?('必'),    # 必修或選修
           department: "#{data[4]}" + " " + "#{data[3]}",    # 開課系所

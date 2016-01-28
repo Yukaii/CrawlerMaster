@@ -88,6 +88,8 @@ class NiuCourseCrawler < CourseCrawler::Base
 				course_locations << row[11].split(',')[i]
 			end
 
+      next if row[1].nil?
+
 			course ={
         department:   row[0].split(","),
         name:         row[2],

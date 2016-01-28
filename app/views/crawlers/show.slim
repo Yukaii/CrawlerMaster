@@ -68,7 +68,7 @@
                   tr
                     td= work["payload"]["jid"]
                     td= CourseCrawler::Crawlers.get_progress(@crawler.name, work["payload"]["jid"])
-                    td= work["payload"]["created_at"] && Time.at(work["payload"]["created_at"])
+                    td= work["payload"]["created_at"] && time_ago_in_words(Time.at(work["payload"]["created_at"])) + " ago"
                     td= work["payload"]["failed_at"] && Time.at(work["payload"]["failed_at"])
 
       / Rufus Jobs Table

@@ -122,19 +122,19 @@ class KuasCourseCrawler < CourseCrawler::Base
               (PERIODS[p3]..PERIODS[p4]).each do |p|
                 course_days << DAYS[day]
                 course_periods << p
-                course_locations << data[9]
+                course_locations << power_strip(data[9])
               end
             end
           end
 
-          general_code = data[0] && data[0].strip;
+          general_code = data[0] && power_strip(data[0]);
           next if general_code.nil?
 
           course = {
             year: @year,    # 西元年
             term: @term,    # 學期 (第一學期=1，第二學期=2)
-            name: data[1],    # 課程名稱
-            lecturer: data[8],    # 授課教師
+            name: power_strip(data[1]),    # 課程名稱
+            lecturer: power_strip(data[8]),    # 授課教師
             credits: data[3][0].to_i,    # 學分數
             code: "#{@year}-#{@term}-#{dep_c}-#{general_code}",
             # general_code: data[0],    # 選課代碼

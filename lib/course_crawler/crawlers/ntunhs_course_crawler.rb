@@ -47,89 +47,90 @@ class NtunhsCourseCrawler < CourseCrawler::Base
       # "ctl00$ContentPlaceHolder1$hidEmptyDataText" => "查無符合條件資料",
       "__ASYNCPOST" => "true",
       "ctl00$ContentPlaceHolder1$btnQuery" => "查詢",
-      }), {"User-Agent" => "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/47.0.2526.73 Chrome/47.0.2526.73 Safari/537.36"}).body
+    }), {"User-Agent" => "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/47.0.2526.73 Chrome/47.0.2526.73 Safari/537.36"}).body
     doc = Nokogiri::HTML(r)
 
-    data_temp = []
-    course_days, course_periods, course_locations = [], [], []
 
-    (0..doc.css('table tr:nth(n+2)').count - 1).each do |tr|
-      data = doc.css('table tr:nth(n+2)')[tr].css('td >span').map{|td| td.text}
+    row_groups = doc.css('table.GridView tr:not(:first-child)').map{|tr| tr[:group]}.uniq
+    row_groups.each do |group|
+      rows = doc.css(%Q{table.GridView tr[group="#{group}"]})
+      datas = rows[0].xpath('td')
 
-      if data.count < 6
-        data[23], data[24] = data[0], data[1]
-      elsif data.count < 10
-        data[22], data[23], data[24] = data[4], data[5], data[6]
+      locations = datas[10].text.strip
+
+      # first rows period data
+      course_days, course_periods, course_locations = parse_course_periods(datas[11], datas[12], locations)
+
+      # other rows period data
+      rows.length > 1 && rows[1..-1].each do |_row|
+        tds = _row.xpath('td')
+        _d, _p, _l = parse_course_periods(tds[0], tds[1], locations)
+        course_days.concat(_d)
+        course_periods.concat(_p)
+        course_locations.concat(_l)
       end
 
-      data[14] = doc.css('table tr:nth(n+2)')[tr].css('td a span').map{|td| td[:title]}[0] # 選課代碼
-      data[15] = doc.css('table tr:nth(n+2)')[tr].css('td a span').map{|td| td.text}[0] # 課程名稱
-# puts "#{tr}/#{doc.css('table tr:nth(n+2)').count}"
-      data[24].scan(/(?<period>(\d+\~?\,?)+)/).each do |period|
-        (0..period[0].split(',').count - 1).each do |i|
-          (period[0].split(',')[i].split('~')[0].to_i..period[0].split(',')[i].split('~')[-1].to_i).each do |p|
-            course_days << data[23].to_i
-            course_periods << p
-            course_locations << data[22]
-          end
-        end
-      end
+      general_code = datas[4].css('span')[0][:title]
 
-      if doc.css('table tr:nth(n+2)').map{|tr| tr[:group]}[tr] == doc.css('table tr:nth(n+2)').map{|tr| tr[:group]}[tr+1] && data_temp == []
-        data_temp = data
-      elsif doc.css('table tr:nth(n+2)').map{|tr| tr[:group]}[tr] != doc.css('table tr:nth(n+2)').map{|tr| tr[:group]}[tr+1]
-        if data_temp != []
-          data = data_temp
-          data_temp = []
-        end
+      course = {
+        :year         => @year,
+        :term         => @term,
+        :name         => power_strip(datas[4].text),
+        :lecturer     => power_strip(datas[5].xpath('span')[0].text),
+        :credits      => datas[8].text.to_i,
+        :required     => datas[9].text.include?('必'),
+        :general_code => general_code,
+        :code         => "#{@year}-#{@term}-#{general_code}",
+        :day_1        => course_days[0],
+        :day_2        => course_days[1],
+        :day_3        => course_days[2],
+        :day_4        => course_days[3],
+        :day_5        => course_days[4],
+        :day_6        => course_days[5],
+        :day_7        => course_days[6],
+        :day_8        => course_days[7],
+        :day_9        => course_days[8],
+        :period_1     => course_periods[0],
+        :period_2     => course_periods[1],
+        :period_3     => course_periods[2],
+        :period_4     => course_periods[3],
+        :period_5     => course_periods[4],
+        :period_6     => course_periods[5],
+        :period_7     => course_periods[6],
+        :period_8     => course_periods[7],
+        :period_9     => course_periods[8],
+        :location_1   => course_locations[0],
+        :location_2   => course_locations[1],
+        :location_3   => course_locations[2],
+        :location_4   => course_locations[3],
+        :location_5   => course_locations[4],
+        :location_6   => course_locations[5],
+        :location_7   => course_locations[6],
+        :location_8   => course_locations[7],
+        :location_9   => course_locations[8],
+      }
 
-        course = {
-          year: @year,    # 西元年
-          term: @term,    # 學期 (第一學期=1，第二學期=2)
-          name: data[15],    # 課程名稱
-          lecturer: data[4],    # 授課教師
-          credits: data[20].to_i,    # 學分數
-          code: "#{@year}-#{@term}-#{data[0]}-?(#{data[14]})?",
-          general_code: data[14],    # 選課代碼
-          required: data[21].include?('必'),    # 必修或選修
-          department: data[13],    # 開課系所
-          day_1: course_days[0],
-          day_2: course_days[1],
-          day_3: course_days[2],
-          day_4: course_days[3],
-          day_5: course_days[4],
-          day_6: course_days[5],
-          day_7: course_days[6],
-          day_8: course_days[7],
-          day_9: course_days[8],
-          period_1: course_periods[0],
-          period_2: course_periods[1],
-          period_3: course_periods[2],
-          period_4: course_periods[3],
-          period_5: course_periods[4],
-          period_6: course_periods[5],
-          period_7: course_periods[6],
-          period_8: course_periods[7],
-          period_9: course_periods[8],
-          location_1: course_locations[0],
-          location_2: course_locations[1],
-          location_3: course_locations[2],
-          location_4: course_locations[3],
-          location_5: course_locations[4],
-          location_6: course_locations[5],
-          location_7: course_locations[6],
-          location_8: course_locations[7],
-          location_9: course_locations[8],
-          }
-        course_days, course_periods, course_locations = [], [], []
+      @courses << course
 
-        @after_each_proc.call(course: course) if @after_each_proc
-
-        @courses << course
-      end
-    end
-# binding.pry
+    end # end each group of rows
     @courses
+  end
+
+  def parse_course_periods day, periods, locations
+    day = day.text.strip.to_i
+    return [], [], [] if day.zero?
+
+    p_start, p_end = periods.text.strip.match(/(\d+?(~?\d+?)?)節?/)[1].split('~')
+    p_end = p_start if p_end.nil?
+
+    course_days, course_periods, course_locations = [], [], []
+    (p_start.to_i..p_end.to_i).each do |p|
+      course_days      << day
+      course_periods   << p
+      course_locations << locations
+    end
+
+    return course_days, course_periods, course_locations
   end
 
 end

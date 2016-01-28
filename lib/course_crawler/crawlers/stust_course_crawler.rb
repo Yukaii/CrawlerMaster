@@ -39,7 +39,7 @@ class StustCourseCrawler < CourseCrawler::Base
       doc = web_post(dept: dept, btn_query: nil)
 
       doc.css('select[id="ctl00_ContentPlaceHolder1_ddl_class"] option:nth-child(n+2)').map{|option| option[:value]}.each do |cla|
-  
+
         doc = web_post(dept: dept, cla: cla)
 
         # puts "#{dept}_#{cla}"
@@ -76,7 +76,7 @@ class StustCourseCrawler < CourseCrawler::Base
               name: course_name,    # 課程名稱
               lecturer: data[1],    # 授課教師
               credits: data[0].to_i,    # 學分數
-              code: "#{@year}-#{@term}-#{course_id}-?(#{general_code})?",
+              code: "#{@year}-#{@term}-#{course_id}-#{general_code}",
               general_code: general_code,    # 選課代碼
               url: syllabus_url,    # 課程大綱之類的連結
               required: data[2].include?('必'),    # 必修或選修

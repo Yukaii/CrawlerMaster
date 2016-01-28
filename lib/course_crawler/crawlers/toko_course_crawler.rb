@@ -1,3 +1,7 @@
+##
+# 稻江科技暨管理學院
+# http://coursemap.toko.edu.tw/bin/index.php?Plugin=coursemap&Action=csmapschcosrec
+
 module CourseCrawler::Crawlers
 class TokoCourseCrawler < CourseCrawler::Base
 

@@ -90,7 +90,7 @@ class NquCourseCrawler < CourseCrawler::Base
             name:         data[1],    # 課程名稱
             lecturer:     data[8],    # 授課教師
             credits:      data[3].to_i,    # 學分數
-            code:         "#{@year}-#{@term}-#{dep_c}-?(#{data[0].scan(/\w+/)[0]})?",
+            code:         "#{@year}-#{@term}-#{dep_c}-#{data[0].scan(/\w+/)[0]}",
             general_code: data[0].scan(/\w+/)[0],
             # general_code: data[0],    # 選課代碼
             required:     data[5].include?('必'),    # 必修或選修

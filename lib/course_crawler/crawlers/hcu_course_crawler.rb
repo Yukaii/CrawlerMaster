@@ -42,14 +42,16 @@ class HcuCourseCrawler < CourseCrawler::Base
       # note = tr[:title]
 
       time_period_regex = /(?<day>\d)[0]?(?<period>\d+)/
-      course_time_location = Hash[ data[5].scan(time_period_regex) ]
+      course_time_location = data[5].scan(time_period_regex)
 
       # 把 course_time_location 轉成資料庫可以儲存的格式
       course_days, course_periods, course_locations = [], [], []
-      course_time_location.each do |k, v|
-        course_days << k.to_i
-        course_periods << v.to_i
-        course_locations << data[6]
+      course_time_location.each do |arr|
+        day, period = arr
+
+        course_days      << day.to_i
+        course_periods   << period.to_i
+        course_locations << power_strip(data[6])
       end
 
       course = {
@@ -58,8 +60,8 @@ class HcuCourseCrawler < CourseCrawler::Base
         name:         data[3],    # 課程名稱
         lecturer:     data[4],    # 授課教師
         credits:      data[7].to_i,    # 學分數
-        code:         "#{@year}-#{@term}-#{data[1]}-?(#{data[2]})?",
-        general_code: "#{data[1]}-?(#{data[2]})?",
+        code:         "#{@year}-#{@term}-#{data[1]}_#{data[2]}",
+        general_code: "#{data[1]}_#{data[2]}",
         # general_code: data[2],    # 選課代碼
         # url: syllabus_url,    # 課程大綱之類的連結(內容為HTML，這是一個要POST的)
         required:     data[12].include?('必'),    # 必修或選修

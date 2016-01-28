@@ -86,7 +86,7 @@ class NcnuCourseCrawler < CourseCrawler::Base
           name: data[3],    # 課程名稱
           lecturer: data[5],    # 授課教師
           credits: data[8].to_i,    # 學分數
-          code: "#{@year}-#{@term}-#{course_id}-?(#{data[2]})?",
+          code: "#{@year}-#{@term}-#{course_id}_#{data[2]}",
           general_code: data[2],    # 選課代碼
           url: syllabus_url,    # 課程大綱之類的連結
           required: required.include?(data[3]),    # 必修或選修

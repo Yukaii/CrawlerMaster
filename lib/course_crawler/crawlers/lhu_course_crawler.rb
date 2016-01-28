@@ -64,13 +64,13 @@ class LhuCourseCrawler < CourseCrawler::Base
         syllabus_url = tr.css('td a').map{|a| a[:href]}[0]
         course_id += 1
 
-        course_time = Hash[ data[8].scan(/(?<day>\w)(?<period>\w)/) ]
-
+        course_time = data[8].scan(/(?<day>\w)(?<period>\w)/)
         course_days, course_periods, course_locations = [], [], []
-        course_time.each do |day, period|
-          course_days << day.to_i
-          course_periods << PERIODS[period]
-          course_locations << data[9]
+        course_time.each do |arr|
+          day, period = arr
+          course_days      << day.to_i
+          course_periods   << PERIODS[period]
+          course_locations << power_strip(data[9])
         end
 
         course = {
@@ -79,7 +79,7 @@ class LhuCourseCrawler < CourseCrawler::Base
           name: data[3],    # 課程名稱
           lecturer: data[7],    # 授課教師
           credits: data[5],    # 學分數
-          code: "#{@year}-#{@term}-#{course_id}-?(#{data[1]})?",
+          code: "#{@year}-#{@term}-#{course_id}_#{data[1]}",
           general_code: data[1],    # 選課代碼
           url: syllabus_url,    # 課程大綱之類的連結
           required: data[4].include?('必'),    # 必修或選修

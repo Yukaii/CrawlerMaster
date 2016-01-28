@@ -1,3 +1,8 @@
+##
+# 臺中科技大學
+# 上學期：http://academic.nutc.edu.tw/curriculum/show_subject/show_subject_form.asp?show_vol=1
+# 下學期：http://academic.nutc.edu.tw/curriculum/show_subject/show_subject_form.asp?show_vol=2
+
 require 'capybara'
 require 'capybara/poltergeist'
 
