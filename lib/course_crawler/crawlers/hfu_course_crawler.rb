@@ -92,7 +92,7 @@ class HfuCourseCrawler < CourseCrawler::Base
           name: data[6],    # 課程名稱
           lecturer: data[9],    # 授課教師
           credits: data[10].to_i,    # 學分數
-          code: "#{@year}-#{@term}-#{data[0]}-?(#{data[4]})?",
+          code: "#{@year}-#{@term}-#{data[0]}_#{data[4]}",
           general_code: data[4],    # 選課代碼
           url: syllabus_url,    # 課程大綱之類的連結
           required: data[12].include?('必'),    # 必修或選修
