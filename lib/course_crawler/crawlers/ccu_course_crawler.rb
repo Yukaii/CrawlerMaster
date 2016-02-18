@@ -75,26 +75,26 @@ class CcuCourseCrawler < CourseCrawler::Base
               location =  datas[10] && datas[10].text
               group_code = datas[3] && datas[3].text
 
-              code = datas[3] && "#{@year}-#{@term}-#{datas[2].text}-#{group_code}"
+              code         = datas[3] && "#{@year}-#{@term}-#{datas[2].text}-#{group_code}"
               general_code = "#{datas[2].text}-#{group_code}"
-              name = datas[4] && datas[4].text && datas[4].text.strip
-              lecturer = datas[5] && datas[5].text && datas[5].text.strip
-              credits = datas[7] && datas[7].text && datas[7].text.to_i
-              required = datas[8] && datas[8].text.include?('必')
-              url = datas[12] && datas[12].css('a')[0] && datas[12].css('a')[0][:href]
+              name         = datas[4] && datas[4].text && datas[4].text.strip
+              lecturer     = datas[5] && datas[5].text && datas[5].text.strip
+              credits      = datas[7] && datas[7].text && datas[7].text.to_i
+              required     = datas[8] && datas[8].text.include?('必')
+              url          = datas[12] && datas[12].css('a')[0] && datas[12].css('a')[0][:href]
             else
-              times =  datas[8] && datas[8].text
-              location =  datas[9] && datas[9].text
-              group_code = datas[2] && datas[2].text
+              times        = datas[8] && datas[8].text
+              location     = datas[9] && datas[9].text
+              group_code   = datas[2] && datas[2].text
 
-              code = datas[2] && "#{@year}-#{@term}-#{datas[1].text}-#{group_code}"
+              code         = datas[2] && "#{@year}-#{@term}-#{datas[1].text}-#{group_code}"
               general_code = "#{datas[1].text}-#{group_code}"
 
-              name = datas[3] && datas[3].text && datas[3].text.strip
-              lecturer = datas[4] && datas[4].text && datas[4].text.strip
-              credits = datas[6] && datas[6].text && datas[6].text.to_i
-              required = datas[7] && datas[7].text.include?('必')
-              url = datas[11] && datas[11].css('a')[0] && datas[11].css('a')[0][:href]
+              name         = datas[3] && datas[3].text && datas[3].text.strip
+              lecturer     = datas[4] && datas[4].text && datas[4].text.strip
+              credits      = datas[6] && datas[6].text && datas[6].text.to_i
+              required     = datas[7] && datas[7].text.include?('必')
+              url          = datas[11] && datas[11].css('a')[0] && datas[11].css('a')[0][:href]
             end
 
             course_days = []

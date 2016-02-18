@@ -6,7 +6,7 @@ class YzuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
-    @url = "https://portal.yzu.edu.tw/cosSelect/Index.aspx?Lang=TW"
+    @url = "https://portal.yzu.edu.tw/cosSelect/index.aspx?Lang=TW&D=G"
 
     @year = year || current_year
     @term = term || current_term

@@ -25,14 +25,15 @@ class NthuCourseCrawler < CourseCrawler::Base
     "2" => 2,
     "3" => 3,
     "4" => 4,
-    "5" => 5,
-    "6" => 6,
-    "7" => 7,
-    "8" => 8,
-    "9" => 9,
-    "a" => 10,
-    "b" => 11,
-    "c" => 12,
+    "n" => 5,
+    "5" => 6,
+    "6" => 7,
+    "7" => 8,
+    "8" => 9,
+    "9" => 10,
+    "a" => 11,
+    "b" => 12,
+    "c" => 13,
   }
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil

@@ -131,45 +131,45 @@ class KuasCourseCrawler < CourseCrawler::Base
           next if general_code.nil?
 
           course = {
-            year: @year,    # 西元年
-            term: @term,    # 學期 (第一學期=1，第二學期=2)
-            name: power_strip(data[1]),    # 課程名稱
-            lecturer: power_strip(data[8]),    # 授課教師
-            credits: data[3][0].to_i,    # 學分數
-            code: "#{@year}-#{@term}-#{dep_c}-#{general_code}",
-            # general_code: data[0],    # 選課代碼
-            general_code: general_code,
-            url: syllabus_url,    # 課程大綱之類的連結(如果有的話)
-            required: data[5].include?('必'),    # 必修或選修
-            department: dep_n,    # 開課系所
-            department_code: dep_c,
-            day_1: course_days[0],
-            day_2: course_days[1],
-            day_3: course_days[2],
-            day_4: course_days[3],
-            day_5: course_days[4],
-            day_6: course_days[5],
-            day_7: course_days[6],
-            day_8: course_days[7],
-            day_9: course_days[8],
-            period_1: course_periods[0],
-            period_2: course_periods[1],
-            period_3: course_periods[2],
-            period_4: course_periods[3],
-            period_5: course_periods[4],
-            period_6: course_periods[5],
-            period_7: course_periods[6],
-            period_8: course_periods[7],
-            period_9: course_periods[8],
-            location_1: course_locations[0],
-            location_2: course_locations[1],
-            location_3: course_locations[2],
-            location_4: course_locations[3],
-            location_5: course_locations[4],
-            location_6: course_locations[5],
-            location_7: course_locations[6],
-            location_8: course_locations[7],
-            location_9: course_locations[8],
+            :year            => @year,    # 西元年
+            :term            => @term,    # 學期 (第一學期=1，第二學期=2)
+            :name            => power_strip(data[1]),    # 課程名稱
+            :lecturer        => power_strip(data[8]),    # 授課教師
+            :credits         => data[3][0].to_i,    # 學分數
+            :code            => "#{@year}-#{@term}-#{dep_c}-#{general_code}",
+            # :general_code  => data[0],    # 選課代碼
+            :general_code    => general_code,
+            :url             => syllabus_url,    # 課程大綱之類的連結(如果有的話)
+            :required        => data[5].include?('必'),    # 必修或選修
+            :department      => dep_n,    # 開課系所
+            :department_code => dep_c,
+            :day_1           => course_days[0],
+            :day_2           => course_days[1],
+            :day_3           => course_days[2],
+            :day_4           => course_days[3],
+            :day_5           => course_days[4],
+            :day_6           => course_days[5],
+            :day_7           => course_days[6],
+            :day_8           => course_days[7],
+            :day_9           => course_days[8],
+            :period_1        => course_periods[0],
+            :period_2        => course_periods[1],
+            :period_3        => course_periods[2],
+            :period_4        => course_periods[3],
+            :period_5        => course_periods[4],
+            :period_6        => course_periods[5],
+            :period_7        => course_periods[6],
+            :period_8        => course_periods[7],
+            :period_9        => course_periods[8],
+            :location_1      => course_locations[0],
+            :location_2      => course_locations[1],
+            :location_3      => course_locations[2],
+            :location_4      => course_locations[3],
+            :location_5      => course_locations[4],
+            :location_6      => course_locations[5],
+            :location_7      => course_locations[6],
+            :location_8      => course_locations[7],
+            :location_9      => course_locations[8],
           }
 
           sleep(1) until (

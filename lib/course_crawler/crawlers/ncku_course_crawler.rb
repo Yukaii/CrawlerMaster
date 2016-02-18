@@ -149,7 +149,7 @@ class NckuCourseCrawler < CourseCrawler::Base
           end # doc.css each row
 
           done_departments_count += 1
-          set_progress "#{done_departments_count} / #{dep_n.count}"
+          set_progress "#{done_departments_count} / #{deps_h.keys.count}"
 
         # rescue Exception => e
         #   sleep 3

@@ -80,15 +80,17 @@ class NhuCourseCrawler < CourseCrawler::Base
             course_locations << v
           end
 
+          general_code = data[0] && data[0].strip
+
           course = {
             year:         @year,    # 西元年
             term:         @term,    # 學期 (第一學期=1，第二學期=2)
-            name:         data[2],    # 課程名稱
-            lecturer:     data[5],    # 授課教師
-            credits:      data[7],    # 學分數
-            code:         "#{@year}-#{@term}-#{data[1].scan(/\d+/)[0]}-#{data[0]}",
+            name:         data[2] && data[2].strip,    # 課程名稱
+            lecturer:     data[5] && data[5].strip,    # 授課教師
+            credits:      data[7] && data[7].to_i,    # 學分數
+            code:         "#{@year}-#{@term}-#{data[1].scan(/\d+/)[0]}-#{general_code}",
             # general_code: old_course.cos_code,    # 選課代碼
-            general_code: data[0],
+            general_code: general_code,
             url:          syllabus_url,    # 課程大綱之類的連結
             required:     data[6].include?('必'),    # 必修或選修
             department:   dep_n,    # 開課系所

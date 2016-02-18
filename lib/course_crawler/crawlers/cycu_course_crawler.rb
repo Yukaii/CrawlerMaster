@@ -7,22 +7,23 @@ class CycuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
 
   PERIODS = {
-    "A" => 1,
-    "1" => 2,
-    "2" => 3,
-    "3" => 4,
-    "4" => 5,
-    "B" => 6,
-    "5" => 7,
-    "6" => 8,
-    "7" => 9,
-    "8" => 10,
-    "C" => 11,
-    "D" => 12,
-    "E" => 13,
-    "F" => 14,
-    "G" => 15,
-    "H" => 16
+    "特早" => 1,
+    "A"    => 2,
+    "1"    => 3,
+    "2"    => 4,
+    "3"    => 5,
+    "4"    => 6,
+    "B"    => 7,
+    "5"    => 8,
+    "6"    => 9,
+    "7"    => 10,
+    "8"    => 11,
+    "C"    => 12,
+    "D"    => 13,
+    "E"    => 14,
+    "F"    => 15,
+    "G"    => 16,
+    "H"    => 17
   }
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil

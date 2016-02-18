@@ -115,7 +115,7 @@ class FjuCourseCrawler < CourseCrawler::Base
       course_days = []
       course_periods = []
       course_locations = []
-      (12..18).step(3) do |i|
+      (13..19).step(3) do |i|
         day = nil
         day_text = (datas[i] && datas[i].text)
         day_text.match(/([#{DAYS.keys.join}])/) do |m|

@@ -38,6 +38,7 @@ class HcuCourseCrawler < CourseCrawler::Base
 
     doc.css('tbody tr[height="30"]').map{|tr| tr}.each do |tr|
       data = tr.css('td:nth-child(n+3)').map{|td| td.text}
+      _datas = tr.css('td')
       # syllabus_url = tr.css('td a').map{|a| a}
       # note = tr[:title]
 
@@ -54,14 +55,17 @@ class HcuCourseCrawler < CourseCrawler::Base
         course_locations << power_strip(data[6])
       end
 
+      general_code = data[2]
+      cla_code = Digest::MD5.hexdigest(_datas[2].text)[0..5]
+
       course = {
         year:         @year,    # 西元年
         term:         @term,    # 學期 (第一學期=1，第二學期=2)
         name:         data[3],    # 課程名稱
         lecturer:     data[4],    # 授課教師
         credits:      data[7].to_i,    # 學分數
-        code:         "#{@year}-#{@term}-#{data[1]}_#{data[2]}",
-        general_code: "#{data[1]}_#{data[2]}",
+        code:         "#{@year}-#{@term}-#{data[1]}_#{data[2]}_#{cla_code}",
+        general_code: "#{data[2]}",
         # general_code: data[2],    # 選課代碼
         # url: syllabus_url,    # 課程大綱之類的連結(內容為HTML，這是一個要POST的)
         required:     data[12].include?('必'),    # 必修或選修
