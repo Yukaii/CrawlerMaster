@@ -1,3 +1,7 @@
+# 國立陽明大學
+# 課程查詢網址：https://portal.ym.edu.tw/course/CSCS/CSCS01S01
+
+# 只能看最新的課程狀態！！！學年度與學期無法選擇！！！
 module CourseCrawler::Crawlers
 class YmCourseCrawler < CourseCrawler::Base
 

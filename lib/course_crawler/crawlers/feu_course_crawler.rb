@@ -1,137 +1,152 @@
-##
 # 遠東科技大學
-# http://web.isic.feu.edu.tw/query/classcour.asp?ysem=1041
-#
-require 'capybara'
-require 'capybara/poltergeist'
+# 課程查詢網址：http://web.isic.feu.edu.tw/query/classcour.asp
 
 module CourseCrawler::Crawlers
 class FeuCourseCrawler < CourseCrawler::Base
-  include Capybara::DSL
 
-  def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
-    @year = year || current_year
-    @term = term || current_term
+  def initialize year: nil, term: nil, update_progress: nil, after_each: nil
+
+    @year = year
+    @term = term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    @query_url = "http://web.isic.feu.edu.tw/query/classcour.asp?ysem=#{@year-1911}#{@term}"
-
-    Capybara.register_driver :poltergeist do |app|
-      Capybara::Poltergeist::Driver.new(app,  {
-        js_errors: false,
-        timeout: 300,
-        ignore_ssl_errors: true,
-      })
-    end
-
-    Capybara.javascript_driver = :poltergeist
-    Capybara.current_driver = :poltergeist
+    @query_url = 'http://web.isic.feu.edu.tw/query/'
+    @ic = Iconv.new('utf-8//IGNORE//translit', 'big5')
   end
 
   def courses
     @courses = []
-    visit @query_url
+    course_id = 0
 
-    daynight = all('input[name="DAYNIGHT"]')
-    daynight.length.times do |daynight_index|
-      all('input[name="DAYNIGHT"]')[daynight_index].click
+    r = RestClient.get(@query_url+"classcour.asp?ysem=#{@year-1911}#{@term}")
+    doc = Nokogiri::HTML(r)
 
-      depts = all('select[name="DEPT"] option')
-      depts.length.times do |dept_index|
-        all('select[name="DEPT"] option')[dept_index].select_option
+    sem = nil
+    doc.css('select[name="SEM"] option').map{|opt| opt[:value]}.each do |sem_temp|
+      sem = sem_temp if sem_temp.include?(@term.to_s)
+    end
 
-        subs = all('select[name="SUB"] option')
-        subs.length.times do |sub_index|
-          all('select[name="SUB"] option')[sub_index].select_option
+    doc.css('table:nth-child(1) tr:nth-child(2) td input').map{|i| i[:value]}.each do |d_n|
+      r = RestClient.get(@query_url+"classcour.asp?ysem=#{@year-1911}#{@term}&daynight=#{d_n}")
+      doc = Nokogiri::HTML(r)
 
-          clas = all('select[name="CLASS"] option')
-          clas.length.times do |clas_index|
-            all('select[name="CLASS"] option')[clas_index].select_option
+      doc.css('select[name="DEPT"] option').map{|opt| URI.escape(opt[:value])}.each do |dept|
+        r = RestClient.get(@query_url+"classcour.asp?ysem=#{@year-1911}#{@term}&daynight=#{d_n}&dept=#{dept.scan(/[\w]+/)[0]}")
+        doc = Nokogiri::HTML(r)
 
-            click_on '　　查　　詢　　'
-            parse_courses(Nokogiri::HTML(html))
-            click_on '回前頁'
-          end # end clas times
-        end # end sub times
-      end # end dept times
-    end # end daynight times
+        doc.css('select[name="SUB"] option').map{|opt| URI.escape(opt[:value])}.each do |sub|
+          r = RestClient.get(@query_url+"classcour.asp?ysem=#{@year-1911}#{@term}&daynight=#{d_n}&dept=#{dept.scan(/[\w]+/)[0]}&sub=#{sub.scan(/[\w]+/)[0]}")
+          doc = Nokogiri::HTML(r)
 
+          doc.css('select[name="CLASS"] option').map{|opt| URI.escape(opt[:value])}.each do |cla|
+            r = RestClient.post(@query_url+"classcour3.asp",{
+              "YEAR" => @year-1911,
+              "SEM" => "2.%A4U%BE%C7%B4%C1",
+              "term" => "1",
+              "DAYNIGHT" => d_n,
+              "DEPT" => dept,
+              "SUB" => sub,
+              "CLASS" => cla,
+              })
+            doc = Nokogiri::HTML(r)
+
+            (0..doc.css('table:nth-child(1) tr:nth-child(n+2)').count-1).each do |tr|
+              data = mix_data(doc,tr)
+              next if data[0] == " "
+              data[1] = 0 if data[1] == ""
+              if doc.css('table:nth-child(1) tr:nth-child(n+2)')[tr].css('td a')[0] != nil
+                syllabus_url = @query_url+doc.css('table:nth-child(1) tr:nth-child(n+2)')[tr].css('td a')[0][:href]
+              else
+                syllabus_url = nil
+              end
+              dep_name = URI.decode(doc.css('b font font:nth-child(4) font[color="BLUE"]')[0].text)
+
+              course_id += 1
+
+              course_days, course_periods, course_locations = data[18], data[19], data[20]
+
+              course = {
+                year: @year,    # 西元年
+                term: @term,    # 學期 (第一學期=1，第二學期=2)
+                name: data[2],    # 課程名稱
+                lecturer: data[6],    # 授課教師
+                credits: data[4].to_i,    # 學分數
+                code: "#{@year}-#{@term}-#{course_id}_#{data[1]}",
+                general_code: data[1],    # 選課代碼
+                url: syllabus_url,    # 課程大綱之類的連結
+                required: data[3].include?('必'),    # 必修或選修
+                department: dep_name,    # 開課系所
+                # department_code: sub.scan(/[\w]+/)[0],
+                day_1: course_days[0],
+                day_2: course_days[1],
+                day_3: course_days[2],
+                day_4: course_days[3],
+                day_5: course_days[4],
+                day_6: course_days[5],
+                day_7: course_days[6],
+                day_8: course_days[7],
+                day_9: course_days[8],
+                period_1: course_periods[0],
+                period_2: course_periods[1],
+                period_3: course_periods[2],
+                period_4: course_periods[3],
+                period_5: course_periods[4],
+                period_6: course_periods[5],
+                period_7: course_periods[6],
+                period_8: course_periods[7],
+                period_9: course_periods[8],
+                location_1: course_locations[0],
+                location_2: course_locations[1],
+                location_3: course_locations[2],
+                location_4: course_locations[3],
+                location_5: course_locations[4],
+                location_6: course_locations[5],
+                location_7: course_locations[6],
+                location_8: course_locations[7],
+                location_9: course_locations[8],
+                }
+
+              @after_each_proc.call(course: course) if @after_each_proc
+
+              @courses << course
+# binding.pry if course_id == 7
+            end
+          end
+        end
+      end
+    end
     @courses
   end
 
-  def parse_courses doc
-    year, term, _ = doc.css('font[color="BLUE"]').map(&:text)
-
-    year = year.to_i + 1911
-    case term
-    when "上學期"
-      term = 1
-    when "下學期"
-      term = 2
-    else
-      term = 0
-    end
-
-    doc.css('table[width="1000"] tr:not(:first-child)').each do |row|
-      datas = row.xpath('td')
-
-      general_code = datas[1].text.strip
-      next if general_code.empty?
-
-      url = datas[2].css('a').any? ? datas[2].css('a')[0][:href] : nil
-      url = "http://web.isic.feu.edu.tw/query/#{url}"
-
-      course_days, course_periods, course_locations = [], [], []
-      7.times do |i|
-        day_index = i + 8
-
-        datas[day_index].text.strip.split(',').map(&:to_i).each do |p|
-          course_days      << i+1
-          course_periods   << p
-          course_locations << datas[7].text.strip
-        end
+  def mix_data doc,tr
+    # 往後察看下一欄的資訊，如果是本欄延續的資料就合起來~
+    data = doc.css('table:nth-child(1) tr:nth-child(n+2)')[tr].css('td').map{|td| td.text}
+    data[18],data[19],data[20] = [],[],[]
+    (1..data[8..14].length).each do |day|
+      data[8..14][day-1].scan(/\d/).each do |p|
+        data[18] << day
+        data[19] << p.to_i
+        data[20] << data[7]
       end
-
-      @courses << {
-        :year         => year,
-        :term         => term,
-        :code         => "#{year}-#{term}-#{general_code}",
-        :general_code => general_code,
-        :name         => datas[2].text.strip,
-        :url          => url,
-        :required     => datas[3].text.include?('必'),
-        :credits      => datas[4].text.strip.to_i,
-        :lecturer     => datas[6].text.strip,
-        :day_1        => course_days[0],
-        :day_2        => course_days[1],
-        :day_3        => course_days[2],
-        :day_4        => course_days[3],
-        :day_5        => course_days[4],
-        :day_6        => course_days[5],
-        :day_7        => course_days[6],
-        :day_8        => course_days[7],
-        :day_9        => course_days[8],
-        :period_1     => course_periods[0],
-        :period_2     => course_periods[1],
-        :period_3     => course_periods[2],
-        :period_4     => course_periods[3],
-        :period_5     => course_periods[4],
-        :period_6     => course_periods[5],
-        :period_7     => course_periods[6],
-        :period_8     => course_periods[7],
-        :period_9     => course_periods[8],
-        :location_1   => course_locations[0],
-        :location_2   => course_locations[1],
-        :location_3   => course_locations[2],
-        :location_4   => course_locations[3],
-        :location_5   => course_locations[4],
-        :location_6   => course_locations[5],
-        :location_7   => course_locations[6],
-        :location_8   => course_locations[7],
-        :location_9   => course_locations[8]
-      }
     end
+
+    if doc.css('table:nth-child(1) tr:nth-child(n+2)')[tr+1] != nil
+      data_next = doc.css('table:nth-child(1) tr:nth-child(n+2)')[tr+1].css('td').map{|td| td.text}
+    else
+      return data
+    end
+
+    if data_next[0] == " "
+      data_next = mix_data(doc,tr+1)
+
+      data[4] += ",#{data_next[4]}" if data_next[4] != " "
+
+      data[18] += data_next[18]
+      data[19] += data_next[19]
+      data[20] += data_next[20]
+    end
+    data
   end
 end
 end

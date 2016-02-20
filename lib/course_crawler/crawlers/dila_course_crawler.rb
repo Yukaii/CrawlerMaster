@@ -1,3 +1,6 @@
+# 法鼓文理學院
+# 課程查詢網址：http://ecampus.dila.edu.tw/ddb/
+
 module CourseCrawler::Crawlers
 class DilaCourseCrawler < CourseCrawler::Base
 
@@ -107,10 +110,9 @@ class DilaCourseCrawler < CourseCrawler::Base
             name:         data[3],    # 課程名稱
             lecturer:     lecturer,    # 授課教師
             credits:      data[6].to_i,    # 學分數
-            code:         "#{@year}-#{@term}-#{dept_c}-?(#{data[0].scan(/\w+/)[0]})?",
+            code:         "#{@year}-#{@term}-#{dept_c}_#{data[0].scan(/\w+/)[0]}",
             general_code: data[0].scan(/\w+/)[0],
-            # general_code: data[0],    # 選課代碼
-            # url: ,    # 課程大綱之類的連結(不能直接從外部連結，會顯示登入逾時)
+            url:          nil,    # 課程大綱之類的連結(不能直接從外部連結，會顯示登入逾時)
             required:     data[5].include?('必'),    # 必修或選修
             department:   data[1],    # 開課系所
             # department_code: dept_c,

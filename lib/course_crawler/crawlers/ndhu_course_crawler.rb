@@ -1,257 +1,147 @@
-##
-# 東華課程爬蟲
-# http://sys.ndhu.edu.tw/aa/class/course/Default.aspx
-#
+# 國立東華大學
+# 課程查詢網址：http://sys.ndhu.edu.tw/aa/class/course/Default.aspx
 
+# 沒有顯示必選修
 module CourseCrawler::Crawlers
 class NdhuCourseCrawler < CourseCrawler::Base
 
-  DAYS = { "一" => 1,"二" => 2,"三" => 3, "四" => 4, "五" => 5, "六" => 6,"日" => 7,}
+  DAYS = {
+    "一" => 1,
+    "二" => 2,
+    "三" => 3,
+    "四" => 4,
+    "五" => 5,
+    "六" => 6,
+    "日" => 7
+    }
 
-  def initialize  year: nil, term: nil, update_progress: nil, after_each: nil # initialize 94建構子
+  def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-    @year = year || current_year
-    @term = term || current_term
-    @query_url = "http://sys.ndhu.edu.tw/aa/class/course/Default.aspx"
-    # @ic = Iconv.new('utf-8//translit//IGNORE', 'big-5')
-    #@result_url = "https://web085003.adm.ncyu.edu.tw/pub_depta2.aspx"
-
-    @after_each_proc = after_each
+    @year = year
+    @term = term
     @update_progress_proc = update_progress
+    @after_each_proc = after_each
+
+    @query_url = 'http://sys.ndhu.edu.tw/aa/class/course/Default.aspx'
+    @ic = Iconv.new('utf-8//IGNORE//translit', 'big5')  # 如果遇到utf-8轉HTML有錯誤，可以先utf-8轉utf-8(可以除錯)
   end
 
   def courses
     @courses = []
-    # start write your crawler here:
-    r = RestClient.get @query_url
+    course_id = 0
+
+    r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(r)
 
-    @cookies = r.cookies
+    hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
 
-    colleges_hash = Hash[
-      doc.css('select[name="ddlCOLLEGE"] option')[1..-1].map{|option| [option[:value], option.content]}
-    ]
+    # 選擇學院
+    doc.css('select[name="ddlCOLLEGE"] option:nth-child(n+2)').map{|opt| opt[:value]}.each do |col|
+      r = RestClient.post(@query_url, hidden.merge({
+        "ddlYEAR" => "#{@year-1911}/#{@term}",
+        "ddlCOLLEGE" => col,
+        "ddlDEP" => "NA",
+        "ddlCLASS" => "NA",
+        "tbSNAME" => "",
+        "tbTCHER" => "",
+        "ddlDAY" => "0",
+        "ddlTIME" => "0",
+        "ddlAREA" => "0",
+        "ddlROOM" => "NA",
+        "ddlSENG" => "0",
+        "ddlCORE" => "0",
+        "ddlSSTATUS" => "0",
+        }) )
+      doc = Nokogiri::HTML(r)
+      hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
+      # 選擇系所
+      doc.css('select[name="ddlDEP"] option').map{|opt| [opt[:value],opt.text]}.each do |dept_v,dept_n|
+        r = RestClient.post(@query_url, hidden.merge({
+          "ddlYEAR" => "#{@year-1911}/#{@term}",
+          "ddlCOLLEGE" => col,
+          "ddlDEP" => dept_v,
+          "ddlCLASS" => "NA",
+          "tbSNAME" => "",
+          "tbTCHER" => "",
+          "ddlDAY" => "0",
+          "ddlTIME" => "0",
+          "ddlAREA" => "0",
+          "ddlROOM" => "NA",
+          "ddlSENG" => "0",
+          "ddlCORE" => "0",
+          "ddlSSTATUS" => "0",
+          "btnCourse" => "查詢(中文)"
+          }) )
+        doc = Nokogiri::HTML(r)
 
-    colleges_hash.keys[0..-1].each do |college_post_value|
+        doc.css('table[id="GridView1"] tr:nth-child(n+2)').each do |tr|
+          data = tr.css('td').map{|td| td.text.gsub(/[\r\n\s　]/,"")}
+          next if data.length < 6
+# puts "#{dept_n},#{course_id}"
+          syllabus_url = tr.css('td a')[1][:href]
 
-      #collge_name = colleges_hash[college_post_value]
-      dept_post_value, degree_post_value = 'NA'
-      doc = web_post(doc,college_post_value,dept_post_value,degree_post_value)
+          course_id += 1
 
+          course_time = data[3].scan(/([一二三四五六日])([\d]+)/)
+          course_location_temp = data[13].split("/")
 
-      dept_hash = Hash[
-        doc.css('select[name="ddlDEP"] option')[0..-1].map{|option| [option[:value], option.content]}
-      ]
+          course_days, course_periods, course_locations = [], [], []
+          (0..course_time.length-1).each do |i|
 
-      dept_hash.each_with_index do |(dept_post_value,dept_name), dep_index|
-        # print "#{dep_index+1} / #{dept_hash.keys.count}: #{dept_name}\n"
-
-
-        degree_post_value = 'NA'
-        doc = web_post(doc,college_post_value,dept_post_value,degree_post_value)
-
-
-        degree_hash = Hash[
-          doc.css('select[name="ddlCLASS"] option')[0..-1].map{|option| [option[:value], option.content]}
-        ]
-
-        degree_hash.each do |degree_post_value,degree_name|
-
-          doc = web_post(doc,college_post_value,dept_post_value,degree_post_value,check:'查詢(中文)')
-
-          doc.css('#GridView1 tr:not(:first-child)').each do |row|
-            columns = row.css('td')
-            next if columns[5].nil?
-
-            period_loc = columns[13].text.strip
-            regl = /\/(?<loc>[^\/]+)/
-            period_loc.scan(regl)
-
-            course_locations = []
-            course_locations.concat(period_loc.scan(regl).map(&:first)) unless period_loc.strip.empty?
-            course_locations.map{|course_locations|course_locations+columns[0]}
-            #concat 陣列串連陣列，字串串連字串
-            #&自己 :first 用自己呼叫. first 這個方法
-
-            period_time_data = columns[3].text.strip
-            temp = period_time_data.split("/")
-            temp.delete("")
-            days = temp.map.with_index{|temp,i|temp[0]}
-
-            course_days = []
-            course_periods = []
-
-            temp.each_with_index do |content,index|
-              course_days << DAYS[days[index]]
-            end
-
-            course_periods = temp.map.with_index{|temp,i|temp[1..-1]}
-
-            course = {
-              department:   columns[21] && columns[21].text,
-              name:         columns[5] && columns[5].text,
-              year:         @year,
-              term:         @term,
-              code:         "#{@year}-#{@term}-#{columns[4].text.strip}",
-              general_code: columns[4].text.strip,
-              credits:      columns[11].text.split('/')[0].gsub(/[^\d]/, '').to_i,
-              lecturer:     columns[12].text.strip.strip.split(/[\/\/]/).reject(&:empty?).join(','),
-              day_1:        course_days[0],
-              day_2:        course_days[1],
-              day_3:        course_days[2],
-              day_4:        course_days[3],
-              day_5:        course_days[4],
-              day_6:        course_days[5],
-              day_7:        course_days[6],
-              day_8:        course_days[7],
-              day_9:        course_days[8],
-              period_1:     course_periods[0],
-              period_2:     course_periods[1],
-              period_3:     course_periods[2],
-              period_4:     course_periods[3],
-              period_5:     course_periods[4],
-              period_6:     course_periods[5],
-              period_7:     course_periods[6],
-              period_8:     course_periods[7],
-              period_9:     course_periods[8],
-              location_1:   course_locations[0],
-              location_2:   course_locations[1],
-              location_3:   course_locations[2],
-              location_4:   course_locations[3],
-              location_5:   course_locations[4],
-              location_6:   course_locations[5],
-              location_7:   course_locations[6],
-              location_8:   course_locations[7],
-              location_9:   course_locations[8],
-            }
-
-            @after_each_proc.call(course: course) if @after_each_proc
-
-            @courses << course
-            # puts "test1"
+            course_days << DAYS[course_time[i][0]]
+            course_periods << course_time[i][1].to_i
+            course_locations << course_location_temp[i+1]
           end
 
-          doc.css('#GridView2 tr:not(:first-child)').each do |row|
-            columns = row.css('td')
-            next if columns[6].nil?
-
-            period_loc = columns[14].text.strip
-            regl = /\/(?<loc>[^\/]+)/
-            period_loc.scan(regl)
-
-            course_locations = []
-            course_locations.concat(period_loc.scan(regl).map(&:first)) unless period_loc.strip.empty?
-            course_locations.map{|course_locations|course_locations+columns[0]}
-
-            period_time_data = columns[4].text.strip
-            temp = period_time_data.split("/")
-            temp.delete("")
-            days = temp.map.with_index{|temp,i|temp[0]}
-
-            course_days = []
-            course_periods = []
-
-            temp.each_with_index do |content,index|
-              course_days << DAYS[days[index]]
-            end
-
-            course_periods = temp.map.with_index{|temp,i|temp[1..-1]}
-
-            course = {
-              department:   columns[0].text,
-              name:         columns[6].text,
-              year:         @year,
-              term:         @term,
-              code:         "#{@year}-#{@term}-#{columns[5].text.strip}",
-              general_code: columns[5].text.strip,
-              credits:      columns[12].text.split('/')[0].gsub(/[^\d]/, '').to_i,
-              lecturer:     columns[13].text.strip.split(/[\/\/]/).reject(&:empty?).join(','),
-              day_1:        course_days[0],
-              day_2:        course_days[1],
-              day_3:        course_days[2],
-              day_4:        course_days[3],
-              day_5:        course_days[4],
-              day_6:        course_days[5],
-              day_7:        course_days[6],
-              day_8:        course_days[7],
-              day_9:        course_days[8],
-              period_1:     course_periods[0],
-              period_2:     course_periods[1],
-              period_3:     course_periods[2],
-              period_4:     course_periods[3],
-              period_5:     course_periods[4],
-              period_6:     course_periods[5],
-              period_7:     course_periods[6],
-              period_8:     course_periods[7],
-              period_9:     course_periods[8],
-              location_1:   course_locations[0],
-              location_2:   course_locations[1],
-              location_3:   course_locations[2],
-              location_4:   course_locations[3],
-              location_5:   course_locations[4],
-              location_6:   course_locations[5],
-              location_7:   course_locations[6],
-              location_8:   course_locations[7],
-              location_9:   course_locations[8],
-
+          course = {
+            year: @year,    # 西元年
+            term: @term,    # 學期 (第一學期=1，第二學期=2)
+            name: data[5],    # 課程名稱
+            lecturer: data[12][1..-1],    # 授課教師
+            credits: data[11][0].to_i,    # 學分數
+            code: "#{@year}-#{@term}-#{course_id}_#{data[4]}",
+            general_code: data[4],    # 選課代碼
+            url: syllabus_url,    # 課程大綱之類的連結
+            required: nil,#data.include?('必'),    # 必修或選修
+            department: data[14],    # 開課系所
+            # department_code: dept_v,
+            day_1: course_days[0],
+            day_2: course_days[1],
+            day_3: course_days[2],
+            day_4: course_days[3],
+            day_5: course_days[4],
+            day_6: course_days[5],
+            day_7: course_days[6],
+            day_8: course_days[7],
+            day_9: course_days[8],
+            period_1: course_periods[0],
+            period_2: course_periods[1],
+            period_3: course_periods[2],
+            period_4: course_periods[3],
+            period_5: course_periods[4],
+            period_6: course_periods[5],
+            period_7: course_periods[6],
+            period_8: course_periods[7],
+            period_9: course_periods[8],
+            location_1: course_locations[0],
+            location_2: course_locations[1],
+            location_3: course_locations[2],
+            location_4: course_locations[3],
+            location_5: course_locations[4],
+            location_6: course_locations[5],
+            location_7: course_locations[6],
+            location_8: course_locations[7],
+            location_9: course_locations[8],
             }
 
-            @after_each_proc.call(course: course) if @after_each_proc
-            @courses << course
-            # puts "test2"
-          end
-        end #degree
+          @after_each_proc.call(course: course) if @after_each_proc
 
-      #@after_each_proc.call(course: course) if @after_each_proc
-      # end each row
-
-      # table = doc.css('table[border="1"][align="center"][cellpadding="1"][cellspacing="0"][width="99%"]')[0]
-
-      # rows = table.css('tr:not(:first-child)')
-      # rows.each do |row|
-      #   table_datas = row.css('td')
-
-      #   course = {
-      #     department_code: table_datas[2].text,
-      #     # name: aaa,
-      #     # code: aaa,
-      #   }
-
-      #   @courses << course
-      # end
-      # File.write("temp/#{dept_value}.html", r)
-      # end each dept_values
-
-    # binding.pry
-    # puts "hello"
-
-      end # dept
-
+          @courses << course
+# binding.pry
+        end
+      end
     end
     @courses
-  end # end course method
-
-  def view_state doc
-    Hash[doc.css('input[type="hidden"]').map{|input| [input[:name], input[:value]]}]
-  end
-
-  def web_post doc, college_post_value, dept_post_value, degree_post_value, check: nil
-    r = RestClient.post(@query_url, view_state(doc).merge({
-      "ddlYEAR" => '104/1',
-      "ddlCOLLEGE" => college_post_value,
-      "ddlDEP" => dept_post_value,
-      "ddlCLASS" => degree_post_value,
-      "ddlDAY" => '0',
-      "ddlTIME" => '0',
-      "ddlAREA" => '0',
-      "ddlROOM" => 'NA',
-      "ddlSENG" => '0',
-      "ddlCORE" => '0',
-      "ddlSSTATUS" => '0',
-      "btnCourse" => check,
-    }), cookies: @cookies)
-    doc = Nokogiri::HTML(r)
-
   end
 end
 end

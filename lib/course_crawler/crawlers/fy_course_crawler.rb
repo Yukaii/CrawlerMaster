@@ -1,7 +1,7 @@
 # 輔英科技大學
 # 課程查詢網址：http://cos.fy.edu.tw/fywww/new/new_info/cos_info/yco_1000.asp
 
-# 2381.411 sec 跑很久...
+# 13614.832 sec 跑很久...
 module CourseCrawler::Crawlers
 class FyCourseCrawler < CourseCrawler::Base
 
@@ -88,7 +88,7 @@ class FyCourseCrawler < CourseCrawler::Base
               course_table_repeat[department_code] = @course_id
             end
 
-            syllabus_url = @query_url+URI.escape(@ic.iconv(course_table_obj.css('>font a')[0][:href][2..-1]))
+            syllabus_url = course_table_obj.css('>font a')[0][:href]
             teacher = course_table_obj.css('>font font').text.scan(/\W+/)[0]
             location = course_table_obj.css('>font font').map{|f| f.text}[0].scan(/\w+/)[0] if course_table_obj.css('>font font').map{|f| f.text}[0] != nil
             location = "" if location == nil
@@ -96,12 +96,17 @@ class FyCourseCrawler < CourseCrawler::Base
             r = RestClient.get(URI.escape(@ic.iconv(syllabus_url)))
             doc = Nokogiri::HTML(r)
 
-            name_code_credits = doc.css('center table table tr td:nth-child(2n)').map{|td| td.text}.values_at(0,2)
-            name = name_code_credits[0].scan(/\W+/)[0]
-            general_code = name_code_credits[0].scan(/\w+/)[-1]
-            credits = name_code_credits[1][0].to_i
+            name_code_credits = doc.css('table[class="ViewTB"] > tr:not(:nth-child(n+6)) td span').map{|s| s.text}
+            if name_code_credits.length > 6
+              name = name_code_credits[0]
+              general_code = name_code_credits[1]
+              credits = name_code_credits[6].to_i
+              department = name_code_credits[4]
+            else
+              next
+            end
 
-            courses_temp << [course_table_repeat[department_code],[day+1,period+1,location],[name,teacher,credits,general_code,syllabus_url.gsub(/'/,"%27"),department_code]]
+            courses_temp << [course_table_repeat[department_code],[day+1,period+1,location],[name,teacher,credits,general_code,syllabus_url.gsub(/'/,"%27"),department_code,department]]
           end
         end
       end
@@ -120,11 +125,11 @@ class FyCourseCrawler < CourseCrawler::Base
             name: data[2][0],    # 課程名稱
             lecturer: data[2][1],    # 授課教師
             credits: data[2][2],    # 學分數
-            code: "#{@year}-#{@term}-#{data[0]}-?(#{data[2][3]})?",
+            code: "#{@year}-#{@term}-#{data[0]}_#{data[2][3]}",
             general_code: data[2][3],    # 選課代碼
             url: data[2][4],    # 課程大綱之類的連結
             required: data[1].include?('必'),    # 必修或選修 (這學校沒有寫這個選項)
-            department: data[2][5],    # 開課系所
+            department: data[2][6],    # 開課系所
             # department_code: data[2][5],
             day_1: course_days[0],
             day_2: course_days[1],
@@ -168,8 +173,8 @@ class FyCourseCrawler < CourseCrawler::Base
 
         temp_data = temp_cor
       end
-    # puts @course_id
-# binding.pry if @course_id == 156
+# puts @course_id
+# binding.pry #if @course_id == 156
     end
   end
 

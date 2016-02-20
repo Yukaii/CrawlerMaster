@@ -1,6 +1,8 @@
 # 南臺科技大學
 # 課程查詢網址：http://120.117.2.118/CourSel/Pages/NextCourse.aspx
 
+# 一頁一頁的爬~~~
+# 8168.847 sec ~~
 module CourseCrawler::Crawlers
 class StustCourseCrawler < CourseCrawler::Base
 
@@ -26,6 +28,7 @@ class StustCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
+    course_id = 0
 
     r = RestClient.get(@query_url+"NextCourse.aspx")
     doc = Nokogiri::HTML(r)
@@ -33,54 +36,57 @@ class StustCourseCrawler < CourseCrawler::Base
 
     @hidden = Hash[doc.css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
 
-    course_id = 0
-    doc.css('select[id="ctl00_ContentPlaceHolder1_ddl_dept"] option:nth-child(n+2)').map{|option| option[:value]}.each do |dept|
+    doc.css('select[id="ctl00_ContentPlaceHolder1_ddl_dept"] option:nth-child(n+2)').map{|option| [option[:value],option.text]}.each do |dept_v,dept_n|
 
-      doc = web_post(dept: dept, btn_query: nil)
+      doc = web_post(dept: dept_v, btn_query: nil)
 
       doc.css('select[id="ctl00_ContentPlaceHolder1_ddl_class"] option:nth-child(n+2)').map{|option| option[:value]}.each do |cla|
+  
+        doc = web_post(dept: dept_v, cla: cla)
 
-        doc = web_post(dept: dept, cla: cla)
-
-        # puts "#{dept}_#{cla}"
+# puts "#{dept_v}_#{cla}"
 
         pages = doc.css('table[id="ctl00_ContentPlaceHolder1_gv_result"] tr:last-child a').map{|a| a.text}[-1]
         pages = 1 if pages == nil || pages.length > 1
 
         (1..pages.to_i).each do |page|
-          doc = web_post(dept: dept, cla: cla, btn_query: nil, hdf_query: "True", eVENTTARGET: "ctl00$ContentPlaceHolder1$gv_result", eVENTARGUMENT: "Page$#{page}") if page > 1
+          doc = web_post(dept: dept_v, cla: cla, btn_query: nil, hdf_query: "True", eVENTTARGET: "ctl00$ContentPlaceHolder1$gv_result", eVENTARGUMENT: "Page$#{page}") if page > 1
 
           doc.css('table[id="ctl00_ContentPlaceHolder1_gv_result"] tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
-            data = tr.css('td span').map{|td| td.text}
-            next if not data[2].to_s.include?('修')
-            course_name = tr.css('td a').map{|td| td.text}[0]
-            general_code = tr.css('td a').map{|td| td[:title]}[0]
+            next if not tr.css('td').map{|td| td.text}[3].to_s.include?("修")
             syllabus_url = @query_url+tr.css('td a').map{|td| td[:href]}[0]
+
+            doc = Nokogiri::HTML(RestClient.get(syllabus_url))
+
+            data1 = doc.css('table[style="width:100%"]> tr:nth-child(1) tr span').map{|s| s.text}
+            data2 = doc.css('table[style="width:100%"]> tr:nth-child(2)')
+            # course_class = doc.css('table[style="width:100%"]> tr:nth-child(2) tr span')[0].text
+            teacher = tr.css('td span')[1].text
+
             course_id += 1
 
-            time_period_regex = /(?<day>[一二三四五六日])\s(?<period>((\d+)\s?)+)/
-            course_time = Hash[ data[4].scan(time_period_regex) ]
+            time_period_regex = /週(?<day>[一二三四五六日])第(?<period>\w+)節\((?<loc>([\w\-]+)?)\)/
+            course_time_location = doc.css('table[style="width:100%"]> tr:nth-child(2) tr span')[11].text.scan(time_period_regex)
 
             course_days, course_periods, course_locations = [], [], []
-            course_time.each do |day, period|
-              period.split(' ').each do |p|
-                course_days << DAYS[day[0]]
-                course_periods << p.to_i
-                course_locations << nil
-              end
+            course_time_location.each do |day, period, location|
+              course_days << DAYS[day]
+              course_periods << period.to_i
+              course_locations << location
             end
 
             course = {
               year: @year,    # 西元年
               term: @term,    # 學期 (第一學期=1，第二學期=2)
-              name: course_name,    # 課程名稱
-              lecturer: data[1],    # 授課教師
-              credits: data[0].to_i,    # 學分數
-              code: "#{@year}-#{@term}-#{course_id}-#{general_code}",
-              general_code: general_code,    # 選課代碼
+              name: data1[1],    # 課程名稱
+              lecturer: teacher,    # 授課教師
+              credits: data1[4].to_i,    # 學分數
+              code: "#{@year}-#{@term}-#{course_id}_#{data1[0]}",
+              general_code: data1[0],    # 選課代碼
               url: syllabus_url,    # 課程大綱之類的連結
-              required: data[2].include?('必'),    # 必修或選修
-              department: data[3],    # 開課系所
+              required: data1[3].include?('必'),    # 必修或選修
+              department: dept_n,    # 開課系所
+              # department_code: dept_v,
               day_1: course_days[0],
               day_2: course_days[1],
               day_3: course_days[2],
@@ -114,13 +120,12 @@ class StustCourseCrawler < CourseCrawler::Base
 
             @courses << course
 
-        # puts "#{course_id} / #{dept}_#{cla}_#{page}"
+# puts "#{course_id} / #{dept_v}_#{cla}_#{page}"
           end
         end
       end
     end
-
-    # binding.pry
+# binding.pry
     @courses
   end
 

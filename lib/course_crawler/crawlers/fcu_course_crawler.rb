@@ -4,6 +4,7 @@
 # 使用 guest/guest 登入
 # 登入後到進階查詢(http://sdsweb.oit.fcu.edu.tw/coursequest/advance.jsp)
 
+# 沒有上課地點,必選修,教師名稱
 module CourseCrawler::Crawlers
 class FcuCourseCrawler < CourseCrawler::Base
 
@@ -17,134 +18,112 @@ class FcuCourseCrawler < CourseCrawler::Base
   "日" => 7,
   }
 
- PERIODS = {
-  "00" => 1,
-  "01" => 2,
-  "02" => 3,
-  "03" => 4,
-  "04" => 5,
-  "05" => 6,
-  "06" => 7,
-  "07" => 8,
-  "08" => 9,
-  "09" => 10,
-  "10" => 11,
-  "11" => 12,
-  "12" => 13,
-  "13" => 14,
-  "14" => 15,
-  }
+  def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
-
-    @year                 = year || current_year
-    @term                 = term || current_term
+    @year = year
+    @term = term
     @update_progress_proc = update_progress
-    @after_each_proc      = after_each
+    @after_each_proc = after_each
 
-		@query_url = 'http://sdsweb.oit.fcu.edu.tw/coursequest/condition.jsp'
-		@ic = Iconv.new('utf-8//IGNORE//translit', 'utf-8')
-	end
+    @query_url = 'http://sdsweb.oit.fcu.edu.tw/coursequest/'
+  end
 
-	def courses
-		@courses = []
+  def courses
+    @courses = []
 
-		r = RestClient.post(@query_url, {
-			"userID" => "guest",
-			"userPW" => "guest",
-			"Button2" => "%B5n%A4J",
-			})
+    cookie = RestClient.post(@query_url+"condition.jsp", {
+      "userID" => "guest",
+      "userPW" => "guest",
+      "Button2" => "%B5n%A4J",
+      }).cookies
 
-		@query_url = "http://sdsweb.oit.fcu.edu.tw/coursequest/advancelist.jsp"
-		r = RestClient.post(@query_url, {
-			"yms_year" => "#{@year-1911}",
-			"yms_smester" => "#{@term}",
-			"week" => "0",
-			"start" => "0",
-			"end" => "0",
-			"submit1" => "%ACd++%B8%DF",
-			}, {"Cookie" => "JSESSIONID=#{r.cookies["JSESSIONID"]}"})
-		doc = Nokogiri::HTML(@ic.iconv(r))
-
-    doc.css('table tr:not(:first-child)').each do |tr|
-      data = []
-      for i in 0..tr.css('td').count - 1
-        data[i] = tr.css('td')[i].text
-        syllabus_url = "http://sdsweb.oit.fcu.edu.tw#{tr.css('td a').map{|a| a[:href]}[0][2..-1]}"
-        course_code = data[1].split('  ')[0] if data[1] != nil
-      end
-
-      time_period_regex = /\((?<day>[一二三四五六日])\)(?<period>.+)/
-      course_time_location = Hash[data[7].split(' ').inject([]){|arr, s| arr.concat(s.scan(time_period_regex))}]
-
-      # 把 course_time_location 轉成資料庫可以儲存的格式
-      course_days, course_periods, course_locations = [], [], []
-      course_time_location.each do |k, v|
-        periods = v.split('-').map(&:to_i)
-        if periods.count == 1
-          course_days << DAYS[k]
-          course_periods << periods[0]
-        else
-          (periods[0]..periods[1]).each do |period|
-            course_days << DAYS[k]
-            course_periods << period
-          end
-        end
-      end
-
-      course = {
-        year:         @year,    # 西元年
-        term:         @term,    # 學期 (第一學期=1，第二學期=2)
-        name:         data[1].split(/\s+/).last,    # 課程名稱
-        lecturer:     "",    # 授課教師，選課系統不提供
-        credits:      data[3].to_i,    # 學分數(需要轉換成數字，可以用.to_i)
-        code:         "#{@year}-#{@term}-#{course_code}-#{data[0]}", # course_code 科目代碼，data[0] 選課代碼，要問逢甲的同學
-        general_code: "#{course_code}-#{data[0]}",
-        # general_code: data[0],    # 選課代碼
-        url:          syllabus_url,    # 課程大綱之類的連結(如果有的話)
-        required:     nil,    # 必修或選修
-        department:   data[6],    # 開課系所
-        # note: data[11],
-        # department_term: data[2],
-        # mid_exam: data[4],
-        # final_exam: data[5],
-        # exam_early: data[6],
-        # limit_people: data[9],    # 開放名額
-        day_1:        course_days[0],
-        day_2:        course_days[1],
-        day_3:        course_days[2],
-        day_4:        course_days[3],
-        day_5:        course_days[4],
-        day_6:        course_days[5],
-        day_7:        course_days[6],
-        day_8:        course_days[7],
-        day_9:        course_days[8],
-        period_1:     course_periods[0],
-        period_2:     course_periods[1],
-        period_3:     course_periods[2],
-        period_4:     course_periods[3],
-        period_5:     course_periods[4],
-        period_6:     course_periods[5],
-        period_7:     course_periods[6],
-        period_8:     course_periods[7],
-        period_9:     course_periods[8],
-        location_1:   course_locations[0],
-        location_2:   course_locations[1],
-        location_3:   course_locations[2],
-        location_4:   course_locations[3],
-        location_5:   course_locations[4],
-        location_6:   course_locations[5],
-        location_7:   course_locations[6],
-        location_8:   course_locations[7],
-        location_9:   course_locations[8]
-      }
-
-      @after_each_proc.call(course: course) if @after_each_proc
-      @courses << course
-# binding.pry if @courses.count == 30
+    week_start_end_data = []
+    (1..7).each do |w|
+      week_start_end_data += [[w,1,7],[w,8,14]]
     end
 
-    @courses
+    week_start_end_data.each do |wsed|
+      r = RestClient.post(@query_url+"advancelist.jsp", {
+        "yms_year" => "#{@year-1911}",
+        "yms_smester" => "#{@term}",
+        "week" => wsed[0],
+        "start" => wsed[1],
+        "end" => wsed[2],
+        "submit1" => "%ACd++%B8%DF",
+        }, {"Cookie" => "JSESSIONID=#{cookie["JSESSIONID"]}"})
+      doc = Nokogiri::HTML(r)
+
+# puts "#{wsed},#{doc.css('table tr:not(:first-child)').count}"
+      doc.css('table tr:not(:first-child)').each do |tr|
+        data = tr.css('td').map{|td| td.text.gsub(/[\r\t\n\s]/,"")}
+        syllabus_url = "http://sdsweb.oit.fcu.edu.tw#{tr.css('td a').map{|a| a[:href]}[0][2..-1]}"
+        course_code = data[1].scan(/\w+/)[0] if data[1] != nil
+
+        course_time = data[7].scan(/\((?<day>[一二三四五六日])\)(?<period>[\d\-]+)/)
+
+        # 把 course_time_location 轉成資料庫可以儲存的格式
+        course_days, course_periods, course_locations = [], [], []
+        course_time.each do |day, period|
+          (period.split("-")[0].to_i..period.split("-")[-1].to_i).each do |p|
+            course_days << DAYS[day]
+            course_periods << p+1
+            course_locations << nil # 沒有上課地點
+          end
+        end
+
+        course = {
+          year: @year,    # 西元年
+          term: @term,    # 學期 (第一學期=1，第二學期=2)
+          name: data[1],    # 課程名稱
+          lecturer: nil,    # 授課教師
+          credits: data[3].to_i,    # 學分數(需要轉換成數字，可以用.to_i)
+          code: "#{@year}-#{@term}-#{course_code}-#{data[0]}",
+          general_code: data[0],    # 選課代碼
+          url: syllabus_url,    # 課程大綱之類的連結(如果有的話)
+          required: nil,    # 必修或選修
+          department: data[6],    # 開課系所
+          # note: data[11],
+          # department_term: data[2],
+          # mid_exam: data[4],
+          # final_exam: data[5],
+          # exam_early: data[6],
+          # limit_people: data[9],    # 開放名額
+          day_1: course_days[0],
+          day_2: course_days[1],
+          day_3: course_days[2],
+          day_4: course_days[3],
+          day_5: course_days[4],
+          day_6: course_days[5],
+          day_7: course_days[6],
+          day_8: course_days[7],
+          day_9: course_days[8],
+          period_1: course_periods[0],
+          period_2: course_periods[1],
+          period_3: course_periods[2],
+          period_4: course_periods[3],
+          period_5: course_periods[4],
+          period_6: course_periods[5],
+          period_7: course_periods[6],
+          period_8: course_periods[7],
+          period_9: course_periods[8],
+          location_1: course_locations[0],
+          location_2: course_locations[1],
+          location_3: course_locations[2],
+          location_4: course_locations[3],
+          location_5: course_locations[4],
+          location_6: course_locations[5],
+          location_7: course_locations[6],
+          location_8: course_locations[7],
+          location_9: course_locations[8],
+          }
+
+        @after_each_proc.call(course: course) if @after_each_proc
+
+        @courses << course
+# binding.pry if @courses.count == 30
+      end
+    end
+  @courses
   end
 
 end
