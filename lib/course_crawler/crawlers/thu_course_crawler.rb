@@ -14,6 +14,25 @@ class ThuCourseCrawler < CourseCrawler::Base
     '日' => 7
   }
 
+  PERIODS = {
+    "0"   => 1,
+    "1"   => 2,
+    "2"   => 3,
+    "3"   => 4,
+    "4"   => 5,
+    "4.5" => 6,
+    "5"   => 7,
+    "6"   => 8,
+    "7"   => 9,
+    "8"   => 10,
+    "9"   => 11,
+    "10"  => 12,
+    "11"  => 13,
+    "12"  => 14,
+    "13"  => 15,
+    "14"  => 16,
+  }
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year                 = year || current_year
@@ -52,9 +71,11 @@ class ThuCourseCrawler < CourseCrawler::Base
         # end
 
         datas[3].text.strip.scan(time_loc_regex).each do |array|
-          course_days << DAYS[array[0]]
-          course_periods.concat array[1].split(',').map(&:to_i)
-          course_locations << array[2]
+          array[1].split(',').each do |period|
+            course_days << DAYS[array[0]]
+            course_periods << PERIODS[period.strip]
+            course_locations << array[2]
+          end
         end
 
         code = datas[0].text.strip.match(/\d+/)[0].to_s

@@ -12,6 +12,7 @@ class IsuCourseCrawler < CourseCrawler::Base
     "3" => 3,
     "4" => 4,
     "z" => 5,
+    "Z" => 5,
     "5" => 6,
     "6" => 7,
     "7" => 8,
@@ -21,7 +22,7 @@ class IsuCourseCrawler < CourseCrawler::Base
     "B" => 12,
     "C" => 13,
     "D" => 14,
-    }
+  }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 

@@ -250,7 +250,7 @@ module CourseCrawler::Crawlers
             course_locations << v
             course_days << DAYS[k[0]]
             period = PERIODS[k[1..-1]]
-            period += 1 if @year > 2014  # 台科自 104 學年度起增加第 0 節，為讓節次從 1 開始排列故全部 +1
+            # period += 1 if @year > 2014  # 台科自 104 學年度起增加第 0 節，為讓節次從 1 開始排列故全部 +1
             course_periods << period
           end
 

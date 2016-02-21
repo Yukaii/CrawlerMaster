@@ -83,9 +83,13 @@ class NiuCourseCrawler < CourseCrawler::Base
 
 			course_days, course_periods, course_locations = [], [], []
 			row[10].to_s.split(',').each_with_index do |period, i|
+        location = row[11].split(',')[0]
+        if row[11].split(',').length > 1
+          location = row[11].split(',')[i]
+        end
 				course_days << period[0].to_i
 				course_periods << PERIODS[period[1..2]]
-				course_locations << row[11].split(',')[i]
+				course_locations << location
 			end
 
       next if row[1].nil?

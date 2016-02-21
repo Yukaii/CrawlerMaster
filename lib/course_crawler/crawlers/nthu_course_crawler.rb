@@ -111,7 +111,7 @@ class NthuCourseCrawler < CourseCrawler::Base
         # print "#{depts_h[dep_c]}\n"
         done_deps_count += 1
         set_progress "#{done_deps_count} / #{depts_h.count}"
-      end
+      end # end Thread
     end
     ThreadsWait.all_waits(*@threads)
 
@@ -220,16 +220,20 @@ class NthuCourseCrawler < CourseCrawler::Base
         lecturer && lecturer.gsub!(/ /, '') && lecturer.gsub!(/ /, '')
 
         # normalize location
-        course_days = []
-        course_periods = []
-        course_locations = []
+        course_days, course_periods, course_locations = [], [], []
+
         datas[4].search('br').each {|br| br.replace("\n")}
-        location = datas[4].text.strip.split("\n")[0]
-        datas[3].text.scan(/([#{DAYS.keys.join('|')}])([#{PERIODS.keys.join('|')}])/).each do |pss|
-          # [["R", "6"], ["R", "7"], ["R", "8"]]
-          course_days << DAYS[pss[0]]
-          course_periods << PERIODS[pss[1]]
-          course_locations << location
+        locations = datas[4].text.strip.split("\n")
+
+        datas[3].search('br').each {|br| br.replace("\n")}
+        datas[3].text.strip.split("\n").each_with_index do |raw_period, index|
+          location = locations[2*index]
+          raw_period.scan(/([#{DAYS.keys.join('|')}])([#{PERIODS.keys.join('|')}])/).each do |pss|
+            # [["R", "6"], ["R", "7"], ["R", "8"]]
+            course_days << DAYS[pss[0]]
+            course_periods << PERIODS[pss[1]]
+            course_locations << location
+          end
         end
 
         if @detail
@@ -307,16 +311,20 @@ class NthuCourseCrawler < CourseCrawler::Base
       lecturer && lecturer.gsub!(/ /, '') && lecturer.gsub!(/ /, '')
 
       # normalize location
-      course_days = []
-      course_periods = []
-      course_locations = []
+      course_days, course_periods, course_locations = [], [], []
+
       datas[4].search('br').each {|br| br.replace("\n")}
-      location = datas[4].text.split("\n")[0]
-      datas[3].text.scan(/([#{DAYS.keys.join('|')}])([#{PERIODS.keys.join('|')}])/).each do |pss|
-        # [["R", "6"], ["R", "7"], ["R", "8"]]
-        course_days << DAYS[pss[0]]
-        course_periods << PERIODS[pss[1]]
-        course_locations << location
+      locations = power_strip(datas[4].text).split("\n")
+
+      datas[3].search('br').each {|br| br.replace("\n")}
+      power_strip(datas[3].text).split("\n").each_with_index do |raw_period, index|
+        location = locations[2*index]
+        raw_period.scan(/([#{DAYS.keys.join('|')}])([#{PERIODS.keys.join('|')}])/).each do |pss|
+          # [["R", "6"], ["R", "7"], ["R", "8"]]
+          course_days << DAYS[pss[0]]
+          course_periods << PERIODS[pss[1]]
+          course_locations << location
+        end
       end
 
       if @detail

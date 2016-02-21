@@ -60,9 +60,10 @@ class CycuCourseCrawler < CourseCrawler::Base
       course_locations = []
       times = []
 
-      course_locations << (datas[17] && (datas[17].empty? ? nil : datas[17] ) )
-      course_locations << (datas[19] && (datas[19].empty? ? nil : datas[19] ) )
-      course_locations << (datas[21] && (datas[21].empty? ? nil : datas[21] ) )
+      location = datas[17]
+      # course_locations << (datas[17] && (datas[17].empty? ? nil : datas[17] ) )
+      # course_locations << (datas[19] && (datas[19].empty? ? nil : datas[19] ) )
+      # course_locations << (datas[21] && (datas[21].empty? ? nil : datas[21] ) )
 
       times << datas[16]
       times << datas[18]
@@ -73,6 +74,7 @@ class CycuCourseCrawler < CourseCrawler::Base
           m[:p].split("").each do |period|
             course_days << m[:d].to_i
             course_periods << PERIODS[period]
+            course_locations << location
           end
         end
       end

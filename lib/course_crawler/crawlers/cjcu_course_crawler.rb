@@ -99,7 +99,7 @@ class CjcuCourseCrawler < CourseCrawler::Base
   						course_arrange_time_info.scan(course_regex).each do |match_arr|
   							(match_arr[1].to_i..match_arr[2].to_i).each do |period|
   								course_days << DAYS[match_arr[0]]
-  								course_periods << period
+  								course_periods << PERIODS[period.to_s]
   								course_locations << match_arr[3]
   							end
   						end
