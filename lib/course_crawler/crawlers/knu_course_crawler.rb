@@ -1,103 +1,112 @@
-##
-# 開南課程爬蟲
-# http://coumap.eportfolio.knu.edu.tw/files/11-1001-83.php
-#
+# 開南大學
+# 課程查詢網址：http://portal.knu.edu.tw/info/Application/COU/COU130Q_01v1.aspx
 
+# 有課程資料可以下載真好
+# http://portal.knu.edu.tw/info/Application/COU/COU200M_01v1.aspx
 module CourseCrawler::Crawlers
 class KnuCourseCrawler < CourseCrawler::Base
 
-	DEP = [ 4, 9, 5, 6, 7, 8, 10, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 48, 24 ]
-	DEGREE = [ 1006, 1010, 1009, 1007, 1008 ]
+  DAYS = {
+    "一" => 1,
+    "二" => 2,
+    "三" => 3,
+    "四" => 4,
+    "五" => 5,
+    "六" => 6,
+    "日" => 7
+    }
 
-	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
+  def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-    @year                 = year || current_year
-    @term                 = term || current_term
+    @year = year
+    @term = term
     @update_progress_proc = update_progress
-    @after_each_proc      = after_each
+    @after_each_proc = after_each
 
-		#@url = "http://coumap.eportfolio.knu.edu.tw/files/11-1001-83.php"
-		@post_url = "http://coumap.eportfolio.knu.edu.tw/bin/index.php?Plugin=coursemap&Action=csmapschcosrec"
-	end
+    @query_url = 'http://portal.knu.edu.tw/info/'
+  end
 
-	def courses
-		@courses = []
+  def courses
+    @courses = []
+    course_id = 0
 
-		done_list = 0
-		total_list = DEGREE.count * DEP.count
-
-		DEGREE.each do |deg|
-			DEP.each do |dep|
-				done_list += 1
-				# puts "degree: " + DEGREE.size.to_s + "/" + (DEGREE.index(deg)+1).to_s + " , dep:" + DEP.size.to_s + "/" + (DEP.index(dep)+1).to_s
-
-				set_progress "#{done_list} / #{total_list}"
+    r = RestClient.get(@query_url+"Application/COU/COU200M_01v1.aspx")
+    doc = Nokogiri::HTML(r)
 
 
-				r = RestClient.post( @post_url , { #post network
-          :cosrec_year   => @year-1911,
-          :cosrec_unit   => dep,
-          :cosrec_edusys => deg,
-          :cosrec_grade  => @term,
-          :sch_cond      => 0,
-    		})
+    url = doc.css('table[class="sortable"] tr:nth-child(n+2)').map{|tr| tr}
+    (0..url.count-1).each do |u|
+      if url[u].text.include?("#{@year-1911}#{@term}")
+        url = @query_url+url[u].css('a')[0][:href][6..-1]
+        break
+      end
+    end
 
-				doc = Nokogiri::HTML(r) # XML to HTML
+    r = %x(curl -s '#{url}' --compressed)
+    doc = File.new("data","w")
+    doc.write(r)
+    doc = Spreadsheet.open "data"
+    File.delete("data")
 
-				course_days = [] # KNU no days , periods and locations
-				course_periods = []
-				course_locations = []
+    doc.worksheets[0].map{|row| row}[1..-1].each do |data|
+      course_id += 1
 
-				class_num = doc.css('#csmap_cos_table tr').count
+      course_time_location = data[11].scan(/週(?<day>[一二三四五六日])(?<period>\d+)(?<loc>\w+)/)
 
-				1.upto(class_num-1) do |num|
-					data = doc.css('#csmap_cos_table tr')[num].css('td')
+      course_days, course_periods, course_locations = [], [], []
+      course_time_location.each do |day, period, loc|
+        course_days << DAYS[day]
+        course_periods << period.to_i
+        course_locations << loc
+      end
 
-					course = {
-					  name: data[2].text.strip,
-				  	year: @year,
-				  	term: @term,
-				  	code: "#{@year}-#{@term}-#{data[1].text.strip}",
-						general_code: data[1].text.strip,
-				  	degree: data[0].text.strip,
-				    credits: data[4].text.strip[0],
-				    lecturer: data[5].text.strip,
-				  	day_1: course_days[0],
-				  	day_2: course_days[1],
-				    day_3: course_days[2],
-				  	day_4: course_days[3],
-				    day_5: course_days[4],
-				  	day_6: course_days[5],
-				  	day_7: course_days[6],
-				  	day_8: course_days[7],
-				  	day_9: course_days[8],
-				  	period_1: course_periods[0],
-				  	period_2: course_periods[1],
-				  	period_3: course_periods[2],
-				    period_4: course_periods[3],
-				  	period_5: course_periods[4],
-				  	period_6: course_periods[5],
-				  	period_7: course_periods[6],
-				  	period_8: course_periods[7],
-				  	period_9: course_periods[8],
-				  	location_1: course_locations[0],
-				  	location_2: course_locations[1],
-				  	location_3: course_locations[2],
-				  	location_4: course_locations[3],
-				  	location_5: course_locations[4],
-				  	location_6: course_locations[5],
-				  	location_7: course_locations[6],
-				  	location_8: course_locations[7],
-				  	location_9: course_locations[8]
-					}
+      course = {
+        year: @year,    # 西元年
+        term: @term,    # 學期 (第一學期=1，第二學期=2)
+        name: "#{data[4]} #{data[3]}",    # 課程名稱
+        lecturer: data[7],    # 授課教師
+        credits: data[6].to_i,    # 學分數
+        code: "#{@year}-#{@term}-#{course_id}_#{data[2]}",
+        general_code: data[2],    # 選課代碼
+        url: nil,    # 課程大綱之類的連結
+        required: data[10].include?('必'),    # 必修或選修
+        department: data[14],    # 開課系所
+        # department_code: nil,
+        day_1: course_days[0],
+        day_2: course_days[1],
+        day_3: course_days[2],
+        day_4: course_days[3],
+        day_5: course_days[4],
+        day_6: course_days[5],
+        day_7: course_days[6],
+        day_8: course_days[7],
+        day_9: course_days[8],
+        period_1: course_periods[0],
+        period_2: course_periods[1],
+        period_3: course_periods[2],
+        period_4: course_periods[3],
+        period_5: course_periods[4],
+        period_6: course_periods[5],
+        period_7: course_periods[6],
+        period_8: course_periods[7],
+        period_9: course_periods[8],
+        location_1: course_locations[0],
+        location_2: course_locations[1],
+        location_3: course_locations[2],
+        location_4: course_locations[3],
+        location_5: course_locations[4],
+        location_6: course_locations[5],
+        location_7: course_locations[6],
+        location_8: course_locations[7],
+        location_9: course_locations[8],
+        }
 
-					@after_each_proc.call(course: course) if @after_each_proc
-					@courses << course
-				end
-			end
-		end
+      @after_each_proc.call(course: course) if @after_each_proc
 
-		@courses
-	end
+      @courses << course
+# binding.pry
+    end
+    @courses
+  end
 end
 end
