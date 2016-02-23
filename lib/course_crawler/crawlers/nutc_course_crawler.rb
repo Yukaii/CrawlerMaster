@@ -1,119 +1,96 @@
-##
 # 臺中科技大學
-# 上學期：http://academic.nutc.edu.tw/curriculum/show_subject/show_subject_form.asp?show_vol=1
-# 下學期：http://academic.nutc.edu.tw/curriculum/show_subject/show_subject_form.asp?show_vol=2
-
-require 'capybara'
-require 'capybara/poltergeist'
+# 課程查詢網址：http://academic.nutc.edu.tw/curriculum/show_subject/select_menu.asp
 
 module CourseCrawler::Crawlers
 class NutcCourseCrawler < CourseCrawler::Base
-  include Capybara::DSL
 
-  def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
+  DAYS = {
+    "一" => 1,
+    "二" => 2,
+    "三" => 3,
+    "四" => 4,
+    "五" => 5,
+    "六" => 6,
+    "日" => 7
+    }
 
-    @year = year || current_year
-    @term = term || current_term
+  PERIODS = {
+    "１" => 1,
+    "２" => 2,
+    "３" => 3,
+    "４" => 4,
+    "５" => 5,
+    "６" => 6,
+    "７" => 7,
+    "８" => 8,
+    "９" => 9,
+    "１０" => 10,
+    "１１" => 11,
+    "１２" => 12,
+    "１３" => 13,
+    "１４" => 14
+    }
 
+  def initialize year: nil, term: nil, update_progress: nil, after_each: nil
+
+    @year = year
+    @term = term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    # @year = current_year
-    @query_url = "http://academic.nutc.edu.tw/curriculum/show_subject/show_subject_form.asp?show_vol=#{@term}"
-
-    Capybara.register_driver :poltergeist do |app|
-      Capybara::Poltergeist::Driver.new(app,  {
-        js_errors: false,
-        timeout: 300,
-        ignore_ssl_errors: true,
-        # debug: true
-      })
-    end
-
-    Capybara.javascript_driver = :poltergeist
-    Capybara.current_driver = :poltergeist
+    @query_url = 'http://aisap.nutc.edu.tw/public/'
   end
 
   def courses
     @courses = []
-    @threads = []
+    course_id_temp = {}
 
-    visit @query_url
+    # 先抓取全部的course_id
+    doc = URI.decode(RestClient.get(@query_url+"subject_list.js"))
 
-    @year = first('font[color="#330000"]').text.match(/\d+/).to_s.to_i + 1911
+    course_code_data = []
+    (doc.gsub(/[\"\s\n]/,"").split(";").count-1).downto(1) do |y_t|
+      if doc.gsub(/[\"\s\n]/,"").split(";")[y_t][9..19].include?("#{@year-1911}#{@term}")
+        course_code_data += doc.gsub(/[\"\s\n]/,"").split(";")[y_t].split("=[[")[1][0..-3].split("],[")
+      else
+        break
+      end
+    end
 
-    click_on '　下　一　步　'
-    option_count = all('select[name="show_select1"] option').count
+    # 分日間部&夜間部跑
+    ["day","nig"].each do |d_n|
 
-    begin
-      option_count.times do |i|
-        visit @query_url
-        click_on '　下　一　步　'
+      course_code_data.each do |course_id|
+        r = RestClient.get(@query_url+"#{d_n}/course_list.aspx?sem=#{@year-1911}#{@term}&subject=#{course_id.scan(/\w+/)[0]}")
+        doc = Nokogiri::HTML(r)
 
-        sleep 2
-        opt = all('select[name="show_select1"] option')[i]
-        opt.select_option
-        # puts opt.text
-        click_on '開始查詢資料'
+        doc.css('table[class="grid_view empty_html"] tr:nth-child(n+2)').each do |tr|
+          data = tr.css('td').map{|td| td.text}
+          next if course_id_temp[data[1]]
 
-        # parse table
-        doc = Nokogiri.HTML(html)
-        doc.css('table tr:not(:first-child)').each do |row|
-          datas = row.css('td')
+          course_time_location = data[5].scan(/(?<day>[一二三四五六日])第(?<period>[１２３４５６７８９０、]+)節\s\((?<loc>\w+)/)
 
-
-          # parse time table
-          timetable_url = datas[4] && !datas[4].css('a').empty? && datas[4].css('a')[0][:href]
-          timetable_url = "http://academic.nutc.edu.tw/curriculum/show_subject/#{timetable_url}"
-
-          course_days = []
-          course_periods = []
-          course_locations = []
-          execute_script("window.open(\"#{timetable_url}\")")
-          within_window windows.last do
-            timetable = Nokogiri::HTML(html)
-            table = !timetable.css('#Layer1 > table').empty? && timetable.css('#Layer1 > table')[0]
-            if table
-              table.css('tr:not(:first-child)').each_with_index do |row, p|
-                row.css('td:nth-child(n+3)').each_with_index do |data, d|
-                  if not data.text.gsub(/[\s|　]+/, '').empty?
-                    location = data.css('font[color="#FF0000"]').text
-                    course_days << (d+1).to_s.to_i
-                    course_periods << (p+1).to_s.to_i
-                    course_locations << location
-                  end
-                end
-              end
+          course_days, course_periods, course_locations = [], [], []
+          course_time_location.each do |day, period, loc|
+            period.split("、").each do |p|
+              course_days << DAYS[day]
+              course_periods << PERIODS[p]
+              course_locations << loc
             end
           end
-          windows.last.close
-
-          # r = RestClient.get timetable_url
-
-          url = datas[11] && !datas[11].css('a').empty? && datas[11].css('a')[0][:href]
-          url = url && "http://academic.nutc.edu.tw/#{url[7..-1]}"
-
-          begin
-            general_code = CGI.parse(URI(url).query)["flow_no"][0]
-          rescue Exception => e
-            general_code = nil
-          end
-
-          department = datas[1] && datas[1].text.strip
-          next if department.nil?
 
           course = {
-            year: @year,
-            term: @term,
-            department: department,
-            # semester: datas[2] && datas[2].text.strip,
-            code: "#{@year}-#{@term}-#{general_code}",
-            general_code: general_code,
-            required: datas[3] && datas[3].text.strip.include?('必'),
-            name: datas[4] && datas[4].text.strip,
-            lecturer: datas[5] && datas[5].text.strip,
-            credits: datas[6] && datas[6].text.to_i,
-            url: url,
+            year: @year,    # 西元年
+            term: @term,    # 學期 (第一學期=1，第二學期=2)
+            name: data[3],    # 課程名稱
+            lecturer: data[9],    # 授課教師
+            credits: data[7][0].to_i,    # 學分數
+            code: "#{@year}-#{@term}-#{course_id.scan(/\w+/)[0]}_#{data[1]}",
+            general_code: data[1],    # 選課代碼
+            url: nil,    # 課程大綱之類的連結
+            required: data[6].include?('必'),    # 必修或選修
+            department: data[2],    # 開課系所
+            # department_code: nil,
             day_1: course_days[0],
             day_2: course_days[1],
             day_3: course_days[2],
@@ -140,26 +117,20 @@ class NutcCourseCrawler < CourseCrawler::Base
             location_6: course_locations[5],
             location_7: course_locations[6],
             location_8: course_locations[7],
-            location_9: course_locations[8]
-          }
-          sleep(1) until (
-            @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
-            @threads.count < ( (ENV['MAX_THREADS'] && ENV['MAX_THREADS'].to_i) || 30)
-          )
-          @threads << Thread.new {
-            @after_each_proc.call(course: course) if @after_each_proc
-          }
+            location_9: course_locations[8],
+            }
+
+          @after_each_proc.call(course: course) if @after_each_proc
+
           @courses << course
+
+          course_id_temp[data[1]] = true
+# binding.pry
         end
-
-        evaluate_script('window.history.back()')
       end
-    rescue Exception => e
-      # binding.pry
     end
-    ThreadsWait.all_waits(*@threads)
-
     @courses
   end
+
 end
 end

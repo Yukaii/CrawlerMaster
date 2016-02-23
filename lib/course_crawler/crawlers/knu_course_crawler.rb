@@ -43,10 +43,10 @@ class KnuCourseCrawler < CourseCrawler::Base
     end
 
     r = %x(curl -s '#{url}' --compressed)
-    doc = File.new("data","w")
+    doc = File.new("knu_course_data_temp","w")
     doc.write(r)
-    doc = Spreadsheet.open "data"
-    File.delete("data")
+    doc = Spreadsheet.open "knu_course_data_temp"
+    File.delete("knu_course_data_temp")
 
     doc.worksheets[0].map{|row| row}[1..-1].each do |data|
       course_id += 1
