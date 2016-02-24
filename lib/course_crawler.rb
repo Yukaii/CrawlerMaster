@@ -1,6 +1,8 @@
 module CourseCrawler
   def crawler_list
-    Crawlers.constants.reject { |c| !c.to_s.include? "Crawler" }
+    Crawlers.constants.reject do |c|
+      !c.to_s.include?("Crawler") || !c.to_s.match(/(.+?)CourseCrawler/)
+    end
   end
 
   def get_crawler sym

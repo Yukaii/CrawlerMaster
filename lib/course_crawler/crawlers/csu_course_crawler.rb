@@ -16,6 +16,23 @@ class CsuCourseCrawler < CourseCrawler::Base
     "U" => 7
   }
 
+  PERIODS = {
+    "1" => 1,
+    "2" => 2,
+    "3" => 3,
+    "4" => 4,
+    "5" => 5,
+    "6" => 6,
+    "7" => 7,
+    "8" => 8,
+    "9" => 9,
+    "A" => 10,
+    "B" => 11,
+    "C" => 12,
+    "D" => 13,
+    "E" => 14
+  }
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year
@@ -74,7 +91,7 @@ class CsuCourseCrawler < CourseCrawler::Base
                 course_days, course_periods, course_locations = [], [], []
                 course_time.each do |time|
                   course_days << DAYS[time[0]]
-                  course_periods << time[1].to_i
+                  course_periods << PERIODS[power_strip(time[1])]
                   course_locations << data[7].gsub(/[\t\r\n\s]/,"")
                 end
 
