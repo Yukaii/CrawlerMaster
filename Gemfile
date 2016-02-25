@@ -62,6 +62,7 @@ gem "capybara-webkit"
 gem 'sidekiq', '~> 4.0'
 gem 'sidekiq-limit_fetch'
 gem 'redis-namespace'
+gem 'rubyXL'
 
 gem 'sinatra', :require => nil
 
