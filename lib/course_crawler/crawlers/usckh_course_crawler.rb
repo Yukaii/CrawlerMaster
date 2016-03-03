@@ -15,6 +15,24 @@ class UsckhCourseCrawler < CourseCrawler::Base
     "日" => 7,
   }
 
+  PERIODS = {
+    "1" => 1,
+    "2" => 2,
+    "3" => 3,
+    "4" => 4,
+    "N" => 5,
+    "5" => 6,
+    "6" => 7,
+    "7" => 8,
+    "8" => 9,
+    "9" => 10,
+    "10" => 11,
+    "11" => 12,
+    "12" => 13,
+    "13" => 14,
+    "14" => 15,
+  }
+
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     # @get_url = "http://studentsystem.usc.edu.tw/CourseSystem/Top.asp"
@@ -76,7 +94,7 @@ class UsckhCourseCrawler < CourseCrawler::Base
         begin
           mat["periods"].split(',').each do |period|
             course_days << DAYS[mat["day"]]
-            course_periods << period.to_i
+            course_periods << PERIODS[period]
             course_locations << mat["classroom"]
           end
         rescue

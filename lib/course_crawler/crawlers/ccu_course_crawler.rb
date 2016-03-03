@@ -23,6 +23,34 @@ class CcuCourseCrawler < CourseCrawler::Base
     "日" => 7,
   }
 
+  PERIODS = {
+    "1" => 1,
+    "2" => 2,
+    "3" => 3,
+    "4" => 4,
+    "5" => 5,
+    "6" => 6,
+    "7" => 7,
+    "8" => 8,
+    "9" => 9,
+    "10" => 10,
+    "11" => 11,
+    "12" => 12,
+    "13" => 13,
+    "14" => 14,
+    "15" => 15,
+    "A" => 16,
+    "B" => 17,
+    "C" => 18,
+    "D" => 19,
+    "E" => 20,
+    "F" => 21,
+    "G" => 22,
+    "H" => 23,
+    "I" => 24,
+    "J" => 25
+  }
+
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     @year = year || current_year
@@ -106,7 +134,7 @@ class CcuCourseCrawler < CourseCrawler::Base
                 time.match(/(?<d>[#{DAYS.keys.join}])(?<p>.+)/) do |m|
                   m[:p].split(',').each do |period|
                     course_days << DAYS[m[:d]]
-                    course_periods << period.to_i
+                    course_periods << PERIODS[period]
                     course_locations << location
                   end
                 end
