@@ -17,6 +17,24 @@ class TajenCourseCrawler < CourseCrawler::Base
     "日" => 7
     }
 
+  PERIODS = {
+    "1" => 1,
+    "2" => 2,
+    "3" => 3,
+    "4" => 4,
+    "午休" => 5,
+    "5" => 6,
+    "6" => 7,
+    "7" => 8,
+    "8" => 9,
+    "9" => 10,
+    "10" => 11,
+    "11" => 12,
+    "12" => 13,
+    "13" => 14,
+    "14" => 15,
+  }
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year
@@ -48,7 +66,7 @@ class TajenCourseCrawler < CourseCrawler::Base
       course_time.each do |day, period|
         period.split(",").each do |p|
           course_days << DAYS[day]
-          course_periods << p.to_i
+          course_periods << PERIODS[p]
           course_locations << data[13]
         end
       end

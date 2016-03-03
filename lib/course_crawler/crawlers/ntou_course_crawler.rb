@@ -2,8 +2,27 @@
 # 課程查詢網址：http://ais.ntou.edu.tw/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADIAMgAvAFQASwBFADIAMgAxADEAXwAuAGEAcwBwAHgAPwBwAHIAbwBnAGMAZAA9AFQASwBFADIAMgAxADEA
 
 # 第一次跑爬蟲跑到宿網爆掉...(跑完一次好像有3G多？)
+# 5451.355 sec
 module CourseCrawler::Crawlers
 class NtouCourseCrawler < CourseCrawler::Base
+
+  PERIODS = {
+    "00" => 1,
+    "01" => 2,
+    "02" => 3,
+    "03" => 4,
+    "04" => 5,
+    "05" => 6,
+    "06" => 7,
+    "07" => 8,
+    "08" => 9,
+    "09" => 10,
+    "10" => 11,
+    "11" => 12,
+    "12" => 13,
+    "13" => 14,
+    "14" => 15
+    }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -32,8 +51,8 @@ class NtouCourseCrawler < CourseCrawler::Base
 
     doc.css('table[class="sortable"] tr:nth-child(n+2)').each do |tr|
       data = tr.css('td').map{|td| td.text}
-# puts "#{data[0]}/#{doc.css('table[class="sortable"] tr:nth-child(n+2)').count}"
       url_temp = tr.css('td a').map{|a| a[:href].split("'")[1]}[0]
+# puts "#{data[0]}/#{doc.css('table[class="sortable"] tr:nth-child(n+2)').count}"
 
       post_temp = RestClient.post(@query_url+"Application/TKE/TKE22/TKE2211_01.aspx",{
         "ScriptManager1" => "AjaxPanel|#{url_temp}",
@@ -69,16 +88,16 @@ class NtouCourseCrawler < CourseCrawler::Base
           "Cookie" => cookie
           })
 
-      course_time_loc_data = %x(curl -s '#{@query_url}Application/TKE/TKE22/TKE2211_02.aspx?PKNO=122491757' -H 'Accept-Encoding: gzip, deflate, sdch' -H 'Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4,zh-CN;q=0.2' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/48.0.2564.82 Chrome/48.0.2564.82 Safari/537.36' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Referer: http://ais.ntou.edu.tw/mainframe_open.aspx?mainPage=%2FApplication%2FTKE%2FTKE22%2FTKE2211_02.aspx%3FPKNO%3D122491757%23' -H 'Cookie: ASP.NET_SessionId=#{cookie["ASP.NET_SessionId"]}; .ASPXAUTH=1ABEED2AC81C481602C31894D42DBB46FB5353715CA0D3E067C90BA1F1ED49152657C36DBFA4D1E048A1A8AB00A2D70D8D715341CD7818354BB9E4C4F2230CF61AAE08DAD12F67A95E99BF3A9299EBF330D7A507C440B19B18ED67A40C5D233148CFE88FFFF0C81B5704BC2155ED0C782E401E75' -H 'Connection: keep-alive' --compressed)
+      course_time_loc_data = %x(curl -s '#{@query_url}Application/TKE/TKE22/TKE2211_02.aspx?PKNO=#{post_temp[-800..-1].scan(/PKNO=(\d+)/)[0][0]}' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/48.0.2564.82 Chrome/48.0.2564.82 Safari/537.36' -H 'Cookie: ASP.NET_SessionId=#{cookie["ASP.NET_SessionId"]}' --compressed)
       course_time_loc_data = Nokogiri::HTML(course_time_loc_data)
       ctld = course_time_loc_data.css('table[id="QTable2"] table')[1].css('tr:nth-child(12) td').map{|td| td.text}
 
-      course_time = ctld[1].scan(/(?<day>\d)(?<period>[\d]+)/)
+      course_time = ctld[1].scan(/(?<day>\d)(?<period>\d+)/)
 
       course_days, course_periods, course_locations = [], [], []
       course_time.each do |day, period|
-        course_days << day
-        course_periods << period
+        course_days << day.to_i
+        course_periods << PERIODS[period]
         course_locations << ctld[3]
       end
 
@@ -126,7 +145,7 @@ class NtouCourseCrawler < CourseCrawler::Base
       @after_each_proc.call(course: course) if @after_each_proc
 
       @courses << course
-# binding.pry
+# binding.pry if data[2].include?("B0101643")
     end
     @courses
   end
