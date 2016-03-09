@@ -33,13 +33,17 @@ module CourseCrawler::Crawlers
 			doc =  Nokogiri::HTML(@ic.iconv(r))
 			department = doc.css('select[name="sClsId"] option').map { |option| option[:value] }.reject(&:empty?)
 			department.each do |val|
-				r = RestClient.post("http://linuxweb.tccn.edu.tw/st/tad/stQrySubj.php", {
-					"fmYy" => year,
-					"fmSmstr" => @term,
-					"sSuTg" => "", 
-					"sClsId" => val, 
-					"OpType" => "QryCrs"
-				})
+				begin
+					r = RestClient.post("http://linuxweb.tccn.edu.tw/st/tad/stQrySubj.php", {
+						"fmYy" => year,
+						"fmSmstr" => @term,
+						"sSuTg" => "", 
+						"sClsId" => val, 
+						"OpType" => "QryCrs"
+					})
+				rescue Exception => e
+					binding.pry
+				end
 				doc = Nokogiri::HTML(@ic.iconv(r))
 
 				doc.css('td').each do |td|
@@ -126,10 +130,9 @@ module CourseCrawler::Crawlers
 				        location_8:   course_locations[7],
 				        location_9:   course_locations[8],
 					}
-# binding.pry
+					@courses << courses
 				end
 			end
-
 			@courses
 		end
 	end
