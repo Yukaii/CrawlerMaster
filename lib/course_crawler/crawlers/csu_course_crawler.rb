@@ -14,7 +14,7 @@ class CsuCourseCrawler < CourseCrawler::Base
     "N" => 7,
     "S" => 6,
     "U" => 7
-  }
+    }
 
   PERIODS = {
     "1" => 1,
@@ -31,7 +31,7 @@ class CsuCourseCrawler < CourseCrawler::Base
     "C" => 12,
     "D" => 13,
     "E" => 14
-  }
+    }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -52,7 +52,7 @@ class CsuCourseCrawler < CourseCrawler::Base
     r = RestClient.get(@query_url+"course11.asp")
     doc_main = Nokogiri::HTML(r)
 
-    doc_main.css('select[id="sysno"] option').map{|opt| opt[:value]}.values_at(0..4,9..11,20).each do |sysno|
+    doc_main.css('select[id="sysno"] option').map{|opt| opt[:value]}.each do |sysno|
       doc_main.css('select[id="dept"] option').map{|opt| opt[:value]}.each do |dept|
         doc_main.css('select[id="grade"]> option').map{|opt| opt[:value]}.each do |grade|
           doc_main.css('select[id="req_sel"]> option').map{|opt| opt[:value]}.each do |req_sel|
@@ -83,7 +83,7 @@ class CsuCourseCrawler < CourseCrawler::Base
                 data[6] = data[6].gsub(/[\t\r\n\s]/,"")
 
                 if data[10] != nil
-                  course_time = data[10].scan(/[MTWHFANSU]\d/)
+                  course_time = data[10].scan(/[MTWHFANSU]\w/)
                 else
                   course_time = []
                 end
@@ -91,7 +91,7 @@ class CsuCourseCrawler < CourseCrawler::Base
                 course_days, course_periods, course_locations = [], [], []
                 course_time.each do |time|
                   course_days << DAYS[time[0]]
-                  course_periods << PERIODS[power_strip(time[1])]
+                  course_periods << PERIODS[time[1]]
                   course_locations << data[7].gsub(/[\t\r\n\s]/,"")
                 end
 

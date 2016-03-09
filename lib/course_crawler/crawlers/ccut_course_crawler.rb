@@ -110,7 +110,7 @@ class CcutCourseCrawler < CourseCrawler::Base
 
   def mix_courses course_table,credit_data,dept_v,dept_n
     day = 0
-    period = 0
+    period = 1
     data = {}
 
     course_table.css('table table tr:nth-child(n+2) td:nth-child(n+2)').map{|td| td.text.scan(/(\w+)([\W\(\)]+)(\w+)(\W+)/)[0]}.each do |data_temp|

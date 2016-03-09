@@ -4,9 +4,7 @@
 module CourseCrawler::Crawlers
 class LtuCourseCrawler < CourseCrawler::Base
 
-# 因為日夜六日的節次不同，所以我讓他累加上去
-# 日校/進修部(六) & 日校/進修部(日) & 進院(日) : 1 => 1+15 = 16, ... , 14 => 14+15 = 29
-# 進院(六) : 1 => 1+15+5 = 21, ... , 9 => 9+15+5 = 29
+# 日夜六日的節次不同
   PERIODS = {
     "1" => 1,
     "2" => 2,
@@ -72,9 +70,9 @@ class LtuCourseCrawler < CourseCrawler::Base
           course_periods << PERIODS[period]
         else
           if day.to_i == 6 && data[0].include?("進院")
-            course_periods << period.to_i + 15 + 5
+            course_periods << period.to_i + 4
           else
-            course_periods << period.to_i + 15
+            course_periods << period.to_i
           end
         end
         course_locations << data[10]
