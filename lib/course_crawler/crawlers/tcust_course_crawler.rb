@@ -57,14 +57,11 @@ module CourseCrawler::Crawlers
 
 					course_days, course_periods, course_locations = [], [], []
 
-					begin
-				        day_period = data[4].strip.split('\n').map {|s|
-				          s.match(/(?<day>[#{DAYS.keys.join}])\:(?<period_start>\d)\-(?<period_end>\d)/)
-				          #'?' for what?
-				        }
-				    rescue
-				    	next
-				    end
+			        day_period = data[4].strip.split('\n').map {|s|
+			          s.match(/(?<day>[#{DAYS.keys.join}])\:(?<period_start>\d)\-(?<period_end>\d)/)
+			          #'?' for what?
+			        }
+
 
 				    data[2].gsub!("\n", " ")
 
@@ -85,16 +82,12 @@ module CourseCrawler::Crawlers
 					    end
 				    end
 
-
-					
-
-#code and general code?
 					course = {
 				        year:         @year,    # 西元年
 				        term:         @term,    # 學期 (第一學期=1，第二學期=2)
 				        name:         data[1],    # 課程名稱
 				        lecturer:     data[2],    # 授課教師
-				        credits:      credits && credits[:credits] && credits[:credits].to_i,    # 學分數
+				        credits:      credits && credits[:credits].to_i,    # 學分數
 				        code:         "#{@year}-#{@term}-#{data[0]}",
 				        general_code: "#{data[0]}",
 				        # general_code: data[2],    # 選課代碼
@@ -130,7 +123,7 @@ module CourseCrawler::Crawlers
 				        location_8:   course_locations[7],
 				        location_9:   course_locations[8],
 					}
-					@courses << courses
+					@courses << course
 				end
 			end
 			@courses

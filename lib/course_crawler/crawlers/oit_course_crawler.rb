@@ -33,47 +33,22 @@ module CourseCrawler::Crawlers
 			r = RestClient.get("http://info.oit.edu.tw/cosinfo/schedule/QuerySmtrCos.asp?smtr=" + year_term + "&CosNameKeyword=%&CosCredit=&CosSelType=false&CosTime=&CosRoom=&CosTch=", cookies: cookies)
 			doc = Nokogiri::HTML(@ic.iconv(r))
 
-=begin
-			r = RestClient.get(@query_url)
-			doc =  Nokogiri::HTML(@ic.iconv(r))
-			cookie = r.cookies
-			
-			r = RestClient::Request.execute(
-				method: :get,
-				url: "http://info.oit.edu.tw/cosinfo/schedule/CosScheduleBtn.asp",
-				timeout: 600,
-				payload: {
-				"smtr" => year_term,
-				"CosNameKeyword" => '%',
-				"CosCredit" => "",
-				"CosSelType" => "",
-				"CosTime" => "",
-				"CosRoom" => "",
-				"CosTch" => ""
-				}, 
-				cookies: cookie)
-			doc = Nokogiri::HTML(@ic.iconv(r))
-			File.write("OIT.html", doc)
-=end
-
 
 			doc.css('table tr:not(:first-child)').each do |tr|
 				data = tr.css('td').map{|td| td.text}
 
 				course_days, course_periods, course_locations = [], [], []
 
-				begin
-					day_period = data[11].strip.split(',').map {|s|
-						s.match(/(?<day>\d)[0]?(?<period>\d)/)
-					}
-				rescue
-					next
-				end
+
+				day_period = data[11].strip.split(',').map {|s|
+					s.match(/(?<day>\d)[0]?(?<period>\d)/)
+				}
+
 
 				# department parse
 
 
-				day_period.each do |arr|	
+				day_period.reject(&:nil?).each do |arr|	
 			    	course_days << arr[:day].to_i
 			    	course_periods << arr[:period].to_i
 			    	course_locations << data[12]
@@ -121,11 +96,13 @@ module CourseCrawler::Crawlers
 		        location_7:   course_locations[6],
 		        location_8:   course_locations[7],
 		        location_9:   course_locations[8],
-			}
+				}
 
-				@courses << courses
+				@courses << course
+
 			end
+			@courses
 		end
-		@courses
+
 	end
 end
