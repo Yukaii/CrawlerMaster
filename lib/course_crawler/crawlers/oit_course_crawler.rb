@@ -35,7 +35,7 @@ module CourseCrawler::Crawlers
 
 
 			doc.css('table tr:not(:first-child)').each do |tr|
-				data = tr.css('td').map{|td| td.text}
+				data = tr.css('td').map{|td| td.text.gsub(/[\r\n]/,'')}
 
 				course_days, course_periods, course_locations = [], [], []
 
