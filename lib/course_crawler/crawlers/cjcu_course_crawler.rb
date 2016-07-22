@@ -3,6 +3,8 @@
 # 選課網址：https://eportal.cjcu.edu.tw/syllabus/home
 #
 
+require 'capybara/dsl'
+
 module CourseCrawler::Crawlers
 class CjcuCourseCrawler < CourseCrawler::Base
   include Capybara::DSL

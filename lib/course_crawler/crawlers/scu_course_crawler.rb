@@ -3,6 +3,7 @@
 # http://web.sys.scu.edu.tw/class401.asp
 # 用舊版的部屬在 heroku 跑：https://github.com/Colorgy/crawler-SCU-course
 #
+require 'capybara/dsl'
 
 module CourseCrawler::Crawlers
 class ScuCourseCrawler < CourseCrawler::Base

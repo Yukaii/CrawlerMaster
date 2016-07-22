@@ -3,6 +3,7 @@
 #
 
 require 'capybara'
+require 'capybara/dsl'
 require 'uri'
 
 require 'thread'
