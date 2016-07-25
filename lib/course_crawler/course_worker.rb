@@ -12,16 +12,16 @@
 module CourseCrawler
   class CourseWorker
     include Sidekiq::Worker
-    sidekiq_options :retry => 1
+    sidekiq_options retry: 1
 
-    def perform *args
+    def perform(*args)
       klass = Crawlers.const_get args[0]
 
       org = args[0].match(/(.+?)CourseCrawler/)[1].upcase
       crawler_model = Crawler.find_by(organization_code: org)
 
-      year = args[1][:year] || crawler_model.year || (Time.now.month.between?(1, 7) ? Time.now.year - 1 : Time.now.year)
-      term = args[1][:term] || crawler_model.term || (Time.now.month.between?(2, 7) ? 2 : 1)
+      year = args[1][:year] || crawler_model.year || (Time.zone.now.month.between?(1, 7) ? Time.zone.now.year - 1 : Time.zone.now.year)
+      term = args[1][:term] || crawler_model.term || (Time.zone.now.month.between?(2, 7) ? 2 : 1)
 
       @klass_instance =
         klass.new(
@@ -38,21 +38,21 @@ module CourseCrawler
       return if courses.empty?
 
       # Save course datas into database
-      inserted_column_names = [:ucode] + Course.inserted_column_names + [ :created_at, :updated_at ]
+      inserted_column_names = [:ucode] + Course.inserted_column_names + [:created_at, :updated_at]
 
       courses_inserts = courses.map do |c|
         c[:name] && c[:name].gsub!("'", "''")
-        c[:lecturer] = c[:lecturer_name] || c[:lecturer] || ""
+        c[:lecturer] = c[:lecturer_name] || c[:lecturer] || ''
         c[:lecturer].gsub!("'", "''")
 
-        c[:required] = c[:required].nil? ? "FALSE" : c[:required]
+        c[:required] = c[:required].nil? ? 'FALSE' : c[:required]
 
         # 去頭去尾
         "( '#{org}-#{c[:code]}', '#{org}', #{
           inserted_column_names[2..-3].map do |k|
-            c[k].nil? ? "NULL" : "'#{c[k]}'"
+            c[k].nil? ? 'NULL' : "'#{c[k]}'"
           end.join(', ')
-        }, '#{Time.now}', '#{Time.now}' )"
+        }, '#{Time.zone.now}', '#{Time.zone.now}' )"
       end
 
       sqls = courses_inserts.in_groups_of(500, false).map { |cis|
@@ -70,16 +70,14 @@ module CourseCrawler
       if crawler_model.save_to_db
         ActiveRecord::Base.transaction {
           Course.where(organization_code: org, year: year, term: term).destroy_all
-          sqls.map{|sql| ActiveRecord::Base.connection.execute(sql) }
+          sqls.map{ |sql| ActiveRecord::Base.connection.execute(sql) }
 
           Rails.logger.info("#{args[0]}: Succesfully save to database.")
         }
       end
 
       ## Sync to Core
-      if crawler_model.sync
-        crawler_model.sync_to_core(year, term)
-      end
+      crawler_model.sync && crawler_model.sync_to_core(year, term)
 
     end
   end

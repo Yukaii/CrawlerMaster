@@ -31,16 +31,16 @@ class CrawlersController < ApplicationController
 
     @crawler.save!
 
-    flash[:success] = "Settings has been successfully updated"
+    flash[:success] = 'Settings has been successfully updated'
     redirect_to crawler_path(@crawler.organization_code)
   end
 
   def run
     jobs = Crawler::SCHEDULE_KEYS.map do |job_type|
-      @crawler.run_up(job_type, {year: params[:year], term: params[:term]})
+      @crawler.run_up(job_type, year: params[:year], term: params[:term])
     end
 
-    flash[:success] = "job_ids: #{jobs.map{|j| j && j.id}}"
+    flash[:success] = "job_ids: #{jobs.map { |j| j && j.id }}"
 
     redirect_to crawler_path(@crawler.organization_code)
   end
@@ -71,7 +71,11 @@ class CrawlersController < ApplicationController
   private
 
   def find_crawler
-    demodulized_name = CourseCrawler.crawler_list.map(&:to_s).find { |cn| cn.match(%r{#{params[:id].downcase.capitalize}CourseCrawler}) } or not_found
+    demodulized_name =
+      CourseCrawler
+      .crawler_list
+      .map(&:to_s)
+      .find { |cn| cn.match(/#{params[:id].downcase.capitalize}CourseCrawler/) } || not_found
 
     @crawler = Crawler.find_or_create_by(name: demodulized_name)
   end
