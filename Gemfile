@@ -21,7 +21,7 @@ gem 'jquery-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'bootstrap-sass', '~> 3.3.6'
 
-gem "compass-rails", github: "Compass/compass-rails", branch: "master"
+gem 'compass-rails', github: 'Compass/compass-rails', branch: 'master'
 
 gem 'kaminari'
 
@@ -40,9 +40,9 @@ gem 'devise'
 # Use Pry as the Rails console
 gem 'pry-rails'
 gem 'pry-byebug'
-gem 'awesome_print', :require => false
-gem 'hirb', :require => false
-gem 'hirb-unicode', :require => false
+gem 'awesome_print', require: false
+gem 'hirb',          require: false
+gem 'hirb-unicode',  require: false
 
 # crawler dependencies
 gem 'rest-client'
@@ -54,17 +54,17 @@ gem 'capybara'
 gem 'poltergeist'
 gem 'archive-tar-minitar'
 gem 'spreadsheet'
-gem 'rtesseract', :require => false
-gem 'rmagick', :require => false
+gem 'rtesseract',   require: false
+gem 'rmagick',      require: false
 gem 'selenium-webdriver', '~> 2.49'
-gem "capybara-webkit"
+gem 'capybara-webkit'
 
 gem 'sidekiq', '~> 4.0'
 gem 'sidekiq-limit_fetch'
 gem 'redis-namespace'
 gem 'rubyXL'
 
-gem 'sinatra', :require => nil
+gem 'sinatra', require: false
 
 gem 'rufus-scheduler', '~> 3.1'
 
@@ -75,15 +75,15 @@ gem 'unicorn'
 gem 'remote_syslog_logger'
 
 group :development, :test do
-    # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem 'better_errors'
-  gem "binding_of_caller"
+  gem 'binding_of_caller'
   gem 'rspec-rails', '~> 3.0'
   gem 'shoulda-matchers', require: false
   gem 'guard-rspec', require: false
   gem 'faker'
-  gem "factory_girl_rails", "~> 4.0"
+  gem 'factory_girl_rails', '~> 4.0'
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
 
