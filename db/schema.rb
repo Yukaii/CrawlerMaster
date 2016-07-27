@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160727061317) do
+ActiveRecord::Schema.define(version: 20160727070322) do
 
   create_table "admin_users", force: :cascade do |t|
     t.string   "username",               default: ""
@@ -79,8 +79,13 @@ ActiveRecord::Schema.define(version: 20160727061317) do
     t.datetime "updated_at",        null: false
   end
 
+  add_index "courses", ["code"], name: "index_courses_on_code"
   add_index "courses", ["general_code"], name: "index_courses_on_general_code"
+  add_index "courses", ["organization_code"], name: "index_courses_on_organization_code"
+  add_index "courses", ["required"], name: "index_courses_on_required"
+  add_index "courses", ["term"], name: "index_courses_on_term"
   add_index "courses", ["ucode"], name: "index_courses_on_ucode"
+  add_index "courses", ["year"], name: "index_courses_on_year"
 
   create_table "crawlers", force: :cascade do |t|
     t.string   "name"

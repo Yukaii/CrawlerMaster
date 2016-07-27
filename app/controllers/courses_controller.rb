@@ -1,5 +1,5 @@
 class CoursesController < ApplicationController
-  before_filter :authenticate_admin_user!
+  before_action :authenticate_admin_user!
 
   def index
     filters  = Hash[params.slice(*Course::BASIC_COLUMNS).map { |k, v| k.to_s == 'organization_code' ? [k, v.upcase] : [k, v] }]
