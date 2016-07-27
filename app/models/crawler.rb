@@ -13,7 +13,7 @@
 #  data_management_api_endpoint :string
 #  data_management_api_key      :string
 #  data_name                    :string
-#  save_to_db                   :boolean          default(FALSE)
+#  save_to_db                   :boolean          default(TRUE)
 #  sync                         :boolean          default(FALSE)
 #  category                     :string
 #  description                  :string

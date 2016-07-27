@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160727070322) do
+ActiveRecord::Schema.define(version: 20160727071242) do
 
   create_table "admin_users", force: :cascade do |t|
     t.string   "username",               default: ""
@@ -98,7 +98,7 @@ ActiveRecord::Schema.define(version: 20160727070322) do
     t.string   "data_management_api_endpoint"
     t.string   "data_management_api_key"
     t.string   "data_name"
-    t.boolean  "save_to_db",                   default: false
+    t.boolean  "save_to_db",                   default: true
     t.boolean  "sync",                         default: false
     t.string   "category"
     t.string   "description"
