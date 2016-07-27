@@ -213,6 +213,8 @@ GEM
     pry-rails (0.3.4)
       pry (>= 0.9.10)
     rack (1.6.4)
+    rack-mini-profiler (0.10.1)
+      rack (>= 1.2.0)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
@@ -405,6 +407,7 @@ DEPENDENCIES
   poltergeist
   pry-byebug
   pry-rails
+  rack-mini-profiler
   rails (= 4.2.7)
   rails_12factor
   redis-namespace

@@ -74,6 +74,8 @@ gem 'unicorn'
 # gem 'capistrano-rails', group: :development
 gem 'remote_syslog_logger'
 
+gem 'rack-mini-profiler', require: false
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
