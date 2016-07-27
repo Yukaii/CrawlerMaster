@@ -1,5 +1,3 @@
-require_relative Rails.root.join('lib', 'course_crawler')
-
 namespace :course_crawler do
 
   desc 'Run up course crawler directly, ex: rake course_crawler:run[ntust, 2015, 2, true, false]'
