@@ -5,8 +5,6 @@ class CrawlersController < ApplicationController
   def index
     available_crawler_names = CourseCrawler.crawler_list.map(&:to_s)
     create_missing_crwaler(available_crawler_names)
-
-    @crawlers = Crawler.where(name: available_crawler_names).order(:name)
   end
 
   def show
@@ -78,7 +76,10 @@ class CrawlersController < ApplicationController
   end
 
   def create_missing_crwaler(available_crawler_names)
-    missing_crawler_names = available_crawler_names - Crawler.where(name: available_crawler_names).pluck(:name)
-    Crawler.create!(missing_crawler_names.map { |name| { name: name } })
+    current_crawlers = Crawler.where(name: available_crawler_names)
+    missing_crawler_names = available_crawler_names - current_crawlers.map(&:name)
+
+    @created_crawlers = Crawler.create!(missing_crawler_names.map { |name| { name: name } })
+    @crawlers = (@created_crawlers + current_crawlers).sort_by(&:name)
   end
 end
