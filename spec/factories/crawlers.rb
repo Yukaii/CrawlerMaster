@@ -20,6 +20,8 @@
 #  year                         :integer
 #  term                         :integer
 #  last_sync_at                 :datetime
+#  courses_count                :integer
+#  last_run_at                  :datetime
 #
 
 FactoryGirl.define do

@@ -49,7 +49,7 @@
 #
 
 class Course < ActiveRecord::Base
-  belongs_to :crawler, foreign_key: :organization_code, primary_key: :organization_code
+  belongs_to :crawler, foreign_key: :organization_code, primary_key: :organization_code, counter_cache: :courses_count
 
   BASIC_COLUMNS = [
     :organization_code,

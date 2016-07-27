@@ -80,6 +80,7 @@ module CourseCrawler
       ## Sync to Core
       crawler_record.sync && crawler_record.sync_to_core(year, term)
 
+      crawler_record.update(last_run_at: Time.zone.now)
     end
   end
 end

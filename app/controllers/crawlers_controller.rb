@@ -4,10 +4,7 @@ class CrawlersController < ApplicationController
 
   def index
     available_crawler_names = CourseCrawler.crawler_list.map(&:to_s)
-
-    available_crawler_names.each do |crawler_name|
-      Crawler.find_or_create_by(name: crawler_name)
-    end
+    create_missing_crwaler(available_crawler_names)
 
     @crawlers = Crawler.where(name: available_crawler_names).order(:name)
   end
@@ -77,6 +74,11 @@ class CrawlersController < ApplicationController
       .map(&:to_s)
       .find { |cn| cn.match(/#{params[:id].downcase.capitalize}CourseCrawler/) } || not_found
 
-    @crawler = Crawler.find_or_create_by(name: demodulized_name)
+    @crawler = Crawler.includes(:rufus_jobs).find_or_create_by(name: demodulized_name)
+  end
+
+  def create_missing_crwaler(available_crawler_names)
+    missing_crawler_names = available_crawler_names - Crawler.where(name: available_crawler_names).pluck(:name)
+    Crawler.create!(missing_crawler_names.map { |name| { name: name } })
   end
 end
