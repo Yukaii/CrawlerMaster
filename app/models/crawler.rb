@@ -25,6 +25,7 @@
 #
 
 class Crawler < ActiveRecord::Base
+  include CourseCrawler::Mixin
 
   before_create :setup
   after_create  :after_setup
@@ -115,7 +116,9 @@ class Crawler < ActiveRecord::Base
 
     self.class_name        = klass.name
     self.organization_code = name.match(/(.+?)CourseCrawler/)[1].upcase
-    self.schedule          = {}
+    self.schedule          = { in: '1s' }
+    self.year              = current_year
+    self.term              = current_term
   end
 
   def after_setup
