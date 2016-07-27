@@ -17,14 +17,17 @@ Style/IndentationWidth:
 Style/SignalException:
   Enabled: false
 
-Performance/RedundantMatch:
-  Enabled: false
-
-Documentation:
-  Enabled: false
-
 Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/AsciiComments:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Performance/RedundantMatch:
+  Enabled: false
+
+Documentation:
   Enabled: false

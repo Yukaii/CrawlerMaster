@@ -26,7 +26,10 @@ module CrawlerMaster
     config.active_record.raise_in_transactional_callbacks = true
 
     if !ENV['REMOTE_LOGGER_HOST'].blank? && !ENV['REMOTE_LOGGER_PORT'].blank?
-      config.logger = RemoteSyslogLogger.new(ENV['REMOTE_LOGGER_HOST'], ENV['REMOTE_LOGGER_PORT'], local_hostname: (ENV['APP_NAME'].presence || Rails.application.class.parent_name).gsub(' ', '-'), program: 'rails-' + Rails.application.class.parent_name.underscore)
-      end
+      config.logger = \
+        RemoteSyslogLogger.new(ENV['REMOTE_LOGGER_HOST'], ENV['REMOTE_LOGGER_PORT'],
+                               local_hostname: (ENV['APP_NAME'].presence || Rails.application.class.parent_name).tr(' ', '-'),
+                               program: 'rails-' + Rails.application.class.parent_name.underscore)
+    end
   end
 end

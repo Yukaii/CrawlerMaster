@@ -23,6 +23,6 @@ class AdminUser < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable,
          :rememberable, :trackable, :validatable,
-         :authentication_keys => [ :username ]
+         authentication_keys: [:username]
 
 end
