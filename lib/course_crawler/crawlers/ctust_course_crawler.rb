@@ -142,7 +142,7 @@ class CtustCourseCrawler < CourseCrawler::Base
           }
 
         @after_each_proc.call(course: course) if @after_each_proc
-
+        
         @courses << course
       end
       cookie = nil

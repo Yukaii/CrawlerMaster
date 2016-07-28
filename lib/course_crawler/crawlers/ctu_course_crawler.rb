@@ -110,7 +110,7 @@ class CtuCourseCrawler < CourseCrawler::Base
         :location_8   => course_locations[7],
         :location_9   => course_locations[8],
       }
-
+      
       @after_each_proc.call(course: course) if @after_each_proc
       @courses << course
 

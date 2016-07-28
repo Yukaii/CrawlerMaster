@@ -2,6 +2,7 @@
 # 長榮大學課程爬蟲
 # 選課網址：https://eportal.cjcu.edu.tw/syllabus/home
 #
+require 'capybara/dsl'
 
 module CourseCrawler::Crawlers
 class CjcuCourseCrawler < CourseCrawler::Base

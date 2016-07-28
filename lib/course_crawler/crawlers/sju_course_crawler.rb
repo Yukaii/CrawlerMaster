@@ -5,6 +5,7 @@
 
 require 'capybara'
 require 'capybara/poltergeist'
+require 'capybara/dsl'
 
 module CourseCrawler::Crawlers
 class SjuCourseCrawler < CourseCrawler::Base

@@ -3,6 +3,7 @@
 # http://acadsys.tmu.edu.tw/pubinfo/cousreSearch.aspx
 require 'capybara'
 require 'capybara/poltergeist'
+require 'capybara/dsl'
 
 module CourseCrawler::Crawlers
 class TmuCourseCrawler < CourseCrawler::Base

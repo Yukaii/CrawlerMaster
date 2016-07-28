@@ -1,5 +1,5 @@
 class CrawlersController < ApplicationController
-  before_filter :authenticate_admin_user!
+  # before_filter :authenticate_admin_user!
   before_filter :find_crawler, only: [:show, :setting, :run, :unschedule_job, :sync]
 
   def index
