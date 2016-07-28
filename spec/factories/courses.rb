@@ -5,12 +5,12 @@
 #  id                :integer          not null, primary key
 #  organization_code :string           not null
 #  department_code   :string
-#  lecturer          :string           not null
+#  lecturer          :string
 #  year              :integer          not null
 #  term              :integer          not null
-#  name              :string           not null
-#  code              :string           not null
-#  general_code      :string           not null
+#  name              :string
+#  code              :string
+#  general_code      :string
 #  ucode             :string
 #  required          :boolean
 #  credits           :integer
