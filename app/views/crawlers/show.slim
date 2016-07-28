@@ -44,10 +44,10 @@
           td= link_to resource_url, resource_url
         tr
           th Resource Count
-          td= @crawler.courses.count
+          td= @crawler.courses.size
         tr
           th Last Update at
-          td= @crawler.courses.last.nil? ? 'not available' : time_ago_in_words(@crawler.courses.last.updated_at)
+          td= @crawler.last_run_at.nil? ? 'not available' : time_ago_in_words(@crawler.last_run_at)
         tr
           th Last Sync at
           td= @crawler.last_sync_at.nil? ? 'not available' : time_ago_in_words(@crawler.last_sync_at)

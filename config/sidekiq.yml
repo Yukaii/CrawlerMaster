@@ -1,3 +1,5 @@
 ---
 :concurrency: 2
 :dynamic: true
+development:
+  :concurrency: 3

@@ -10,14 +10,14 @@ module CourseCrawler
     include Mixin
     attr_accessor :worker
 
-    def set_progress progress
+    def set_progress(progress)
       Sidekiq.redis do |conn|
         conn.set(progress_key, progress)
       end
     end
 
     def job_id
-      "#{worker && worker.jid}"
+      worker && worker.jid.to_s
     end
 
     def progress_key
@@ -28,7 +28,7 @@ module CourseCrawler
       @http_clnt ||= HTTPClient.new
     end
 
-    def power_strip str
+    def power_strip(str)
       str.strip.gsub(/^[ |\s]*|[ |\s]*$/,'')
     end
   end

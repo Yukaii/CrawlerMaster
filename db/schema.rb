@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160118031401) do
+ActiveRecord::Schema.define(version: 20160728032050) do
 
   create_table "admin_users", force: :cascade do |t|
     t.string   "username",               default: ""
@@ -36,12 +36,12 @@ ActiveRecord::Schema.define(version: 20160118031401) do
   create_table "courses", force: :cascade do |t|
     t.string   "organization_code", null: false
     t.string   "department_code"
-    t.string   "lecturer",          null: false
+    t.string   "lecturer"
     t.integer  "year",              null: false
     t.integer  "term",              null: false
-    t.string   "name",              null: false
-    t.string   "code",              null: false
-    t.string   "general_code",      null: false
+    t.string   "name"
+    t.string   "code"
+    t.string   "general_code"
     t.string   "ucode"
     t.boolean  "required"
     t.integer  "credits"
@@ -79,8 +79,13 @@ ActiveRecord::Schema.define(version: 20160118031401) do
     t.datetime "updated_at",        null: false
   end
 
+  add_index "courses", ["code"], name: "index_courses_on_code"
   add_index "courses", ["general_code"], name: "index_courses_on_general_code"
+  add_index "courses", ["organization_code"], name: "index_courses_on_organization_code"
+  add_index "courses", ["required"], name: "index_courses_on_required"
+  add_index "courses", ["term"], name: "index_courses_on_term"
   add_index "courses", ["ucode"], name: "index_courses_on_ucode"
+  add_index "courses", ["year"], name: "index_courses_on_year"
 
   create_table "crawlers", force: :cascade do |t|
     t.string   "name"
@@ -93,13 +98,15 @@ ActiveRecord::Schema.define(version: 20160118031401) do
     t.string   "data_management_api_endpoint"
     t.string   "data_management_api_key"
     t.string   "data_name"
-    t.boolean  "save_to_db",                   default: false
+    t.boolean  "save_to_db",                   default: true
     t.boolean  "sync",                         default: false
     t.string   "category"
     t.string   "description"
     t.integer  "year"
     t.integer  "term"
     t.datetime "last_sync_at"
+    t.integer  "courses_count"
+    t.datetime "last_run_at"
   end
 
   create_table "rufus_jobs", force: :cascade do |t|

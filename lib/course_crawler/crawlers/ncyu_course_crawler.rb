@@ -1,3 +1,5 @@
+# 國立嘉義大學
+
 module CourseCrawler::Crawlers
 class NcyuCourseCrawler < CourseCrawler::Base
 

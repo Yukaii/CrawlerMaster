@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: rufus_jobs
+#
+#  id         :integer          not null, primary key
+#  jid        :string
+#  crawler_id :integer
+#  type       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  original   :string
+#
+
 class RufusJob < ActiveRecord::Base
   belongs_to :crawler
   after_initialize :check_existance
@@ -5,34 +18,30 @@ class RufusJob < ActiveRecord::Base
   self.inheritance_column = :_type_disabled
 
   def job_instance
-    self.jid && Rufus::Scheduler.s.job(self.jid)
+    jid && Rufus::Scheduler.s.job(jid)
   end
 
   def original
-    self.job_instance && self.job_instance.original
+    job_instance && job_instance.original
   end
 
   def last_time
-    self.job_instance && self.job_instance.last_time
+    job_instance && job_instance.last_time
   end
 
   def scheduled_at
-    self.job_instance && self.job_instance.scheduled_at
+    job_instance && job_instance.scheduled_at
   end
 
   def running?
-    self.job_instance && self.job_instance.running?
+    job_instance && job_instance.running?
   end
 
   def check_existance
-    if self.jid && !self.job_instance
-      self.destroy
-    end
+    jid && !job_instance && destroy
   end
 
   def unschedule
-    if job_instance
-      job_instance.unschedule
-    end
+    job_instance && job_instance.unschedule
   end
 end

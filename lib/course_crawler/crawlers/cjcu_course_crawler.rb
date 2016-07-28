@@ -4,6 +4,8 @@
 #
 require 'capybara/dsl'
 
+require 'capybara/dsl'
+
 module CourseCrawler::Crawlers
 class CjcuCourseCrawler < CourseCrawler::Base
   include Capybara::DSL

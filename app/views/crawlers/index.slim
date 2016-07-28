@@ -26,10 +26,10 @@
             td= link_to index+1, crawler_path(crawler.organization_code)
             td= crawler.description
             td= link_to crawler.name, crawler_path(crawler.organization_code)
-            td= CourseCrawler::Crawlers.find_workers(crawler.name).count
-            td= CourseCrawler::Crawlers.find_queued_jobs(crawler.name).count
-            td= link_to crawler.courses.count, courses_path(organization_code: crawler.organization_code)
-            td= (crawler.courses.last).nil? ? 'not available' : time_ago_in_words(crawler.courses.last.updated_at)
+            td= CourseCrawler::Crawlers.find_workers(crawler.name).size
+            td= CourseCrawler::Crawlers.find_queued_jobs(crawler.name).size
+            td= link_to crawler.courses.size, courses_path(organization_code: crawler.organization_code)
+            td= crawler.last_run_at.nil? ? 'not available' : time_ago_in_words(crawler.last_run_at)
             td= crawler.last_sync_at && time_ago_in_words(crawler.last_sync_at)
 
 javascript:

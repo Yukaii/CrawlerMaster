@@ -2,6 +2,7 @@
 # 臺北醫學大學
 # http://acadsys.tmu.edu.tw/pubinfo/cousreSearch.aspx
 require 'capybara'
+require 'capybara/dsl'
 require 'capybara/poltergeist'
 require 'capybara/dsl'
 
