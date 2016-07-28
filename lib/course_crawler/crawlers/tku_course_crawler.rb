@@ -1,6 +1,7 @@
 require 'capybara'
 require 'capybara/dsl'
 require 'capybara/poltergeist'
+require 'capybara/dsl'
 
 module CourseCrawler::Crawlers
 class TkuCourseCrawler < CourseCrawler::Base

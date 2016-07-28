@@ -64,8 +64,9 @@ class AsiaCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
 
-    r =
-      RestClient::Request.execute(
+    begin
+        r =
+        RestClient::Request.execute(
         :method => :post,
         :url => "#{@query_url}courselist.asp",
         :timeout => 600,
@@ -76,27 +77,37 @@ class AsiaCourseCrawler < CourseCrawler::Base
         }
       )
 
+    rescue Exception => e
+
+      r = e.response.follow_redirection
+
+    end
+
+
     doc = Nokogiri::HTML(r)
 
     course_id = 1
 
     (1..doc.css('table[id="Table4"] td[align="center"]').text.split('/')[-1].to_i).each do |page|
       if page != 1
-        r = RestClient::Request.execute(
-          :method => :post,
-          :url => "#{@query_url}courselist.asp",
-          :timeout => 600,
-          :open_timeout => 60,
-          :payload => {
-            "GoToPage1" => page-1,
-            "GoToPage2" => page-1,
-            "flg" => "Y",
-            "page" => page,
-            "cos_setyear_q" => @year - 1911,
-            "cos_setterm_q" => @term,
-          }
-        )
-
+        begin
+          r = RestClient::Request.execute(
+            :method => :post,
+            :url => "#{@query_url}courselist.asp",
+            :timeout => 600,
+            :open_timeout => 60,
+            :payload => {
+              "GoToPage1" => page-1,
+              "GoToPage2" => page-1,
+              "flg" => "Y",
+              "page" => page,
+              "cos_setyear_q" => @year - 1911,
+              "cos_setterm_q" => @term,
+            }
+          )
+         rescue Exception => e
+             r = e.response.follow_redirection
+         end
         doc = Nokogiri::HTML(r)
 
         course_id += 1

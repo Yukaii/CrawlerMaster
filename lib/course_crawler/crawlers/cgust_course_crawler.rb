@@ -18,7 +18,7 @@ class CgustCourseCrawler < CourseCrawler::Base
     "B" => 11,
     "C" => 12,
     "D" => 13,
-    "E" => 14
+    "E" => 14,
     }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
@@ -31,7 +31,7 @@ class CgustCourseCrawler < CourseCrawler::Base
     @query_url = 'http://webmis.cgust.edu.tw/%E8%AA%B2%E5%8B%99%E7%B5%84/%E8%AA%B2%E7%A8%8B%E6%9F%A5%E8%A9%A2/'
     @ic = Iconv.new('utf-8//IGNORE//translit', 'big5')
   end
-
+  
   def courses
     @courses = []
     course_id = 0

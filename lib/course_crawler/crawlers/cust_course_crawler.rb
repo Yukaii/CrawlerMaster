@@ -71,7 +71,7 @@ class CustCourseCrawler < CourseCrawler::Base
           error_times += 1
         end
       end
-      
+
       doc = Nokogiri::HTML(r)
 
       doc.css('table[id="row"] tbody tr').map{|tr| tr}.each do |tr|
@@ -135,7 +135,7 @@ class CustCourseCrawler < CourseCrawler::Base
           }
 
         @after_each_proc.call(course: course) if @after_each_proc
-
+      
         @courses << course
 # binding.pry
       end
