@@ -1,26 +1,14 @@
 # 新增課程爬蟲說明
 
-## 前言
-
-俗話說得好，「自己的學校自己寫」，若是發現自己的學校竟然沒有支援，自己幹出來並發 Pull Request 吧！我把規格都寫在這了，想幹走的就盡量拿吧！！
-
-* ~~開源好像就能解決所有問題一樣~~
-* ~~來自一位宅宅的呼籲~~
-
-## 學習指南
-
-* [Colorgy 爬蟲開發指南](爬蟲開發指南.md)
-* [輕鬆鬆做個 Ruby 爬蟲機器人](http://tonytonyjan.net/slides/2014-07-03-simple-crawler/), [tonytonyjan](http://tonytonyjan.net/), 2014
-
 ## 爬蟲文件目錄
 
 目前爬蟲相關檔案主要放在 `lib` 底下的 `course_crawler/crawlers` 資料夾。`base.rb` `mixin.rb` 兩個檔案放的是爬蟲的 helper functions，而 `crawlers.rb` 放的是爬蟲管理的 function。
 
-```txt
+```bash
 lib
 ├── course_crawler
-│   ├── base.rb
-│   ├── crawlers
+│   ├── base.rb  # 爬蟲繼承的 class
+│   ├── crawlers # 爬蟲都放在這個資料頰
 │   │   ├── ccu_course_crawler.rb
 │   │   ├── cgu_course_crawler.rb
 │   │   ├── cycu_course_crawler.rb
@@ -29,13 +17,20 @@ lib
 │   │   └── yzu_course_crawler.rb
 │   ├── crawlers.rb
 │   ├── mixin.rb
-│   └── worker.rb
+│   └── course_worker.rb # 爬蟲 worker runner
 └── course_crawler.rb
 ```
 
-## 新增學校課程爬蟲
+## 爬蟲架構
 
-放在 `course_crawler/crawlers` 資料夾底下的 `xxx_course_crawler.rb` 就是各個學校的課程爬蟲， `xxx` 為學校的英文縮寫（ruby 檔名慣例為小寫）。基本架構如下：
+放在 `lib/course_crawler/crawlers` 底下
+
+* 檔名命名：`xxx_course_crawler.rb`，`xxx` 為學校英文小寫縮寫，如台科即為 `ntust_course_crawler.rb`。
+* 類別命名：`XxxCourseCrawler`，`Xxx` 為學校英文駝峰命名法，如台科即為 NtustCourseCrawler
+
+### 規格
+
+> 在檔頭註解的地方必須附上大學中文名稱，以及附上查課系統的網址，範例如下：
 
 ```ruby
 # XXX 大學
@@ -55,17 +50,20 @@ module CourseCrawler::Crawlers
 end
 ```
 
-跟以前的寫法有幾點差異：
+> `initialize` function：
 
-1. 包在 CourseCrawler::Crawlers module 底下
-1. 繼承 CourseCrawler::Base
-1. 前面加註解，太多縮寫背不起來啊哈哈
+```ruby
+def initialize year: current_year, term: current_term
+  @year = year
+  @term = term
 
-參照各爬蟲寫法完成並發送 pull request 即可。
+  @course_system_url = 'https://xxx.xxxxxxxxx' # 學校選課系統網址
+end
+```
 
-## 資料欄位
+> `courses` function
 
-`courses` 方法回傳的資料會是一包 `Hash` 的 `Array`（an Array of Hash），主要資料欄位如下：
+`courses` 方法回傳的資料為 `Hash` 的 `Array`（an Array of Hash），主要資料欄位如下：
 
 * `year`：西元年 (Integer)
 * `term`：學期，一般為 1 或 2 (Integer)
@@ -76,7 +74,6 @@ end
 * `credits`：學分數 (Integer)
 * `required`：必修否 (Boolean)
 * `lecturer`：教師姓名 (String)
-
 
 課程節次資料
 
@@ -108,7 +105,7 @@ end
 * `location_8`
 * `location_9`
 
-接下來 `day_x`(Integer) `period_x`(Integer) `location_x`(String) 是為了通用課表所設計的欄位，每堂課的單一節為基本單位。
+`day_x`(Integer) `period_x`(Integer) `location_x`(String) 是為了通用課表所設計的欄位，每堂課的單一節為基本單位。
 
 舉例來說，微積分（一）這門課在禮拜三的 3/4 節在 EE-502 這間教室上課，禮拜五的 1 節在 EE-501 這間教室上課，資料記錄如下：
 
@@ -133,58 +130,13 @@ location_3 = "EE-501"
 
 ## 開發
 
-先把專案 clone 下來
+`lib/course_crawler/crawlers` 底下的任一隻爬蟲可以由 rake task 直接跑起，指令為：
 
 ```bash
-git clone https://github.com/colorgy/CrawlerMaster
-cd CrawlerMaster
+rake course_crawler:run[ym,2015,2,true,false] # 參數之間不含空白
+# => courses crawled results generate at: ..../tmp/ym_courses_1469697508.json
 ```
 
-裝需要的套件
+會在 tmp 資料夾下產生一包課程 json。
 
-```bash
-sudo apt-get install imagemagick libmagickwand-dev
-```
-
-裝 redis (APT)
-
-```bash
-sudo add-apt-repository ppa:chris-lea/redis-server
-sudo apt-get update
-sudo apt-get install redis-server
-```
-
-後
-
-```bash
-bundle install
-rake db:migrate
-```
-
-跑
-
-```bash
-rails c
-```
-
-跑起來
-
-```ruby
-[1] crawler-master(main)> courses = CourseCrawler::Crawlers::NtustCourseCrawler.new(year: 2015, term: 2).courses
-```
-
-## Setup Server
-
-
-```bash
-redis-server /path/to/redis.conf # 把 redis 跑起來
-bundle exec sidekiq # 跑 sidekiq
-rails s # 跑 rails server
-```
-
-## 開發輔助工具
-
-* pow & powder(OS X)
-* [LaunchRocket](https://github.com/jimbojsb/launchrocket)(OS X)
-* [Visual Studio Code](https://code.visualstudio.com/)
-* [Boot-Up Manager (BUM)](http://www.ubuntugeek.com/boot-up-manager-bum-graphical-runlevel-editor.html)
+另外在開發爬蟲時可以加入 `binding.pry` 設置斷點，方便開發時除錯。

@@ -22,73 +22,11 @@
 
 #### 欄位說明
 
-* `year`：西元年 (Integer)
-* `term`：學期，一般為 1 或 2 (Integer)
-* `code`：課程代碼，請確認為 courses 中的唯一碼 (String)，為 `"#{year}-#{term}-#{general_code}"` 之組合
-* `general_code`：通用課程代碼，請確認為 courses 中的唯一碼 (String)
-* `name`：課程名稱 (String)
-* `url`：課程網址（String)
-* `credits`：學分數 (Integer)
-* `required`：必修否 (Boolean)
-* `lecturer`：教師姓名 (String)
-
-
-課程節次資料
-
-* `day_1`
-* `day_2`
-* `day_3`
-* `day_4`
-* `day_5`
-* `day_6`
-* `day_7`
-* `day_8`
-* `day_9`
-* `period_1`
-* `period_2`
-* `period_3`
-* `period_4`
-* `period_5`
-* `period_6`
-* `period_7`
-* `period_8`
-* `period_9`
-* `location_1`
-* `location_2`
-* `location_3`
-* `location_4`
-* `location_5`
-* `location_6`
-* `location_7`
-* `location_8`
-* `location_9`
-
-`day_x`(Integer) `period_x`(Integer) `location_x`(String) 是為了通用課表所設計的欄位，每堂課的單一節為基本單位。
-
-舉例來說，微積分（一）這門課在禮拜三的 3/4 節在 EE-502 這間教室上課，禮拜五的 1 節在 EE-501 這間教室上課，資料記錄如下：
-
-```ruby
-# 週三第三節
-day_1 = 3
-period_1 = 3
-location_1 = "EE-502"
-
-# 週三第四節
-day_2 = 3
-period_2 = 4
-location_2 = "EE-502"
-
-# 週五第一節
-day_3 = 5
-period_3 = 1
-location_3 = "EE-501"
-```
-
-其餘節次欄位皆留 `nil`。[範例見此](../lib/course_crawler/crawlers/ntust_course_crawler.rb?ts=2#L339)。
+請參照[爬蟲開發指南](./crawler_development_guide.md#規格)
 
 ## Crawlers
 
-目前各校的課程爬蟲都在 `lib/course_crawler/crawlers` 此目錄下。可參見[爬蟲開發指南](爬蟲開發指南.md)
+目前各校的課程爬蟲都在 `lib/course_crawler/crawlers` 此目錄下。參見 [爬蟲開發指南](./crawler_development_guide.md)
 
 ## Workers
 

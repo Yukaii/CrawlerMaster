@@ -1,6 +1,6 @@
 namespace :course_crawler do
 
-  desc 'Run up course crawler directly, ex: rake course_crawler:run[ntust, 2015, 2, true, false]'
+  desc 'Run up course crawler directly, ex: rake course_crawler:run[ntust,2015,2,true,false]'
   task :run, [:organization_code, :year, :term, :save_json, :save_to_db] => :environment do |_, args|
     CourseCrawler::CourseWorker.new.perform(
       "#{args.organization_code.camelize}CourseCrawler",
