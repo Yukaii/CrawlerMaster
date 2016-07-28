@@ -4,7 +4,6 @@
 require 'capybara'
 require 'capybara/dsl'
 require 'capybara/poltergeist'
-require 'capybara/dsl'
 
 module CourseCrawler::Crawlers
 class TmuCourseCrawler < CourseCrawler::Base
@@ -26,21 +25,21 @@ class TmuCourseCrawler < CourseCrawler::Base
   }
 
   include Capybara::DSL
-	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
-		@year = year || current_year
-  	@term = term || current_term
+  def initialize year: nil, term: nil, update_progress: nil, after_each: nil
+    @year = year || current_year
+    @term = term || current_term
 
-		@post_url = "http://acadsys.tmu.edu.tw/pubinfo/cousreSearch.aspx"
+    @post_url = "http://acadsys.tmu.edu.tw/pubinfo/cousreSearch.aspx"
 
-		@update_progress_proc = update_progress
+    @update_progress_proc = update_progress
     @after_each_proc = after_each
 
     Capybara.javascript_driver = :webkit
     Capybara.current_driver = :webkit
-	end
+  end
 
-	def courses
-		@courses = []
+  def courses
+    @courses = []
     page.driver.allow_url("acadsys.tmu.edu.tw")
 
     visit "http://acadsys.tmu.edu.tw/pubinfo/deptSearch.aspx?language=tw"
