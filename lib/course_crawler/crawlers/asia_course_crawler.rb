@@ -88,7 +88,7 @@ class AsiaCourseCrawler < CourseCrawler::Base
 
     course_id = 1
 
-    (1..doc.css('table[id="Table4"] td[align="center"]').text.split('/')[-1].to_i).each do |page|
+    all_page = (1..doc.css('table[id="Table4"] td[align="center"]').text.split('/')[-1].to_i).each do |page|
       if page != 1
         begin
           r = RestClient::Request.execute(
@@ -114,6 +114,7 @@ class AsiaCourseCrawler < CourseCrawler::Base
       end
 
       doc.css('table[width="99%"]:not(:first-child) tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
+        puts all_page.size.to_s +"/"+ (all_page.index(page)+1).to_s
         data = tr.css('td').map{|td| td.text}
         syllabus_url = @query_url + tr.css('td a').map{|a| a[:href]}[0]
 

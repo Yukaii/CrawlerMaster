@@ -47,7 +47,7 @@ class HfuCourseCrawler < CourseCrawler::Base
     dept_c = -1
     doc.css('ul[id="ctl00_ContentPlaceHolder1_TabContainer1_TabPanel1_ComboBox1_OptionList"] li').map{|li| li.text}.each do |dept_n|
       dept_c += 1
-
+      puts "Department : " + (dept_c+1).to_s
       next if dept_n.include?('---')
 
       r = HTTPClient.post(@query_url, hidden.merge({

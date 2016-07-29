@@ -23,11 +23,14 @@ class HustCourseCrawler < CourseCrawler::Base
     r = RestClient.get(@query_url + 'QueryOpenCourse.jsp')
     doc = Nokogiri::HTML(@ic.iconv(r))
     cookie = r.cookies
-
-    r = `curl -s '#{@query_url}QueryOpenCourse1.jsp?courseName=&courseNameSel=NO' -H 'Cookie: JSESSIONID=#{cookie['JSESSIONID']}' --compressed`
+    puts "get url ..."
+    r = %x(curl -s '#{@query_url}QueryOpenCourse1.jsp?courseName=&courseNameSel=NO' -H 'Cookie: JSESSIONID=#{cookie["JSESSIONID"]}' --compressed)
     doc = Nokogiri::HTML(@ic.iconv(r))
 
+    count = 1
     doc.css('tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
+      puts "data crawled : " + count.to_s
+      count+=1
       data = tr.css('td').map{|td| td.text.gsub(/\s/,"")}
       course_id += 1
       data[7] = data[7]+" "+data[3]+"年"+data[4]+"班"+data[5]
@@ -85,6 +88,7 @@ class HustCourseCrawler < CourseCrawler::Base
 
       @courses << course
     end
+    puts "Project finished !!!"
     @courses
   end
 end

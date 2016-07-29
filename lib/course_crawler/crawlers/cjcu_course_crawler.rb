@@ -2,14 +2,15 @@
 # 長榮大學課程爬蟲
 # 選課網址：https://eportal.cjcu.edu.tw/syllabus/home
 #
+
 require 'capybara/dsl'
 
 module CourseCrawler::Crawlers
 class CjcuCourseCrawler < CourseCrawler::Base
   include Capybara::DSL
 
-	Grade = [ '1', '2', '3', '4' ]
-	Classes = [ '1', '2', '3', '4' ]
+  Grade = [ '1', '2', '3', '4' ]
+  Classes = [ '1', '2', '3', '4' ]
 
   PERIODS = {
     '0'  => 1,
@@ -30,25 +31,25 @@ class CjcuCourseCrawler < CourseCrawler::Base
     '15' => 16,
   }
 
-	DAYS = {
-		'一' => 1,
-		'二' => 2,
-		'三' => 3,
-		'四' => 4,
-		'五' => 5,
-		'六' => 6,
-		'日' => 7
-	}
+  DAYS = {
+    '一' => 1,
+    '二' => 2,
+    '三' => 3,
+    '四' => 4,
+    '五' => 5,
+    '六' => 6,
+    '日' => 7
+  }
 
 
-	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
+  def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
-		@year = year || current_year
-		@term = term || current_term # 1 => 1 , 2 => 2 , summer1 => 5 , summer2 => 6
+    @year = year || current_year
+    @term = term || current_term # 1 => 1 , 2 => 2 , summer1 => 5 , summer2 => 6
 
-		@ic = Iconv.new('utf-8//translit//IGNORE', 'utf-8')
-		@update_progress_proc = update_progress
-		@after_each_proc = after_each
+    @ic = Iconv.new('utf-8//translit//IGNORE', 'utf-8')
+    @update_progress_proc = update_progress
+    @after_each_proc = after_each
 
     Capybara.register_driver :poltergeist do |app|
       Capybara::Poltergeist::Driver.new(app,  js_errors: false)
@@ -57,13 +58,13 @@ class CjcuCourseCrawler < CourseCrawler::Base
     Capybara.javascript_driver = :poltergeist
     Capybara.current_driver = :poltergeist
 
-	end
+  end
 
-	def courses
-		@courses = []
+  def courses
+    @courses = []
 
-		year = @year
-  	term = @term #initialize -> year and term
+    year = @year
+    term = @term #initialize -> year and term
 
     edu_dep_h = {}
 
@@ -79,34 +80,34 @@ class CjcuCourseCrawler < CourseCrawler::Base
     edu_dep_h.each do |_, depts|
       depts.each do |department|
         Grade.each do |grade|
-  			# puts "grade: " + Grade.size.to_s + "/" +(Grade.index(grade)+1).to_s + " , dep:"+DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
-    			Classes.each do |class_no| # class_name
+        # puts "grade: " + Grade.size.to_s + "/" +(Grade.index(grade)+1).to_s + " , dep:"+DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
+          Classes.each do |class_no| # class_name
 
-  					@url_Get = "https://eportal.cjcu.edu.tw/api/Course/Get/?syear=#{year-1911}&semester=#{term}&dep=#{department}&grade=#{grade}&classno=#{class_no}"
+            @url_Get = "https://eportal.cjcu.edu.tw/api/Course/Get/?syear=#{year-1911}&semester=#{term}&dep=#{department}&grade=#{grade}&classno=#{class_no}"
 
-  					r = RestClient.get @url_Get , accept: 'application/json'
-  					#doc = Nokogiri::HTML(r)
-  	  			data = JSON.parse(r)
+            r = RestClient.get @url_Get , accept: 'application/json'
+            #doc = Nokogiri::HTML(r)
+            data = JSON.parse(r)
 
-  	  			data.each do |array|
-  						# regex = /\[(.)\][A-Z]{3}\s\((.+)\)(.+)/
-  						course_regex = /星期(?<d>.)\((?<s>\d+)節~(?<e>\d+)節\)(?<loc>([^星期]+)?)/
-  						course_arrange_time_info = Nokogiri::HTML(array["course_arrange_time_info"]).text
+            data.each do |array|
+              # regex = /\[(.)\][A-Z]{3}\s\((.+)\)(.+)/
+              course_regex = /星期(?<d>.)\((?<s>\d+)節~(?<e>\d+)節\)(?<loc>([^星期]+)?)/
+              course_arrange_time_info = Nokogiri::HTML(array["course_arrange_time_info"]).text
 
-  						course_days = []
-  						course_periods = []
-  						course_locations = []
+              course_days = []
+              course_periods = []
+              course_locations = []
 
-  						course_arrange_time_info.scan(course_regex).each do |match_arr|
-  							(match_arr[1].to_i..match_arr[2].to_i).each do |period|
-  								course_days << DAYS[match_arr[0]]
-  								course_periods << PERIODS[period.to_s]
-  								course_locations << match_arr[3]
-  							end
-  						end
+              course_arrange_time_info.scan(course_regex).each do |match_arr|
+                (match_arr[1].to_i..match_arr[2].to_i).each do |period|
+                  course_days << DAYS[match_arr[0]]
+                  course_periods << PERIODS[period.to_s]
+                  course_locations << match_arr[3]
+                end
+              end
 
 
-  		  			course = {
+              course = {
                 year:         @year,
                 term:         @term,
                 name:         array["course_name"],
@@ -143,39 +144,39 @@ class CjcuCourseCrawler < CourseCrawler::Base
                 location_7:   course_locations[6],
                 location_8:   course_locations[7],
                 location_9:   course_locations[8],
-  			  		}
+              }
 
-  						@after_each_proc.call(course: course) if @after_each_proc
-  						@courses << course
-  					end
-  		 		end
+              @after_each_proc.call(course: course) if @after_each_proc
+              @courses << course
+            end
+           end
         end
-			end
-		end
+      end
+    end
 
-		puts "ForeignLanguages : Running..."
-		@url_GetInForeign = "https://eportal.cjcu.edu.tw/api/Course/GetByTaughtInForeignLanguages/?syear=#{year-1911}&semester=#{term}"
-		r_Foregin = RestClient.get @url_GetInForeign , accept: 'application/json'
+    puts "ForeignLanguages : Running..."
+    @url_GetInForeign = "https://eportal.cjcu.edu.tw/api/Course/GetByTaughtInForeignLanguages/?syear=#{year-1911}&semester=#{term}"
+    r_Foregin = RestClient.get @url_GetInForeign , accept: 'application/json'
 
-		data_Foregin = JSON.parse(r_Foregin)
-		data_Foregin.each do |array|
+    data_Foregin = JSON.parse(r_Foregin)
+    data_Foregin.each do |array|
 
-			course_regex = /星期(?<d>.)\((?<s>\d+)節~(?<e>\d+)節\)(?<loc>([^星期]+)?)/
-			course_arrange_time_info = Nokogiri::HTML(array["course_arrange_time_info"]).text
+      course_regex = /星期(?<d>.)\((?<s>\d+)節~(?<e>\d+)節\)(?<loc>([^星期]+)?)/
+      course_arrange_time_info = Nokogiri::HTML(array["course_arrange_time_info"]).text
 
-			course_days = []
-			course_periods = []
-			course_locations = []
+      course_days = []
+      course_periods = []
+      course_locations = []
 
-			course_arrange_time_info.scan(course_regex).each do |match_arr|
-				(match_arr[1].to_i..match_arr[2].to_i).each do |period|
-					course_days << DAYS[match_arr[0]]
-					course_periods << PERIODS[period.to_s]
-					course_locations << match_arr[3]
-				end
-			end
+      course_arrange_time_info.scan(course_regex).each do |match_arr|
+        (match_arr[1].to_i..match_arr[2].to_i).each do |period|
+          course_days << DAYS[match_arr[0]]
+          course_periods << PERIODS[period.to_s]
+          course_locations << match_arr[3]
+        end
+      end
 
-	    course = {
+      course = {
         year:         @year,
         term:         @term,
         name:         array["course_name"],
@@ -212,14 +213,14 @@ class CjcuCourseCrawler < CourseCrawler::Base
         location_7:   course_locations[6],
         location_8:   course_locations[7],
         location_9:   course_locations[8]
-			}
-			@after_each_proc.call(course: course) if @after_each_proc
-			@courses << course
-		end
+      }
+      @after_each_proc.call(course: course) if @after_each_proc
+      @courses << course
+    end
 
     puts "End"
-		@courses.uniq
-	end
+    @courses.uniq
+  end
 
 end
 end

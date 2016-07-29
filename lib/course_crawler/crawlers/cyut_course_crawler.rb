@@ -44,8 +44,9 @@ class CyutCourseCrawler < CourseCrawler::Base
         H_SUBID.each do |subid|
           r = `curl -s "https://admin.cyut.edu.tw/crsinfo/cur_01.asp" -H "Cookie: ASPSESSIONIDAGTSCDSB=IHFPJDLCBHFABAGFLIMINNEI" -H "Origin: https://admin.cyut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: https://admin.cyut.edu.tw/crsinfo/cur_01.asp" -H "Connection: keep-alive" --data "h_status=run&h_acy=#{@year-1911}&h_sem=#{@term}&h_depno=#{dep}&h_secid=#{secid}&h_subid=#{subid}&h_year=all&h_class=all" --compressed`
           doc = Nokogiri::HTML(@ic.iconv(r))
-
+          
           set_progress "Department: " + DEP.size.to_s + " / " + (DEP.index(dep)+1).to_s + " H_SECID: " + H_SECID.size.to_s + " / " + (H_SECID.index(secid)+1).to_s + " H_SUBID : " + H_SUBID.size.to_s + " / " + (H_SUBID.index(subid)+1).to_s
+          puts "Department: " + DEP.size.to_s + " / " + (DEP.index(dep)+1).to_s + " H_SECID: " + H_SECID.size.to_s + " / " + (H_SECID.index(secid)+1).to_s + " H_SUBID : " + H_SUBID.size.to_s + " / " + (H_SUBID.index(subid)+1).to_s
 
           if(doc.css('div[class="warning_font"]').text != "查無資料")
             rows = doc.css('table[class="tablefont1"] tr:nth-child(n+3)')
@@ -112,6 +113,7 @@ class CyutCourseCrawler < CourseCrawler::Base
               }
 
               @after_each_proc.call(course: course) if @after_each_proc
+
               @courses << course
             end
           end

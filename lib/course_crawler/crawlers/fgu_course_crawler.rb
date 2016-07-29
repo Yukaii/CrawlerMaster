@@ -130,9 +130,10 @@ class FguCourseCrawler < CourseCrawler::Base
 		year = @year
 		term = @term
 
-
+		puts "Initializie the data ..."
 		DEP.each do |department|
 			set_progress DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
+			puts "Data crawled : " + DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
 			@url = "http://selcourse2.fgu.edu.tw/course_plan/cs_cont_all.aspx?in_years=#{year-1911}&in_semes=#{term}&in_depid="+department+"&out="
 			r = RestClient.get @url
 			doc = Nokogiri::HTML(r)
@@ -201,7 +202,7 @@ class FguCourseCrawler < CourseCrawler::Base
 				end
 			end
 		end
-
+		puts "Project finished !!!"
 		@courses
 	end
 end

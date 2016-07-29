@@ -59,12 +59,14 @@ class FjuCourseCrawler < CourseCrawler::Base
     # step 1
     r = RestClient.get @query_url
     @doc = Nokogiri::HTML(@ic.iconv r)
+    puts "step 1 , get url"
 
     # step 2
     r = RestClient.post @query_url, get_view_state.merge({
       "But_BaseData" => "依基本開課資料查詢"
     })
     @doc = Nokogiri::HTML(@ic.iconv r)
+    puts "step 2 , search"
 
     # step 3 選擇學制
     r = RestClient.post @query_url, get_view_state.merge({
@@ -74,6 +76,7 @@ class FjuCourseCrawler < CourseCrawler::Base
       "DDL_Section_E" => nil,
     })
     @doc = Nokogiri::HTML(@ic.iconv r)
+    puts "step 3 , get DDL_AvaDiv"
 
     # step 查詢
     r = RestClient.post @query_url, get_view_state.merge({
@@ -85,10 +88,13 @@ class FjuCourseCrawler < CourseCrawler::Base
       "But_Run" => '查詢（Search）',
     })
     doc = Nokogiri::HTML(@ic.iconv r)
+    puts "step 4 , final fetch"
 
     parse_course_list(doc)
 
     @courses.each do |course|
+      puts "data saved ...."
+
       sleep(1) until (
         @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
         @threads.count < ( (ENV['MAX_THREADS'] && ENV['MAX_THREADS'].to_i) || 30)
@@ -100,15 +106,19 @@ class FjuCourseCrawler < CourseCrawler::Base
 
     ThreadsWait.all_waits(*@threads)
     @courses
+    puts "Project finished !!!"
   end
 
   def parse_course_list doc
     @courses ||= []
-
+    count = 1;
     rows = doc.xpath('//table[@id="GV_CourseList"]/tr[position()>1]')
     rows && rows.each_with_index do |row, index|
       datas = row.css('td')
 
+      puts "data crawled : " + count.to_s
+      STDOUT.flush
+      count += 1
       # a sub course, has main course code
       next if not (datas[2] && datas[2].text.gsub(/[^a-zA-Z0-9]/,'').empty?)
 

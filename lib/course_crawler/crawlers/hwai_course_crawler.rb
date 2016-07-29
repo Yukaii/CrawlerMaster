@@ -20,9 +20,10 @@ class HwaiCourseCrawler < CourseCrawler::Base
 
     r = RestClient.get(@query_url+"sel/sel_0405.asp")
     doc = Nokogiri::HTML(@ic.iconv(r))
+    puts "get url ...."
 
     doc.css('select[name="cbo_edu06"] option').map{|opt| [opt[:value],opt.text]}.each do |dept_v, dept_n|
-      # puts dept_v+","+dept_n
+      puts "data crawled : " + dept_n
       r = RestClient.post(@query_url+"sel/sel_0405.asp", {
         "SelYear" => @year-1911,
         "SelTerm" => @term,
@@ -95,7 +96,7 @@ class HwaiCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
-
+    puts "Project finished !!!"
     @courses
   end
 

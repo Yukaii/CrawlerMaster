@@ -23,7 +23,7 @@ class HcuCourseCrawler < CourseCrawler::Base
 
     r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(@ic.iconv(r))
-
+    puts "get url ..."
     r = RestClient.post("http://hrs.hcu.edu.tw/strategy/std/index2.asp", {
       "yy" => year,
       "mm" => @term,
@@ -35,8 +35,15 @@ class HcuCourseCrawler < CourseCrawler::Base
       # "s8" => "",
       })
     doc = Nokogiri::HTML(@ic.iconv(r))
+    puts "crawling data ..."
+    count = 1
+    total = doc.css('tbody tr[height="30"]').map{|tr| tr}.each do |tr|
+      # 為了觀看爬蟲次序
+      if count==1 || count % 5 == 0
+        puts "data crawled : "+ count.to_s
+      end
+        count += 1
 
-    doc.css('tbody tr[height="30"]').map{|tr| tr}.each do |tr|
       data = tr.css('td:nth-child(n+3)').map{|td| td.text}
       _datas = tr.css('td')
       # syllabus_url = tr.css('td a').map{|a| a}
@@ -103,6 +110,7 @@ class HcuCourseCrawler < CourseCrawler::Base
       @after_each_proc.call(course: course) if @after_each_proc
       @courses << course
     end
+    puts "Project finished !!!"
     @courses
   end
 end
