@@ -111,7 +111,14 @@ foreman start -f Procfile.dev
 
 ### Rubocop
 
-是 Ruby 的靜態語法檢查工具，有 Vim 平臺的 [syntastic](https://github.com/scrooloose/syntastic)、Atom 的 [linter-rubocop](https://atom.io/packages/linter-rubocop) 可以設置，維持語法統一。
+是 Ruby 的靜態語法檢查工具，有 Vim 平臺的 [syntastic](https://github.com/scrooloose/syntastic)([neomake](https://github.com/neomake/neomake/) 比較順)、Atom 的 [linter-rubocop](https://atom.io/packages/linter-rubocop) 可以設置。
+
+![VSCode](http://i.imgur.com/K2Q9Vkm.png)
+
+![Atom](http://i.imgur.com/juMUR4N.png)
+
+![NeoVim](http://i.imgur.com/A98vyxs.png)
+
 
 ## 參考資料
 
