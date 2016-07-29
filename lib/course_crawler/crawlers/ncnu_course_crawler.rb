@@ -124,7 +124,6 @@ class NcnuCourseCrawler < CourseCrawler::Base
 
         @courses << course
 
-# binding.pry if dept[0] == "mf00"
       end
     end
     @courses

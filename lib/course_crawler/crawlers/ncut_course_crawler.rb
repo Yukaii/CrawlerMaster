@@ -4,69 +4,69 @@
 module CourseCrawler::Crawlers
 class NcutCourseCrawler < CourseCrawler::Base
 
-	DAYS = {
-		'一' => '1',
-		'二' => '2',
-		'三' => '3',
-		'四' => '4',
-		'五' => '5',
-		'六' => '6',
-		'日' => '7'
-	}
+  DAYS = {
+    '一' => '1',
+    '二' => '2',
+    '三' => '3',
+    '四' => '4',
+    '五' => '5',
+    '六' => '6',
+    '日' => '7'
+  }
 
-	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
+  def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year                 = year || current_year
     @term                 = term || current_term
-		#@post_url = "http://msd.ncut.edu.tw/wbcmsc/cmain.asp"
+    #@post_url = "http://msd.ncut.edu.tw/wbcmsc/cmain.asp"
     @update_progress_proc = update_progress
     @after_each_proc      = after_each
     @ic                   = Iconv.new('utf-8//IGNORE', 'big5')
-	end
+  end
 
-	def courses
-		@courses = []
-		year = @year
-		term = @term
+  def courses
+    @courses = []
+    year = @year
+    term = @term
 
-		r = `curl -s "http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Cookie: __utmt=1; __utma=82590601.72128976.1440399078.1440399078.1440399078.1; __utmb=82590601.1.10.1440399078; __utmc=82590601; __utmz=82590601.1440399078.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not"%"20provided); sto-id-20480=AIEHIAIMFAAA; ASPSESSIONIDCQSARQCB=KOIMNKPAHGDEIELLEDMBKPOE" -H "Origin: http://msd.ncut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Connection: keep-alive" --data "dptcd=1150&gd=&schyy=#{year-1911}&smt=#{term}&action="%"BDT"%"A9w" --compressed`
-		doc = Nokogiri::HTML(@ic.iconv(r))
+    r = `curl -s "http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Cookie: __utmt=1; __utma=82590601.72128976.1440399078.1440399078.1440399078.1; __utmb=82590601.1.10.1440399078; __utmc=82590601; __utmz=82590601.1440399078.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not"%"20provided); sto-id-20480=AIEHIAIMFAAA; ASPSESSIONIDCQSARQCB=KOIMNKPAHGDEIELLEDMBKPOE" -H "Origin: http://msd.ncut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Connection: keep-alive" --data "dptcd=1150&gd=&schyy=#{year-1911}&smt=#{term}&action="%"BDT"%"A9w" --compressed`
+    doc = Nokogiri::HTML(@ic.iconv(r))
 
-		index_dep = doc.css('select[name="dptcd"] option')
-		index_dep[1..-1].each do |department_select|
-			department_code = department_select.text[0..3].to_s
-			r = `curl -s "http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Cookie: __utmt=1; __utma=82590601.72128976.1440399078.1440399078.1440399078.1; __utmb=82590601.1.10.1440399078; __utmc=82590601; __utmz=82590601.1440399078.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not"%"20provided); sto-id-20480=AIEHIAIMFAAA; ASPSESSIONIDCQSARQCB=KOIMNKPAHGDEIELLEDMBKPOE" -H "Origin: http://msd.ncut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Connection: keep-alive" --data "dptcd=#{department_code}&gd=&schyy=#{year-1911}&smt=#{term}&action="%"BDT"%"A9w" --compressed`
-			#binding.pry if department_code == "3120"
-			set_progress "#{index_dep.index(department_select)} / #{index_dep.size-1}"
+    index_dep = doc.css('select[name="dptcd"] option')
+    index_dep[1..-1].each do |department_select|
+      department_code = department_select.text[0..3].to_s
+      r = `curl -s "http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Cookie: __utmt=1; __utma=82590601.72128976.1440399078.1440399078.1440399078.1; __utmb=82590601.1.10.1440399078; __utmc=82590601; __utmz=82590601.1440399078.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not"%"20provided); sto-id-20480=AIEHIAIMFAAA; ASPSESSIONIDCQSARQCB=KOIMNKPAHGDEIELLEDMBKPOE" -H "Origin: http://msd.ncut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Connection: keep-alive" --data "dptcd=#{department_code}&gd=&schyy=#{year-1911}&smt=#{term}&action="%"BDT"%"A9w" --compressed`
 
-			doc = Nokogiri::HTML(@ic.iconv(r))
-			deparment_name = doc.css('select[name="dptcd"] option[selected]').text
+      set_progress "#{index_dep.index(department_select)} / #{index_dep.size-1}"
 
-			doc.css('form[name="where"] table tbody tr')[0..-1].each do |row|
-				datas = row.css('td')
+      doc = Nokogiri::HTML(@ic.iconv(r))
+      deparment_name = doc.css('select[name="dptcd"] option[selected]').text
 
-				course_days = []
-				course_periods = []
-				course_locations = []
+      doc.css('form[name="where"] table tbody tr')[0..-1].each do |row|
+        datas = row.css('td')
 
-				if(datas[8].text.size > 1)
-					course_T = datas[8].text.split(',')
+        course_days = []
+        course_periods = []
+        course_locations = []
 
-					course_T[0..-1].each do |_class|
-						tempCourse =_class.split /(?<days>.)(?<periods>\d\d-\d\d)(?<location>.*)/
-						start_course = tempCourse[2][0..1].to_i
-						end_course = tempCourse[2][3..4].to_i
+        if(datas[8].text.size > 1)
+          course_T = datas[8].text.split(',')
 
-						start_course.upto(end_course) do |_period|
-						course_days << DAYS[tempCourse[1]]
-						course_periods << _period.to_s
-						course_locations << tempCourse[3]
+          course_T[0..-1].each do |_class|
+            tempCourse =_class.split /(?<days>.)(?<periods>\d\d-\d\d)(?<location>.*)/
+            start_course = tempCourse[2][0..1].to_i
+            end_course = tempCourse[2][3..4].to_i
 
-						end
-					end
-				end
+            start_course.upto(end_course) do |_period|
+            course_days << DAYS[tempCourse[1]]
+            course_periods << _period.to_s
+            course_locations << tempCourse[3]
 
-				course = {
+            end
+          end
+        end
+
+        course = {
           name:         "#{datas[1].text.strip}",
           year:         @year,
           term:         @term,
@@ -103,14 +103,14 @@ class NcutCourseCrawler < CourseCrawler::Base
           location_7:   course_locations[6],
           location_8:   course_locations[7],
           location_9:   course_locations[8],
-				}
+        }
 
-				@after_each_proc.call(course: course) if @after_each_proc
-				@courses << course
+        @after_each_proc.call(course: course) if @after_each_proc
+        @courses << course
 
-			end
-		end
-		@courses
-	end
+      end
+    end
+    @courses
+  end
 end
 end

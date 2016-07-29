@@ -120,10 +120,10 @@ class FcuCourseCrawler < CourseCrawler::Base
         @after_each_proc.call(course: course) if @after_each_proc
 
         @courses << course
-# binding.pry if @courses.count == 30
       end
     end
-  @courses
+
+    @courses
   end
 
 end

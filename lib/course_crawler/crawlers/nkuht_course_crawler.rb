@@ -86,7 +86,7 @@ class NkuhtCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
-# binding.pry
+
     @courses
   end
 

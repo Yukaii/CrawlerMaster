@@ -86,7 +86,6 @@ class DyuCourseCrawler < CourseCrawler::Base
       doc = Nokogiri::HTML(r)
 
       course_temp(doc, group_c, group_n)
-  # binding.pry
     end
 
     @courses

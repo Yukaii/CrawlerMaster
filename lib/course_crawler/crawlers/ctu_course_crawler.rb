@@ -62,15 +62,13 @@ class CtuCourseCrawler < CourseCrawler::Base
       course_periods = []
       course_locations = []
 
-      binding.pry if datas[7].nil?
+      day_course = datas[7].text.split(/(..)/)
+      day_course.each do |course|
+        next if course.size.empty?
 
-      day_course = datas[7].text.split /(..)/
-      day_course.each do |_course|
-        if(_course.size!=0)
-          course_days << _course[0]
-          course_periods << _course[1]
-          course_locations << datas[8].text.strip
-        end
+        course_days      << course[0]
+        course_periods   << course[1]
+        course_locations << datas[8].text.strip
       end
 
       course = {
@@ -110,7 +108,7 @@ class CtuCourseCrawler < CourseCrawler::Base
         :location_8   => course_locations[7],
         :location_9   => course_locations[8],
       }
-      
+
       @after_each_proc.call(course: course) if @after_each_proc
       @courses << course
 

@@ -126,7 +126,6 @@ class YduCourseCrawler < CourseCrawler::Base
         @after_each_proc.call(course: course) if @after_each_proc
 
         @courses << course
-# binding.pry if dept_v == "1004"
       end
     end
     @courses

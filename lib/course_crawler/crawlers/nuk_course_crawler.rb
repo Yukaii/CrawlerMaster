@@ -141,7 +141,7 @@ class NukCourseCrawler < CourseCrawler::Base
           @after_each_proc.call(course: course) if @after_each_proc
 
           @courses << course
-    # binding.pry if dep_c == "LA"
+
         end
       end
     end

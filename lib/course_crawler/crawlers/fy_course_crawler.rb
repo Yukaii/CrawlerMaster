@@ -167,14 +167,12 @@ class FyCourseCrawler < CourseCrawler::Base
 
         course_days, course_periods, course_locations = [], [], [] if temp_cor[0] != temp_data[0]
 
-        course_days << temp_cor[1][0]
-        course_periods << temp_cor[1][1]
+        course_days      << temp_cor[1][0]
+        course_periods   << temp_cor[1][1]
         course_locations << temp_cor[1][2]
 
         temp_data = temp_cor
       end
-# puts @course_id
-# binding.pry #if @course_id == 156
     end
   end
 

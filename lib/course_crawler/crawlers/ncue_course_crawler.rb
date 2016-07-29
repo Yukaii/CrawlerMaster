@@ -71,8 +71,6 @@ class NcueCourseCrawler < CourseCrawler::Base
       department = dept_names[index]
       doc = Nokogiri::HTML(r)
 
-      # binding.pry
-
       doc.css('tr')[1..-1].each do |row|
         columns = row.css('td')
 
@@ -164,7 +162,6 @@ class NcueCourseCrawler < CourseCrawler::Base
       # File.write("temp/#{dept_value}.html", r)
     end # end each dept_values
 
-    # binding.pry
     # puts "hello"
 
     @courses

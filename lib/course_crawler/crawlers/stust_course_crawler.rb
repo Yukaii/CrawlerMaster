@@ -41,7 +41,7 @@ class StustCourseCrawler < CourseCrawler::Base
       doc = web_post(dept: dept_v, btn_query: nil)
 
       doc.css('select[id="ctl00_ContentPlaceHolder1_ddl_class"] option:nth-child(n+2)').map{|option| option[:value]}.each do |cla|
-  
+
         doc = web_post(dept: dept_v, cla: cla)
 
 # puts "#{dept_v}_#{cla}"
@@ -125,7 +125,6 @@ class StustCourseCrawler < CourseCrawler::Base
         end
       end
     end
-# binding.pry
     @courses
   end
 

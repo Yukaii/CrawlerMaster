@@ -133,7 +133,6 @@ class TtuCourseCrawler < CourseCrawler::Base
                   end
                 end # unless need to parse_syllabus
 
-                # binding.pry
                 unless @courses[c_hash][:lecturer] || @courses[c_hash][:required] || @courses[c_hash][:credits]
                   sleep(1) until (
                     @parse_detail_threads.delete_if { |t| !t.status };  # remove dead (ended) threads
@@ -169,7 +168,6 @@ class TtuCourseCrawler < CourseCrawler::Base
         # deps.each do |k, v|
         #   v.reverse_each do |dep|
         #     if course["class"].include?(dep["department"])
-        #       # binding.pry
         #       course["department_code"] = dep["code"]
         #       break
         #     end

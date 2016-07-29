@@ -129,7 +129,6 @@ class NhuCourseCrawler < CourseCrawler::Base
 
           @courses << course
         end
-  # binding.pry if dep_c == '1100'
       end
     end
     @courses

@@ -31,8 +31,6 @@ class UknCourseCrawler < CourseCrawler::Base
       break if !chk.empty? && chk.match(/\d{5}/)
     end
 
-    binding.pry
-
     doc.css('form[name="form1"]')[0][:action]
 
 
@@ -57,8 +55,6 @@ class UknCourseCrawler < CourseCrawler::Base
   def get_image
     temp_file = Tempfile.new(['captcha', '.png'])
     File.write(temp_file.path, http_client.get_content("http://actweb.ukn.edu.tw:8080/leader/getImage.jsp").force_encoding('utf-8'))
-
-    binding.pry
 
     img = RTesseract.new(temp_file.path.to_s, psm: 8, options: :digits, :processor => "mini_magick")
     img.to_s.strip

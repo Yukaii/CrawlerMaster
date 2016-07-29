@@ -53,7 +53,6 @@ class TnuCourseCrawler < CourseCrawler::Base
         #   "Class" => cla_v,
         #   })
         doc = Nokogiri::HTML(@ic.iconv(r))
-# binding.pry if cla_v == "4213"
         doc.css('table:nth-child(2) tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
 # puts cla_v+","+tr.css('td font').map{|td| td.text}[0]
           data = tr.css('td font').map{|td| td.text}
@@ -114,7 +113,6 @@ class TnuCourseCrawler < CourseCrawler::Base
           @after_each_proc.call(course: course) if @after_each_proc
 
           @courses << course
-# binding.pry
         end
       end
     end

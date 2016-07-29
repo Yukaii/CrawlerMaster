@@ -65,7 +65,6 @@ class NpustCourseCrawler < CourseCrawler::Base
       course_temp(courses_temp)
     end
 
-# binding.pry
     @courses
   end
 

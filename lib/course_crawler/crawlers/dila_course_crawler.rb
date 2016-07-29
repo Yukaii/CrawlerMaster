@@ -150,7 +150,6 @@ class DilaCourseCrawler < CourseCrawler::Base
           @after_each_proc.call(course: course) if @after_each_proc
 
           @courses << course
-# binding.pry if dept_c == "BB03"
         end
       end
     end
