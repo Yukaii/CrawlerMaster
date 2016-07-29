@@ -44,7 +44,6 @@ class UscCourseCrawler < CourseCrawler::Base
     }, cookies: @cookies)
 
     # ic = Iconv.new('utf-8', r.encoding)
-    # binding.pry.force_encoding('utf-8')
     @doc = Nokogiri::HTML(r.to_s.force_encoding('big5').encode('utf-8', invalid: :replace, :undef => :replace, :replace => ''))
 
     rows = @doc.css('tr:nth-child(n+4)')

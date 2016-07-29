@@ -1,3 +1,5 @@
+# 淡江大學
+
 require 'capybara'
 require 'capybara/dsl'
 require 'capybara/poltergeist'
@@ -69,7 +71,9 @@ class TkuCourseCrawler < CourseCrawler::Base
           rescue Exception => e; end;
         end
       end
-    rescue Exception => e; binding.pry; end;
+    rescue Exception => e
+      raise e
+    end
 
     @others_post_datas = []
     # prepare courses by category post datas
@@ -158,7 +162,7 @@ class TkuCourseCrawler < CourseCrawler::Base
   end
 
   def parse_courses doc, post_data
-    dep_regex = /系別\(Department\)\：(?<dep_c>.+)\.(?<dep_n>.+)\u3000/
+    dep_regex = %r{系別\(Department\)\：(?<dep_c>.+)\.(?<dep_n>.+)\u3000}
     course_rows = doc.css('table[bordercolorlight="#0080FF"] tr').select do |course_row|
       !course_row.text.include?('系別(Department)') &&
       !course_row.text.include?('選擇年級') &&
@@ -181,9 +185,8 @@ class TkuCourseCrawler < CourseCrawler::Base
         if datas[2].text.strip.gsub(/\u3000/, '') == "(正課)"
           serial_no = (next_course_row.css('td')[2].text.to_i - 1).to_s.rjust(4, '0')
         end
-      rescue
-        binding.pry
-        puts 'hello'
+      rescue Exception => e
+        raise e
       end
 
       # code = datas[3] && datas[3].text.strip.gsub(/\u3000/, '')
@@ -303,7 +306,6 @@ class TkuCourseCrawler < CourseCrawler::Base
           #     serial_no = (next_course_row.css('td')[1].text.to_i - 1).to_s.rjust(4, '0')
           #   end
           # rescue
-          #   binding.pry
           #   # puts 'hello'
           # end
 
@@ -315,7 +317,7 @@ class TkuCourseCrawler < CourseCrawler::Base
 
           lecturer = ""
           if datas[12].nil?
-            binding.pry
+            # binding.pry
           end
           datas[12] && datas[12].text.match(/(?<lec>.+)?\ \([\d|\*]+\)/) do |m|
             lecturer = m[:lec]

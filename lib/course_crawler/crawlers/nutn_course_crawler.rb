@@ -84,7 +84,6 @@ class NutnCourseCrawler < CourseCrawler::Base
 
     @courses
   end
-  # binding.pry
 
   def post(hidden, scriptmanager: "ScriptManager1|btnQuery", clientstate: "0", college1: "1", dept1_c: "1200", college2: "1", dept2_c: "1204", other: nil, eventtarget: nil, btnQuery: "查詢")
     r = RestClient.post(@query_url, hidden.merge({

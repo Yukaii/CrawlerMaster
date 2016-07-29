@@ -143,7 +143,6 @@ class MhchcmCourseCrawler < CourseCrawler::Base
         @after_each_proc.call(course: course) if @after_each_proc
 
         @courses << course
-# binding.pry if course_id == 1
       end
     end
     @courses

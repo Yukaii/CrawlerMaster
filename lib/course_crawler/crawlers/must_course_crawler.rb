@@ -48,7 +48,7 @@ class MustCourseCrawler < CourseCrawler::Base
       doc.css('body > center table tr:nth-child(n+2)').each do |tr|
         data = tr.css('td').map{|td| td.text}
         syllabus_url = "#{@query_url}#{tr.css('a').map{|a| a[:value]}[0]}" if tr.css('a').map{|a| a[:value]}[0] != nil
- 
+
         course_id += 1
 
         course_days, course_periods, course_locations = [], [], []
@@ -125,7 +125,6 @@ class MustCourseCrawler < CourseCrawler::Base
         @after_each_proc.call(course: course) if @after_each_proc
 
         @courses << course
-# binding.pry
       end
     end
     @courses

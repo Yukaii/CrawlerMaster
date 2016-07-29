@@ -116,7 +116,6 @@ class HwhCourseCrawler < CourseCrawler::Base
         @after_each_proc.call(course: course) if @after_each_proc
 
         @courses << course
-# binding.pry
       end
     end
     @courses

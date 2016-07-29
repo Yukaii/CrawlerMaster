@@ -58,16 +58,14 @@ class IsuCourseCrawler < CourseCrawler::Base
       data = []
       # 系所
       majr_no = majr_option[i].text[0..1]
-# binding.pry if majr_no == '10'
       r = %x(curl -s 'http://netreg.isu.edu.tw/wapp/wapp_sha/wap_s140001.asp' --data 'lange_sel=zh_TW&qry_setyear=#{@year-1911}&qry_setterm=#{@term}&grade_beg=#{grade_beg}&grade_end=#{grade_end}&majr_no=#{majr_no}&divi_A=#{divi_A}&divi_M=#{divi_M}&divi_I=#{divi_I}&divi_D=#{divi_D}&divi_B=#{divi_B}&divi_G=#{divi_G}&divi_T=#{divi_T}&divi_F=#{divi_F}&cr_code=&cr_name=&yepg_sel=+&crdnum_beg=0&crdnum_end=6&apt_code=+&submit1=%B0e%A5X' --compressed)
       doc = Nokogiri::HTML(@ic.iconv(r))
 
       (0..doc.css('table:nth-child(7) tr:nth-child(n+3)').count-1).each do |tr|
         data = mix_data(doc,tr)
-# puts "#{tr+1}/#{majr_no}"
+        # puts "#{tr+1}/#{majr_no}"
         next if data[0] == ""
 
-# binding.pry #if tr == 8
         if doc.css('table:nth-child(7) tr:nth-child(n+3)')[tr].css('td a')[0] != nil
           syllabus_url = "http://netreg.isu.edu.tw/wapp/wapp_sha/#{doc.css('table:nth-child(7) tr:nth-child(n+3)')[tr].css('td a')[0][:href]}"
         else
@@ -118,7 +116,7 @@ class IsuCourseCrawler < CourseCrawler::Base
           location_7: course_locations[6],
           location_8: course_locations[7],
           location_9: course_locations[8],
-          }
+        }
 
 
         @after_each_proc.call(course: course) if @after_each_proc

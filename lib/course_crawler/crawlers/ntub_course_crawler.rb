@@ -114,7 +114,7 @@ class NtubCourseCrawler < CourseCrawler::Base
 
         @after_each_proc.call(course: course) if @after_each_proc
         @courses << course
-# binding.pry
+
       end #end thread
     end #end each tr
       ThreadsWait.all_waits(*@threads)

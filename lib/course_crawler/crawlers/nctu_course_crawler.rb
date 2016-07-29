@@ -48,7 +48,6 @@ class NctuCourseCrawler < CourseCrawler::Base
       )
       @threads << Thread.new do
         @courses.concat cc.get_course_list(unit_id: unit_id)
-        # binding.pry
       end
     end
 

@@ -112,12 +112,11 @@ class LhuCourseCrawler < CourseCrawler::Base
           location_7: course_locations[6],
           location_8: course_locations[7],
           location_9: course_locations[8],
-          }
+        }
 
         @after_each_proc.call(course: course) if @after_each_proc
 
         @courses << course
-  # binding.pry
       end
     end
 

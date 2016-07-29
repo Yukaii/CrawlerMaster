@@ -20,11 +20,11 @@ class HustCourseCrawler < CourseCrawler::Base
     @courses = []
     course_id = 0
 
-    r = RestClient.get(@query_url+"QueryOpenCourse.jsp")
+    r = RestClient.get(@query_url + 'QueryOpenCourse.jsp')
     doc = Nokogiri::HTML(@ic.iconv(r))
     cookie = r.cookies
 
-    r = %x(curl -s '#{@query_url}QueryOpenCourse1.jsp?courseName=&courseNameSel=NO' -H 'Cookie: JSESSIONID=#{cookie["JSESSIONID"]}' --compressed)
+    r = `curl -s '#{@query_url}QueryOpenCourse1.jsp?courseName=&courseNameSel=NO' -H 'Cookie: JSESSIONID=#{cookie['JSESSIONID']}' --compressed`
     doc = Nokogiri::HTML(@ic.iconv(r))
 
     doc.css('tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
@@ -79,12 +79,11 @@ class HustCourseCrawler < CourseCrawler::Base
         location_7: course_locations[6],
         location_8: course_locations[7],
         location_9: course_locations[8],
-        }
+      }
 
       @after_each_proc.call(course: course) if @after_each_proc
 
       @courses << course
-# binding.pry
     end
     @courses
   end

@@ -134,7 +134,6 @@ class NquCourseCrawler < CourseCrawler::Base
         end
       end
     end
-   # binding.pry
     @courses
  end
 

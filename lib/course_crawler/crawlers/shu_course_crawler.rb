@@ -37,7 +37,7 @@ class ShuCourseCrawler < CourseCrawler::Base
     doc = Nokogiri::HTML(@ic.iconv(r))
     hidden = Hash[doc.css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
 
-    r = %x(curl -s '#{@query_url}' -H 'Cookie: #{cookie}' --data '__VIEWSTATE=#{URI.escape(hidden["__VIEWSTATE"], "=+/")}&LoginGuest_Guest.x=20&LoginGuest_Guest.y=20' --compressed)
+    r = `curl -s '#{@query_url}' -H 'Cookie: #{cookie}' --data '__VIEWSTATE=#{URI.escape(hidden["__VIEWSTATE"], "=+/")}&LoginGuest_Guest.x=20&LoginGuest_Guest.y=20' --compressed`
 
     r = RestClient.get(@result_url, {"Cookie" => cookie })
     doc = Nokogiri::HTML(r)
@@ -70,7 +70,6 @@ class ShuCourseCrawler < CourseCrawler::Base
       doc = Nokogiri::HTML(r)
 
       course_temp(doc)
-    # binding.pry if page == 10
     end
 
     @courses.map{|k, course|
@@ -149,8 +148,6 @@ class ShuCourseCrawler < CourseCrawler::Base
       @courses[hash_key][:course_days].concat(course_days)
       @courses[hash_key][:course_periods].concat(course_periods)
       @courses[hash_key][:course_locations].concat(course_locations)
-
-      binding.pry
     end
   end
 end

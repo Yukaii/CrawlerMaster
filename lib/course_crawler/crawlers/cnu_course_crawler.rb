@@ -72,7 +72,7 @@ class CnuCourseCrawler < CourseCrawler::Base
 	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 		@year = year
    		@term = term
-   	
+
     	@update_progress_proc = update_progress
     	@after_each_proc = after_each
     	@ic = Iconv.new('utf-8//IGNORE', 'big5')
@@ -102,14 +102,14 @@ class CnuCourseCrawler < CourseCrawler::Base
 					daytemp = nil
 
 					period_temp = datas[8..14].text.split /(\d\d?-?\d?\d?)/
-					
+
 					if(period_temp[1]!=nil)
 						period_start = period_temp[1][0].to_i
 						period_end = period_temp[1][2..3].to_i
 						period_end = period_start if (period_end==0)
-						
+
 						if(period_end==period_start)
-						
+
 							8.upto(14) do |days|
 								daytemp = days - 7 if datas[days].text[1].to_i == period_start
 							end
@@ -168,13 +168,12 @@ class CnuCourseCrawler < CourseCrawler::Base
 
 						@after_each_proc.call(course: course) if @after_each_proc
 						@courses << course
-# binding.pry
 		    	end
 		    end
 	    end
 		end
   	@courses
 	end
-	
+
 end
 end

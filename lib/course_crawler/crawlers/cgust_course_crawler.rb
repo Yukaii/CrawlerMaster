@@ -31,7 +31,7 @@ class CgustCourseCrawler < CourseCrawler::Base
     @query_url = 'http://webmis.cgust.edu.tw/%E8%AA%B2%E5%8B%99%E7%B5%84/%E8%AA%B2%E7%A8%8B%E6%9F%A5%E8%A9%A2/'
     @ic = Iconv.new('utf-8//IGNORE//translit', 'big5')
   end
-  
+
   def courses
     @courses = []
     course_id = 0
@@ -110,7 +110,6 @@ class CgustCourseCrawler < CourseCrawler::Base
         @after_each_proc.call(course: course) if @after_each_proc
 
         @courses << course
-# binding.pry
       end
     end
     @courses

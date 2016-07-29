@@ -141,7 +141,6 @@ class CsuCourseCrawler < CourseCrawler::Base
                 @courses << course
               end
             end
-# binding.pry
           end
         end
       end

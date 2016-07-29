@@ -51,11 +51,10 @@ class TwuCourseCrawler < CourseCrawler::Base
 
     r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(r)
-# binding.pry
 
-# 先只找日間部
+    # 先只找日間部
     doc.css('select[name="Edu_Session_ID_Filter"] option').map{|opt| opt[:value]}.each do |col|
-      # col==4 是四技日間部 
+      # col==4 是四技日間部
       doc.css('select[name="Edu_Academy_ID_Filter"] option').map{|opt| opt[:value]}.each do |aca|
         # r = RestClient.get("http://140.130.168.152/ftp/Class/Print_063405_#{@year-1911}_#{@term}_#{aca}_1_#{col}_0_0_0_0.htm")
         r = %x(curl -s 'http://140.130.168.152/ftp/Class/Print_063405_#{@year-1911}_#{@term}_#{aca}_1_#{col}_0_0_0_0.htm' --compressed)
@@ -66,7 +65,7 @@ class TwuCourseCrawler < CourseCrawler::Base
           next if data.count < 11 or data[0] == "選課代碼" or data[0] == "合計" or data[0] == " "
           course_id += 1
 
-# puts "http://140.130.168.152/ftp/Class/Print_063405_#{@year-1911}_#{@term}_#{aca}_1_#{col}_0_0_0_0.htm",data[0]
+          # puts "http://140.130.168.152/ftp/Class/Print_063405_#{@year-1911}_#{@term}_#{aca}_1_#{col}_0_0_0_0.htm",data[0]
           course_days, course_periods, course_locations = [], [], []
           data[9].scan(/(?<day>[一二三四五六日])\](?<period>[\d\,]+)/).each do |day, periods|
             periods.scan(/[\w]/).each do |p|
@@ -123,7 +122,6 @@ class TwuCourseCrawler < CourseCrawler::Base
         end
       end
     end
-# binding.pry
     @courses
   end
 end

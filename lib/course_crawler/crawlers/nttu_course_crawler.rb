@@ -92,9 +92,8 @@ class NttuCourseCrawler < CourseCrawler::Base
           course_temp(doc)
         end
       end
-     # end
     end
-   # binding.pry if data[3] == "CTE91H00D001"
+
     @courses
   end
 

@@ -71,7 +71,6 @@ class UsckhCourseCrawler < CourseCrawler::Base
     )
 
     # ic = Iconv.new('utf-8', r.encoding)
-    # binding.pry.force_encoding('utf-8')
     # @doc = Nokogiri::HTML(r.to_s.force_encoding('big5').encode('utf-8', invalid: :replace, :undef => :replace, :replace => ''))
     @doc = Nokogiri::HTML(@ic.iconv r)
 

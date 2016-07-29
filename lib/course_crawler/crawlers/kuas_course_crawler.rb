@@ -181,10 +181,10 @@ class KuasCourseCrawler < CourseCrawler::Base
           end
 
           @courses << course
-    # binding.pry if dep_c == "UE233311"
         end
       end
     end
+
     ThreadsWait.all_waits(*@threads)
 
     @courses

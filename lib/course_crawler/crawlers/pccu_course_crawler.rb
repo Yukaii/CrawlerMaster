@@ -82,7 +82,6 @@ class PccuCourseCrawler < CourseCrawler::Base
 
       # visit URI.encode "https://ap1.pccu.edu.tw/newAp/frame/apMainFrameSet.asp?ApGUID={#{guid}}"
       # sleep 5
-      # binding.pry
 
       frame = first 'iframe'
       within_frame frame do

@@ -157,7 +157,6 @@ class CmuCourseCrawler < CourseCrawler::Base
 
           @courses << course
 
-# binding.pry if course_id == 9
           course_days, course_periods, course_locations = [], [], []
           swich = true
           data = nil

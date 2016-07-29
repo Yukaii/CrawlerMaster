@@ -125,7 +125,7 @@ class NutcCourseCrawler < CourseCrawler::Base
           @courses << course
 
           course_id_temp[data[1]] = true
-# binding.pry
+
         end
       end
     end
