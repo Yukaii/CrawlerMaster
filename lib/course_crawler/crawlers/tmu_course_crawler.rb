@@ -42,10 +42,10 @@ class TmuCourseCrawler < CourseCrawler::Base
     @courses = []
     page.driver.allow_url("acadsys.tmu.edu.tw")
 
-    visit "http://acadsys.tmu.edu.tw/pubinfo/deptSearch.aspx?language=tw"
+    visit "http://acadsys.tmu.edu.tw/pubinfo/cousreSearch.aspx"
     first("select[name=\"ctl00$ContentPlaceHolder1$DropDownListSmtr\"] option[value=\"#{@year-1911}#{@term}\"]")
 
-    first('input[type="submit"]').click
+    first('input[name="ctl00$ContentPlaceHolder1$SearchButton"]').click
 
     page_count = 1
     loop do
