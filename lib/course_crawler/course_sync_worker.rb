@@ -39,7 +39,7 @@ module CourseCrawler
             :"#{crawler_model.data_name}" => course
           )
 
-          updated_course = JSON.parse(r)
+          updated_course = Oj.load(r)
 
           # diff = Hash[*(
           # (updated_course.size > course.size) \

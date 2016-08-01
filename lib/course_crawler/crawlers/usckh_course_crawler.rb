@@ -183,7 +183,7 @@ class UsckhCourseCrawler < CourseCrawler::Base
   end
 
   # def crawl_detail
-  #   @courses = JSON.parse File.read('courses.json')
+  #   @courses = Oj.load File.read('courses.json')
   #   progressbar = ProgressBar.create(:total => @courses.count)
   #   @courses.each do |course|
   #     progressbar.increment

@@ -87,7 +87,7 @@ class CjcuCourseCrawler < CourseCrawler::Base
 
             r = RestClient.get @url_Get , accept: 'application/json'
             #doc = Nokogiri::HTML(r)
-            data = JSON.parse(r)
+            data = Oj.load(r)
 
             data.each do |array|
               # regex = /\[(.)\][A-Z]{3}\s\((.+)\)(.+)/
@@ -158,7 +158,7 @@ class CjcuCourseCrawler < CourseCrawler::Base
     @url_GetInForeign = "https://eportal.cjcu.edu.tw/api/Course/GetByTaughtInForeignLanguages/?syear=#{year-1911}&semester=#{term}"
     r_Foregin = RestClient.get @url_GetInForeign , accept: 'application/json'
 
-    data_Foregin = JSON.parse(r_Foregin)
+    data_Foregin = Oj.load(r_Foregin)
     data_Foregin.each do |array|
 
       course_regex = /星期(?<d>.)\((?<s>\d+)節~(?<e>\d+)節\)(?<loc>([^星期]+)?)/

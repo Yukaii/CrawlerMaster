@@ -148,13 +148,13 @@ class UscCourseCrawler < CourseCrawler::Base
       }
     end
     ThreadsWait.all_waits(*@threads)
-    # File.write('courses.json', JSON.pretty_generate(@courses))
+    # File.write('courses.json', Oj.dump(@courses, indent: 2, mode: :compat))
 
     @courses
   end
 
   # def crawl_detail
-  #   @courses = JSON.parse File.read('courses.json')
+  #   @courses = Oj.load File.read('courses.json')
   #   progressbar = ProgressBar.create(:total => @courses.count)
   #   @courses.each do |course|
   #     progressbar.increment

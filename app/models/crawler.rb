@@ -124,7 +124,7 @@ class Crawler < ActiveRecord::Base
   def after_setup
 
     begin
-      data = JSON.parse(RestClient.get("https://colorgy.io/api/v1/organizations/#{organization_code}.json"))
+      data = Oj.load(RestClient.get("https://colorgy.io/api/v1/organizations/#{organization_code}.json"))
 
       if data && data['name']
         self.description = data['name']
