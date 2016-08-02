@@ -1,3 +1,6 @@
+# 臺灣科技大學
+# http://140.118.31.215/querycourse/ChCourseQuery/QueryCondition.aspx
+
 module CourseCrawler::Crawlers
   class NtustCourseCrawler < CourseCrawler::Base
     attr_reader :semester_list, :courses_list, :query_url, :result_url
@@ -19,23 +22,7 @@ module CourseCrawler::Crawlers
       "日" => 7
     }
 
-    PERIODS = {
-      "0" =>  1,
-      "1" =>  2,
-      "2" =>  3,
-      "3" =>  4,
-      "4" =>  5,
-      "5" =>  6,
-      "6" =>  7,
-      "7" =>  8,
-      "8" =>  9,
-      "9" => 10,
-      "10"=> 11,
-      "A" => 12,
-      "B" => 13,
-      "C" => 14,
-      "D" => 15,
-    }
+    PERIODS = CoursePeriod.find('NTUST').code_map
 
     DEPS = {
       "AD" => "建築系",
