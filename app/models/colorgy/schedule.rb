@@ -28,11 +28,10 @@
 #  index_schedules_on_root_schedule_id  (root_schedule_id)
 #  index_schedules_on_type              (type)
 #
-
 module Colorgy
-  class Schedule < ActiveRecord::Base
-    include ColorgyConnection
-
+  class Schedule < ColorgyRecord
     self.table_name = 'schedules'
+
+    scope :root, -> { where(root_schedule_id: nil) }
   end
 end
