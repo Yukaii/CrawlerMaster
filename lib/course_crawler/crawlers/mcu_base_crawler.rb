@@ -54,7 +54,7 @@ class McuBaseCrawler < CourseCrawler::Base
     # save departments hash
     departments = Hash[@doc.css('select[name="dept1"] option')[1..-1].map {|k| ss = k.text.strip.split(' - '); [ss[0], ss[1]]}]
     Dir.mkdir('tmp') if not Dir.exist?('tmp')
-    File.write('tmp/departments.json', JSON.pretty_generate(departments))
+    File.write('tmp/departments.json', Oj.dump(departments, indent: 2, mode: :compat))
 
     @total_department_count = schs.count
     @processed_department_count = 0

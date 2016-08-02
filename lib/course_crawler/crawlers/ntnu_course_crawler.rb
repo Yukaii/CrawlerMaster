@@ -270,7 +270,7 @@ class NtnuCourseCrawler < CourseCrawler::Base
         # puts "#{dep_code}, #{index}"
         begin
           respond = RestClient.get @url, params: url_params_for_department(department: dep_code, year: @year-1911, term: @term)
-          respond = JSON.parse(respond.to_s)
+          respond = Oj.load(respond.to_s)
         rescue Exception => e
           print "Error on #{dep_code}! #{e}! retry later...\n"
           sleep(1)
@@ -308,7 +308,7 @@ class NtnuCourseCrawler < CourseCrawler::Base
 
     # if done_departments_count == departments.count
 
-    #   File.open('courses.json', 'w') { |f| f.write(JSON.pretty_generate(normalize(@courses))) }
+    #   File.open('courses.json', 'w') { |f| f.write(Oj.dump(normalize(@courses), indent: 2, mode: :compat)) }
     # end
 
     normalize(@courses)

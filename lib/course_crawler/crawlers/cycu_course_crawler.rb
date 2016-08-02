@@ -167,7 +167,7 @@ class CycuCourseCrawler < CourseCrawler::Base
   #   @courses.each do |c|
   #     filename = "book_datas/#{c[:code]}"
   #     if File.exist?(filename)
-  #       textbook = JSON.parse(File.read(filename))
+  #       textbook = Oj.load(File.read(filename))
   #       c[:textbook] = textbook
   #     end
   #   end

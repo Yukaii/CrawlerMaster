@@ -155,7 +155,7 @@ class TtuCourseCrawler < CourseCrawler::Base
     ThreadsWait.all_waits(*@threads)
     ThreadsWait.all_waits(*@parse_detail_threads)
 
-    # deps = JSON.parse(File.read('ttu_code.json'));
+    # deps = Oj.load(File.read('ttu_code.json'));
 
     @update_threads = []
     @courses.each do |k, course|

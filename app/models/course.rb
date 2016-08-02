@@ -47,6 +47,16 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #
+# Indexes
+#
+#  index_courses_on_code               (code)
+#  index_courses_on_general_code       (general_code)
+#  index_courses_on_organization_code  (organization_code)
+#  index_courses_on_required           (required)
+#  index_courses_on_term               (term)
+#  index_courses_on_ucode              (ucode)
+#  index_courses_on_year               (year)
+#
 
 class Course < ActiveRecord::Base
   belongs_to :crawler, foreign_key: :organization_code, primary_key: :organization_code, counter_cache: true

@@ -129,7 +129,7 @@ class NctuCourse
       ftype: ftype,
       flang: 'zh-tw'
     }
-    JSON.parse(r)
+    Oj.load(r)
   end
 
 
@@ -154,7 +154,7 @@ class NctuCourse
       fcategory: fcategory,
       flang: 'zh-tw'
     }
-    JSON.parse(r)
+    Oj.load(r)
   end
 
   # [
@@ -185,7 +185,7 @@ class NctuCourse
       fcollege: fcollege,
       flang: 'zh-tw'
     }
-    JSON.parse(r)
+    Oj.load(r)
   end
 
   def get_group ftype: "3", fcategory: "3*", fcollege: "A", fdep: "343"
@@ -197,7 +197,7 @@ class NctuCourse
       fdep: fdep,
       flang: 'zh-tw'
     }
-    JSON.parse(r)
+    Oj.load(r)
   end
 
   def get_cos_list degree: "3", dep_id: "43"
@@ -217,7 +217,7 @@ class NctuCourse
       m_crstime: "**",
       m_crsoutline: "**",
     }
-    JSON.parse(r)
+    Oj.load(r)
   end
 end
 end

@@ -48,7 +48,7 @@ module CourseCrawler
 
       if options[:save_json]
         file_path = Rails.root.join('tmp', "#{organization_code.downcase}_courses_#{Time.zone.now.to_i}.json")
-        File.write(file_path, JSON.pretty_generate(courses))
+        File.write(file_path, Oj.dump(courses, indent: 2, mode: :compat))
 
         puts "courses crawled results generate at: #{file_path}"
       end

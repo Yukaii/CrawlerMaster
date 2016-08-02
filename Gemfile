@@ -25,6 +25,9 @@ gem 'compass-rails', github: 'Compass/compass-rails', branch: 'master'
 
 gem 'kaminari'
 
+# quick json
+gem 'oj'
+
 gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.0'
