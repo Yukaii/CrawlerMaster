@@ -12,12 +12,9 @@ module CoursePeriod
     end
 
     def validate_time
-      # time string should match "10:10", two digits seperate by a colon
-      time_regex = /\d{2}\:\d{2}/
-      start_at_tmp, end_at_tmp = time.split('-')
-
-      raise InvalidTimeFormat unless time.include?('-')
-      raise InvalidTimeFormat unless start_at_tmp.match(time_regex) && end_at_tmp.match(time_regex)
+      # a full time string should match something like "10:10-11:30"
+      time_regex = /\d{2}\:\d{2}\-\d{2}\:\d{2}/
+      raise InvalidTimeFormat unless time.match(time_regex)
     end
 
     def start_time
@@ -26,6 +23,15 @@ module CoursePeriod
 
     def end_time
       utc_format_str(end_at)
+    end
+
+    def to_s
+      {
+        order: order,
+        code: code,
+        start_at: start_at,
+        end_at: end_at
+      }.to_s
     end
 
     private
