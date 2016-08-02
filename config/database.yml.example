@@ -9,9 +9,23 @@ default: &default
   pool: 5
   timeout: 5000
 
+# Colorgy main database connection info
+# The Crawler system would directly update its database
+colorgy_main: &colorgy_main
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: localhost
+  username:
+  password:
+
 development:
   <<: *default
   database: db/development.sqlite3
+
+  colorgy_main:
+    <<: *colorgy_main
+    database: colorgy_development
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -20,6 +34,14 @@ test:
   <<: *default
   database: db/test.sqlite3
 
+  colorgy_main:
+    <<: *colorgy_main
+    database: colorgy_test
+
 production:
   <<: *default
   database: db/production.sqlite3
+
+  colorgy_main:
+    <<: *colorgy_main
+    database: colorgy_production

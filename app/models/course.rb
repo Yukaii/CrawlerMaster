@@ -59,6 +59,8 @@
 #
 
 class Course < ActiveRecord::Base
+  include CourseImport
+
   belongs_to :crawler, foreign_key: :organization_code, primary_key: :organization_code, counter_cache: true
 
   BASIC_COLUMNS = [
@@ -110,7 +112,34 @@ class Course < ActiveRecord::Base
     :full_semester
   ].freeze
 
+  DAYS = {
+    1 => 'MO',
+    2 => 'TU',
+    3 => 'WE',
+    4 => 'TH',
+    5 => 'FR',
+    6 => 'SA',
+    7 => 'SU'
+  }.freeze
+
   def self.inserted_column_names
     BASIC_COLUMNS + SCHEDULE_COLUMNS + ADDITIONAL_COLUMNS
   end
+
+  def fetch_course_attributes(name)
+    (1..9).map { |i| :"#{name}_#{i}" }.map { |v| send(v) }
+  end
+
+  def course_days
+    fetch_course_attributes('day')
+  end
+
+  def course_periods
+    fetch_course_attributes('period')
+  end
+
+  def course_locations
+    fetch_course_attributes('location')
+  end
+
 end

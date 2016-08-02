@@ -18,6 +18,9 @@ module CrawlerMaster
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
     config.time_zone = 'Taipei'
 
+    # config ActiveJob to work with sidekiq
+    config.active_job.queue_adapter = :sidekiq
+
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
