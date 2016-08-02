@@ -20,7 +20,7 @@ module CourseCrawler
       crawler_klass = Crawlers.const_get(crawler_name)
 
       organization_code = crawler_name.match(/(.+?)CourseCrawler/)[1].upcase
-      crawler_record = Crawler.find_by(organization_code: organization_code)
+      crawler_record    = Crawler.find_by(organization_code: organization_code)
 
       year = options[:year] || crawler_record.year || current_year
       term = options[:term] || crawler_record.term || current_term

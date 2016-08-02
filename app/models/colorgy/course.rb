@@ -35,8 +35,26 @@ module Colorgy
                    :course_notes, :course_type
 
     has_many       :sub_courses, foreign_key: :root_schedule_id, class_name: 'Colorgy::Course', dependent: :destroy
+    belongs_to     :calendar, class_name: 'Colorgy::Calendar'
 
     accepts_nested_attributes_for :sub_courses, allow_destroy: true
+
+    def check_course_type
+      if calendar.owner_type == 'Organization'
+        'official'
+      elsif calendar.owner_type == 'User'
+        if reference_id.nil?
+          'custom'
+        else
+          'modified'
+        end
+      end
+    end
+
+    def flatten_with_sub_courses
+      [self] + sub_courses
+    end
+
     # Overwrite default sti behavior
     # http://stackoverflow.com/questions/23293177/rails-sti-how-to-change-mapping-between-class-name-value-of-the-type-column
     class << self
