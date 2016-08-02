@@ -81,6 +81,7 @@ gem 'remote_syslog_logger'
 gem 'rack-mini-profiler', require: false
 
 gem 'pg'
+gem 'chronic'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

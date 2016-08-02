@@ -28,10 +28,15 @@
 #  index_schedules_on_root_schedule_id  (root_schedule_id)
 #  index_schedules_on_type              (type)
 #
-
 module Colorgy
   class Course < Schedule
+    store_accessor :data, :course_year, :course_term, :course_lecturer,
+                   :course_credits, :course_url, :course_required, :course_code, :period_string,
+                   :course_notes, :course_type
 
+    has_many       :sub_courses, foreign_key: :root_schedule_id, class_name: 'Colorgy::Course', dependent: :destroy
+
+    accepts_nested_attributes_for :sub_courses, allow_destroy: true
     # Overwrite default sti behavior
     # http://stackoverflow.com/questions/23293177/rails-sti-how-to-change-mapping-between-class-name-value-of-the-type-column
     class << self
