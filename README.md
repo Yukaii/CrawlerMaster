@@ -2,7 +2,7 @@
 
 臺灣各校課程爬蟲。
 
-## Documents
+## Getting started
 
 * [開發環境建制指南](./doc/dev_setup_guide.md)
 * [專案架構說明](./doc/architecture.md)
@@ -15,6 +15,7 @@
 * [Neson](https://github.com/Neson)
 * [Hong Ru](https://github.com/LinTim)
 * [Boyu Lin](https://github.com/BoyuLin0906)
+* [herber523](https://github.com/herber523)
 * [log3log4771](https://github.com/log3log4771)
 * [幽默的調調](https://github.com/dengshun83)
 
