@@ -80,6 +80,8 @@ gem 'remote_syslog_logger'
 
 gem 'rack-mini-profiler', require: false
 
+gem 'pg'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -101,7 +103,6 @@ group :development, :test do
 end
 
 group :production do
-  gem 'pg'
   gem 'newrelic_rpm'
   gem 'rails_12factor'
 end
