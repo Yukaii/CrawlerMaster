@@ -25,9 +25,6 @@ gem 'compass-rails', github: 'Compass/compass-rails', branch: 'master'
 
 gem 'kaminari'
 
-# quick json
-gem 'oj'
-
 gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.0'
@@ -47,44 +44,63 @@ gem 'awesome_print', require: false
 gem 'hirb',          require: false
 gem 'hirb-unicode',  require: false
 
-# crawler dependencies
+# http clients
 gem 'rest-client'
 gem 'httpclient', '~> 2.7'
+
+# encoding
 gem 'iconv'
+
+# crawler helpers
 gem 'crawler_rocks'
 gem 'nokogiri'
 gem 'hashie'
+
+# quick json
+gem 'oj'
+
+# browser automation
 gem 'capybara'
 gem 'poltergeist'
-gem 'archive-tar-minitar'
-gem 'spreadsheet'
-gem 'rtesseract',   require: false
-gem 'rmagick',      require: false
 gem 'selenium-webdriver', '~> 2.49'
 gem 'capybara-webkit'
 
-gem 'sidekiq', '~> 4.0'
-gem 'sidekiq-limit_fetch'
-gem 'redis-namespace'
+gem 'archive-tar-minitar'
+
+# xlsx library
+gem 'spreadsheet'
 gem 'rubyXL'
 
-gem 'sinatra', require: false
+# image processing library
+gem 'rtesseract',   require: false
+gem 'rmagick',      require: false
 
+# Task runner
+gem 'sidekiq', '~> 4.0'
+gem 'sidekiq-limit_fetch'
+gem 'sidekiq-failures'
+gem 'sinatra', require: false
 gem 'rufus-scheduler', '~> 3.1'
+
+gem 'redis-namespace'
+
 
 # Use Unicorn as the app server
 gem 'unicorn'
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
+
 gem 'remote_syslog_logger'
 
 gem 'rack-mini-profiler', require: false
 
+# postgres
 gem 'pg'
+
+# date helper
 gem 'chronic'
 
 gem 'active_model_serializers', '~> 0.10.0'
 
+# AWS
 gem 'aws-sdk'
 gem 's3'
 

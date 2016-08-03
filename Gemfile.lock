@@ -340,6 +340,8 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       redis (~> 3.2, >= 3.2.1)
       sinatra (>= 1.4.7)
+    sidekiq-failures (0.4.5)
+      sidekiq (>= 2.16.0)
     sidekiq-limit_fetch (3.3.0)
       sidekiq (>= 4)
     sinatra (1.4.7)
@@ -450,6 +452,7 @@ DEPENDENCIES
   selenium-webdriver (~> 2.49)
   shoulda-matchers
   sidekiq (~> 4.0)
+  sidekiq-failures
   sidekiq-limit_fetch
   sinatra
   slim
