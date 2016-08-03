@@ -31,7 +31,9 @@ module CourseImport
               rrule:         rrule,
               period_string: period_string,
               period:        period,
-              calendar_id:   calendar.id
+              calendar_id:   calendar.id,
+              start_time:    period.start_time(semester_date.nearest_day(course_days[0])),
+              end_time:      period.end_time(semester_date.nearest_day(course_days[0]))
             )
 
           sub_courses_attributes = course_days[1..-1].each_with_index.map do |day, index|
@@ -45,7 +47,9 @@ module CourseImport
               rrule:         rrule,
               period_string: period_string,
               period:        period,
-              calendar_id:   calendar.id
+              calendar_id:   calendar.id,
+              start_time:    period.start_time(semester_date.nearest_day(day)),
+              end_time:      period.end_time(semester_date.nearest_day(day))
             )
           end
 
@@ -58,7 +62,7 @@ module CourseImport
       end # end transaction do
     end # end import
 
-    def build_course_attributes(legacy_course: nil, location: nil, rrule: nil, period_string: nil, period: nil, calendar_id: nil)
+    def self.build_course_attributes(legacy_course: nil, location: nil, rrule: nil, period_string: nil, calendar_id: nil, start_time: nil, end_time: nil)
       {
         name:            legacy_course.name,
         course_year:     legacy_course.year,
@@ -74,8 +78,8 @@ module CourseImport
         rrule:           rrule,
         period_string:   period_string,
 
-        start_time:      period.start_time,
-        end_time:        period.end_time
+        start_time:      start_time,
+        end_time:        end_time
       }
     end
   end

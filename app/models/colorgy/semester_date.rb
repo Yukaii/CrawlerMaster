@@ -25,12 +25,16 @@ module Colorgy
     }.freeze
 
     def to_rrule_array(day)
-      dtstart = Chronic.parse(DAYS[day], now: start_date)
+      dtstart = nearest_day(day, start_date)
 
       [
         "DTSTART=#{to_rrule_string(dtstart)}",
         "UNTIL=#{to_rrule_string(end_date)}"
       ]
+    end
+
+    def nearest_day(day, now=start_date)
+      Chronic.parse(DAYS[day], now: now)
     end
 
     def to_rrule_string(datetime)

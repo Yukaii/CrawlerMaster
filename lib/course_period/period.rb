@@ -17,12 +17,12 @@ module CoursePeriod
       raise InvalidTimeFormat unless time.match(time_regex)
     end
 
-    def start_time
-      utc_format_str(start_at)
+    def start_time(date)
+      utc_format_str(merge_date(date, start_at))
     end
 
-    def end_time
-      utc_format_str(end_at)
+    def end_time(date)
+      utc_format_str(merge_date(date, end_at))
     end
 
     def to_s
@@ -35,6 +35,10 @@ module CoursePeriod
     end
 
     private
+
+    def merge_date(date, time)
+      DateTime.new(date.year, date.month, date.day, time.hour, time.min, time.sec, time.zone)
+    end
 
     def utc_format_str(time)
       time.getutc.iso8601.gsub(/[-:]/, '')
