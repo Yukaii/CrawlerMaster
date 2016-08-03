@@ -14,7 +14,7 @@ module CourseCrawler
     include Sidekiq::Worker
     include Mixin
 
-    sidekiq_options retry: 1
+    sidekiq_options retry: false
 
     def perform(crawler_name, options = {})
       crawler_klass = Crawlers.const_get(crawler_name)
