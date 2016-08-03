@@ -78,7 +78,6 @@ gem 'rufus-scheduler', '~> 3.1'
 
 gem 'redis-namespace'
 
-
 # Use Unicorn as the app server
 gem 'unicorn'
 
@@ -93,6 +92,8 @@ gem 'pg'
 gem 'chronic'
 
 gem 'active_model_serializers', '~> 0.10.0'
+
+gem 'paper_trail'
 
 # AWS
 gem 'aws-sdk'
