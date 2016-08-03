@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160803081532) do
+ActiveRecord::Schema.define(version: 20160803085015) do
 
   create_table "admin_users", force: :cascade do |t|
     t.string   "username",               default: ""
@@ -99,12 +99,18 @@ ActiveRecord::Schema.define(version: 20160803081532) do
   add_index "courses", ["year"], name: "index_courses_on_year"
 
   create_table "crawl_tasks", force: :cascade do |t|
-    t.integer  "type",        default: 0, null: false
+    t.integer  "type",              default: 0, null: false
     t.datetime "finished_at"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.integer  "course_year"
+    t.integer  "course_term"
+    t.string   "organization_code"
   end
 
+  add_index "crawl_tasks", ["course_term"], name: "index_crawl_tasks_on_course_term"
+  add_index "crawl_tasks", ["course_year"], name: "index_crawl_tasks_on_course_year"
+  add_index "crawl_tasks", ["organization_code"], name: "index_crawl_tasks_on_organization_code"
   add_index "crawl_tasks", ["type"], name: "index_crawl_tasks_on_type"
 
   create_table "crawlers", force: :cascade do |t|
