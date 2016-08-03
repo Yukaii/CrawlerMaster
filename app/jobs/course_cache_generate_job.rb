@@ -6,11 +6,11 @@ class CourseCacheGenerateJob < ActiveJob::Base
     organization = Colorgy::Organization.find_by(code: organization_code)
     calendar     = Colorgy::Calendar.find_by!(owner_type: 'Organization', owner_id: organization.id)
 
-    courses = Colorgy::Course.where(calendar_id: calendar.id).root
-                             .where("data -> 'course_year' = '#{course_year}' AND data -> 'course_term' = '#{course_term}'")
-                             .reduce([]) do |prev, cur|
-                               prev + cur.flatten_with_sub_courses
-                             end
+    courses      = Colorgy::Course.where(calendar_id: calendar.id).root
+                                  .where("data -> 'course_year' = '#{course_year}' AND data -> 'course_term' = '#{course_term}'")
+                                  .reduce([]) do |prev, cur|
+                                    prev + cur.flatten_with_sub_courses
+                                  end
 
     courses_json_string = courses.map { |course| CourseSerializer.new(course) }.to_json
 

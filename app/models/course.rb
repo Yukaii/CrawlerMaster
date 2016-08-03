@@ -61,6 +61,8 @@
 class Course < ActiveRecord::Base
   include CourseImport
 
+  has_paper_trail
+
   belongs_to :crawler, foreign_key: :organization_code, primary_key: :organization_code, counter_cache: true
 
   BASIC_COLUMNS = [

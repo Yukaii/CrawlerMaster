@@ -27,10 +27,12 @@
 class Crawler < ActiveRecord::Base
   include CourseCrawler::Mixin
 
-  before_create :setup
-  after_create  :after_setup
   has_many :rufus_jobs
   has_many :courses, foreign_key: :organization_code, primary_key: :organization_code
+  has_many :crawl_tasks, primary_key: :organization_code, foreign_key: :organization_code
+
+  before_create :setup
+  after_create  :after_setup
 
   store :setting, accessors: [:schedule]
 
