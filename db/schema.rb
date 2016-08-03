@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160803085015) do
+ActiveRecord::Schema.define(version: 20160803133323) do
 
   create_table "admin_users", force: :cascade do |t|
     t.string   "username",               default: ""
@@ -88,6 +88,39 @@ ActiveRecord::Schema.define(version: 20160803085015) do
     t.string   "location_9"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
+    t.integer  "day_10"
+    t.integer  "day_11"
+    t.integer  "day_12"
+    t.integer  "day_13"
+    t.integer  "day_14"
+    t.integer  "day_15"
+    t.integer  "day_16"
+    t.integer  "day_17"
+    t.integer  "day_18"
+    t.integer  "day_19"
+    t.integer  "day_20"
+    t.integer  "period_10"
+    t.integer  "period_11"
+    t.integer  "period_12"
+    t.integer  "period_13"
+    t.integer  "period_14"
+    t.integer  "period_15"
+    t.integer  "period_16"
+    t.integer  "period_17"
+    t.integer  "period_18"
+    t.integer  "period_19"
+    t.integer  "period_20"
+    t.string   "location_10"
+    t.string   "location_11"
+    t.string   "location_12"
+    t.string   "location_13"
+    t.string   "location_14"
+    t.string   "location_15"
+    t.string   "location_16"
+    t.string   "location_17"
+    t.string   "location_18"
+    t.string   "location_19"
+    t.string   "location_20"
   end
 
   add_index "courses", ["code"], name: "index_courses_on_code"

@@ -46,6 +46,39 @@
 #  location_9        :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  day_10            :integer
+#  day_11            :integer
+#  day_12            :integer
+#  day_13            :integer
+#  day_14            :integer
+#  day_15            :integer
+#  day_16            :integer
+#  day_17            :integer
+#  day_18            :integer
+#  day_19            :integer
+#  day_20            :integer
+#  period_10         :integer
+#  period_11         :integer
+#  period_12         :integer
+#  period_13         :integer
+#  period_14         :integer
+#  period_15         :integer
+#  period_16         :integer
+#  period_17         :integer
+#  period_18         :integer
+#  period_19         :integer
+#  period_20         :integer
+#  location_10       :string
+#  location_11       :string
+#  location_12       :string
+#  location_13       :string
+#  location_14       :string
+#  location_15       :string
+#  location_16       :string
+#  location_17       :string
+#  location_18       :string
+#  location_19       :string
+#  location_20       :string
 #
 # Indexes
 #
