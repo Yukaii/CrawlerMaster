@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160803041437) do
+ActiveRecord::Schema.define(version: 20160803081532) do
 
   create_table "admin_users", force: :cascade do |t|
     t.string   "username",               default: ""
@@ -32,6 +32,17 @@ ActiveRecord::Schema.define(version: 20160803041437) do
   add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true
   add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   add_index "admin_users", ["username"], name: "index_admin_users_on_username", unique: true
+
+  create_table "course_task_relations", force: :cascade do |t|
+    t.integer  "version_id"
+    t.integer  "task_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "course_task_relations", ["task_id", "version_id"], name: "index_course_task_relations_on_task_id_and_version_id", unique: true
+  add_index "course_task_relations", ["task_id"], name: "index_course_task_relations_on_task_id"
+  add_index "course_task_relations", ["version_id"], name: "index_course_task_relations_on_version_id"
 
   create_table "courses", force: :cascade do |t|
     t.string   "organization_code", null: false
@@ -86,6 +97,15 @@ ActiveRecord::Schema.define(version: 20160803041437) do
   add_index "courses", ["term"], name: "index_courses_on_term"
   add_index "courses", ["ucode"], name: "index_courses_on_ucode"
   add_index "courses", ["year"], name: "index_courses_on_year"
+
+  create_table "crawl_tasks", force: :cascade do |t|
+    t.integer  "type",        default: 0, null: false
+    t.datetime "finished_at"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "crawl_tasks", ["type"], name: "index_crawl_tasks_on_type"
 
   create_table "crawlers", force: :cascade do |t|
     t.string   "name"
