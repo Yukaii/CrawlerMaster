@@ -89,6 +89,9 @@ module CourseCrawler
       end
 
       crawler_record.update!(last_run_at: Time.zone.now)
+
+      # fix counter_cache because we insert courses through sql directly
+      Crawler.reset_counters(crawler_record.id, :courses)
     end
   end
 end
