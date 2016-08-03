@@ -49,7 +49,7 @@ gem 'iconv'
 gem 'crawler_rocks'
 gem 'nokogiri'
 gem 'hashie'
-
+gem 'thu_course'
 # quick json
 gem 'oj'
 
