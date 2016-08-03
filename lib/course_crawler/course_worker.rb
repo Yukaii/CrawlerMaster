@@ -39,7 +39,7 @@ module CourseCrawler
 
       if courses.empty?
         # TODO: Log if results are empty
-        puts 'no courses crawled'
+        puts 'no courses crawled' if $PROGRAM_NAME =~ /rake$/
         Rails.logger.info('no courses crawled')
 
         return
@@ -50,7 +50,7 @@ module CourseCrawler
         file_path = Rails.root.join('tmp', "#{organization_code.downcase}_courses_#{Time.zone.now.to_i}.json")
         File.write(file_path, Oj.dump(courses, indent: 2, mode: :compat))
 
-        puts "courses crawled results generate at: #{file_path}"
+        puts "courses crawled results generate at: #{file_path}" if $PROGRAM_NAME =~ /rake$/
       end
 
       return unless options[:save_to_db]
