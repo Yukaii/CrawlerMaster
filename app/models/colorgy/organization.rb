@@ -14,6 +14,7 @@
 #
 #  index_organizations_on_code  (code) UNIQUE
 #
+
 module Colorgy
   class Organization < ColorgyRecord
     self.table_name = 'organizations'

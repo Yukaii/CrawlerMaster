@@ -15,6 +15,7 @@
 #
 #  index_calendars_on_owner_id  (owner_id)
 #
+
 module Colorgy
   class Calendar < ColorgyRecord
     self.table_name = 'calendars'

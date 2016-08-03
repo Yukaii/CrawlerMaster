@@ -10,6 +10,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+
 module Colorgy
   class SemesterDate < ColorgyRecord
     self.table_name = 'semester_dates'

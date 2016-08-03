@@ -28,6 +28,7 @@
 #  index_schedules_on_root_schedule_id  (root_schedule_id)
 #  index_schedules_on_type              (type)
 #
+
 module Colorgy
   class Schedule < ColorgyRecord
     self.table_name = 'schedules'

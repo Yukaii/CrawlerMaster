@@ -28,6 +28,7 @@
 #  index_schedules_on_root_schedule_id  (root_schedule_id)
 #  index_schedules_on_type              (type)
 #
+
 module Colorgy
   class Course < Schedule
     store_accessor :data, :course_year, :course_term, :course_lecturer,
