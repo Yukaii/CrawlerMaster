@@ -53,7 +53,7 @@ module CourseCrawler
         puts "courses crawled results generate at: #{file_path}" if $PROGRAM_NAME =~ /rake$/
       end
 
-      return unless options[:save_to_db]
+      return unless crawler_record.save_to_db || options[:save_to_db]
 
       # Save course datas into database
       inserted_column_names = [:ucode] + Course.inserted_column_names + [:created_at, :updated_at]
@@ -81,17 +81,12 @@ module CourseCrawler
         eof
       end
 
-      if crawler_record.save_to_db
-        ActiveRecord::Base.transaction do
-          Course.where(organization_code: organization_code, year: year, term: term).destroy_all
-          sqls.map { |sql| ActiveRecord::Base.connection.execute(sql) }
+      ActiveRecord::Base.transaction do
+        Course.where(organization_code: organization_code, year: year, term: term).destroy_all
+        sqls.map { |sql| ActiveRecord::Base.connection.execute(sql) }
 
-          Rails.logger.info("#{crawler_name}: Succesfully save to database.")
-        end
+        Rails.logger.info("#{crawler_name}: Succesfully save to database.")
       end
-
-      # Sync to Core
-      # crawler_record.sync && crawler_record.sync_to_core(year, term)
 
       crawler_record.update!(last_run_at: Time.zone.now)
     end
