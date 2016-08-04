@@ -34,7 +34,7 @@ module Colorgy
       ]
     end
 
-    def nearest_day(day, now=start_date)
+    def nearest_day(day, now = start_date)
       Chronic.parse(DAYS[day], now: now)
     end
 

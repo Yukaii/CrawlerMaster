@@ -8,6 +8,8 @@ require 'thread'
 module CourseCrawler
   class Base
     include Mixin
+
+    attr_reader   :year, :term
     attr_accessor :worker
 
     def set_progress(progress)
