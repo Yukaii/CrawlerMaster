@@ -27,7 +27,7 @@ class CrawlTask < ActiveRecord::Base
 
   enum type: [:crawler, :import]
 
-  validates :organization_code, presence: true
+  validates :organization_code, :course_year, :course_term, presence: true
 
   self.inheritance_column = :_type_disabled
 end

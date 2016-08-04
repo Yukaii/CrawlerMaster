@@ -278,7 +278,7 @@ module CourseCrawler::Crawlers
             :organization_code => 'NTUST',
             :year => @year,
             :term => @term,
-            :lecturer_name => course_lecturer,
+            :lecturer => course_lecturer,
             :credits => course_credits,
             :required => course_required,
             :full_semester => course_full_semester,

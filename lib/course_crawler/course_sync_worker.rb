@@ -15,7 +15,7 @@ module CourseCrawler
 
       return unless org && year && term && class_name
 
-      api_put_columns = Course.inserted_column_names + [ :created_at, :updated_at ]
+      api_put_columns = Course::COLUMN_NAMES + [:created_at, :updated_at]
       crawler_model   = Crawler.find_by(organization_code: org)
 
       courses         = Course.where(organization_code: org, year: year, term: term)
