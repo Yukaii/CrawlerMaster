@@ -57,7 +57,7 @@ module CourseCrawler
 
       return unless crawler_record.save_to_db || options[:save_to_db]
 
-      task       = CrawlTask.create(organization_code: organization_code, course_year: year, course_term: term)
+      task       = CrawlTask.create(organization_code: organization_code, course_year: year, course_term: term, type: :crawler)
       db_courses = Course.where(organization_code: organization_code, year: year, term: term)
 
       # diff courses set
