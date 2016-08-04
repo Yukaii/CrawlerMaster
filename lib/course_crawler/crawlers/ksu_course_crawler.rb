@@ -76,6 +76,9 @@ class KsuCourseCrawler < CourseCrawler::Base
       year   = datas[0].text.to_i + 1911
       term   = datas[1].text.to_i
 
+      @year  = datas[0].text.to_i + 1911
+      @term  = datas[1].text.to_i
+
       next if serial.nil?
 
       detail_doc   = Nokogiri::HTML(http_client.get_content(url))
