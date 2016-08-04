@@ -107,7 +107,8 @@ class Course < ActiveRecord::Base
     :name,
     :code,
     :general_code,
-    :required
+    :required,
+    :ucode
   ].freeze
 
   SCHEDULE_COLUMNS = [
@@ -120,6 +121,17 @@ class Course < ActiveRecord::Base
     :day_7,
     :day_8,
     :day_9,
+    :day_10,
+    :day_11,
+    :day_12,
+    :day_13,
+    :day_14,
+    :day_15,
+    :day_16,
+    :day_17,
+    :day_18,
+    :day_19,
+    :day_20,
     :period_1,
     :period_2,
     :period_3,
@@ -129,6 +141,17 @@ class Course < ActiveRecord::Base
     :period_7,
     :period_8,
     :period_9,
+    :period_10,
+    :period_11,
+    :period_12,
+    :period_13,
+    :period_14,
+    :period_15,
+    :period_16,
+    :period_17,
+    :period_18,
+    :period_19,
+    :period_20,
     :location_1,
     :location_2,
     :location_3,
@@ -137,7 +160,18 @@ class Course < ActiveRecord::Base
     :location_6,
     :location_7,
     :location_8,
-    :location_9
+    :location_9,
+    :location_10,
+    :location_11,
+    :location_12,
+    :location_13,
+    :location_14,
+    :location_15,
+    :location_16,
+    :location_17,
+    :location_18,
+    :location_19,
+    :location_20
   ].freeze
 
   ADDITIONAL_COLUMNS = [
@@ -146,6 +180,8 @@ class Course < ActiveRecord::Base
     :name_en,
     :full_semester
   ].freeze
+
+  COLUMN_NAMES = (BASIC_COLUMNS + SCHEDULE_COLUMNS + ADDITIONAL_COLUMNS).freeze
 
   DAYS = {
     1 => 'MO',
@@ -156,10 +192,6 @@ class Course < ActiveRecord::Base
     6 => 'SA',
     7 => 'SU'
   }.freeze
-
-  def self.inserted_column_names
-    BASIC_COLUMNS + SCHEDULE_COLUMNS + ADDITIONAL_COLUMNS
-  end
 
   def fetch_course_attributes(name)
     (1..9).map { |i| :"#{name}_#{i}" }.map { |v| send(v) }
