@@ -37,7 +37,7 @@ module CoursePeriod
     private
 
     def merge_date(date, time)
-      DateTime.new(date.year, date.month, date.day, time.hour, time.min, time.sec, time.zone)
+      DateTime.new(date.year, date.month, date.day, time.hour, time.min, time.sec, time.formatted_offset)
     end
 
     def utc_format_str(time)
