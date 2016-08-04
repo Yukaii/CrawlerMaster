@@ -3,25 +3,7 @@
 
 module CourseCrawler::Crawlers
   class ThuCourseCrawler < CourseCrawler::Base
-    PERIODS = {
-      'A'   => 1,
-      '1'   => 2,
-      '2'   => 3,
-      '3'   => 4,
-      '4'   => 5,
-      'B'   => 6,
-      '5'   => 7,
-      '6'   => 8,
-      '7'   => 9,
-      '8'   => 10,
-      '9'   => 11,
-      '10'  => 12,
-      '11'  => 13,
-      '12'  => 14,
-      '13'  => 15,
-      '14'  => 16
-    }.freeze
-
+	PERIODS = CoursePeriod.find('THU').code_map
     def initialize(year: nil, term: nil, update_progress: nil, after_each: nil)
       @year                 = year || current_year
       @term                 = term || current_term
