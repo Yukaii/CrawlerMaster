@@ -15,6 +15,7 @@
 #  index_course_task_relations_on_version_id              (version_id)
 #
 
+
 class CourseTaskRelation < ActiveRecord::Base
   belongs_to :version, class_name: 'PaperTrail::Version', foreign_key: :version_id
   belongs_to :crawl_task, foreign_key: :task_id
