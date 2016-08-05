@@ -1,0 +1,26 @@
+= render partial: 'partials/navbar'
+
+
+.container
+  .col-lg-12.col-md-12
+    h3 Task Changes
+
+    p = link_to "<<", crawler_path(@crawler.organization_code)
+
+    = paginate @versions
+    .table-responsive
+      table.table.table-hover
+        tr
+          th id
+          th event
+          th snapshot
+          th changeset
+
+        - @versions.each do |version|
+          tr
+            td= version.id
+            td= version.event
+            td= Oj.dump(version.reify,     indent: 2, mode: :compat)
+            td= Oj.dump(version.changeset, indent: 2, mode: :compat)
+
+    = paginate @versions

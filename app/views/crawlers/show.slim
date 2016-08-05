@@ -71,6 +71,26 @@
                     td= work["payload"]["created_at"] && time_ago_in_words(Time.at(work["payload"]["created_at"])) + " ago"
                     td= work["payload"]["failed_at"] && Time.at(work["payload"]["failed_at"])
 
+      h4 Crawl Tasks
+      .table-responsive
+        table.table.table-hover
+          tr
+            th id
+            th year
+            th term
+            th started at
+            th finished at
+            th
+
+          - @crawler.crawl_tasks.order(:created_at, :desc).find_each do |task|
+            tr
+              td= task.id
+              td= task.course_year
+              td= task.course_term
+              td= task.created_at && "#{time_ago_in_words(task.created_at)} ago"
+              td= task.finished_at && "#{time_ago_in_words(task.finished_at)} ago"
+              td= link_to "View Changes", task_changes_path(task_id: task.id)
+
       / Rufus Jobs Table
       h4 Rufus Jobs
       .table-responsive
