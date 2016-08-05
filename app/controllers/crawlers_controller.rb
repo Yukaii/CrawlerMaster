@@ -1,6 +1,6 @@
 class CrawlersController < ApplicationController
   before_action :authenticate_admin_user!
-  before_action :find_crawler, only: [:show, :setting, :run, :unschedule_job, :sync, :changes]
+  before_action :find_crawler, except: [:index, :batch_run]
 
   def index
     available_crawler_names = CourseCrawler.crawler_list.map(&:to_s)
@@ -12,8 +12,20 @@ class CrawlersController < ApplicationController
   end
 
   def changes
+    @task = @crawler.crawl_tasks.find(params[:task_id])
+    @versions = @task.course_versions.page(params[:page]).per(params[:paginate_by])
+  end
+
+  def snapshot
     task = @crawler.crawl_tasks.find(params[:task_id])
-    @versions = task.course_versions.page(params[:page]).per(params[:paginate_by])
+    task.generate_snapshot do |book, filename|
+      temp_file = Tempfile.new(filename)
+      book.write(temp_file.path)
+      send_data(File.read(temp_file), type: 'application/xls', filename: filename)
+
+      temp_file.close
+      temp_file.unlink
+    end
   end
 
   def setting

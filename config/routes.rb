@@ -17,7 +17,9 @@ Rails.application.routes.draw do
     post   ':id/run',            action: :run,            as: :run_crawler
     post   ':id/sync',           action: :sync,           as: :sync_crawler
 
-    get    ':id/tasks/:task_id', action: :changes,        as: :task_changes
+    get    ':id/tasks/:task_id',          action: :changes,        as: :task_changes
+    post   ':id/tasks/:task_id/snapshot', action: :snapshot,       as: :task_snapshot
+
     delete ':id/jobs/:jid',      action: :unschedule_job, as: :unschedule_job
 
     post   'batch_run',          action: :batch_run,      as: :batch_run_crawler

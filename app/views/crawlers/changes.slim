@@ -1,11 +1,11 @@
 = render partial: 'partials/navbar'
 
-
 .container
   .col-lg-12.col-md-12
     h3 Task Changes
 
-    p = link_to "<<", crawler_path(@crawler.organization_code)
+    p= link_to "<<", crawler_path(@crawler.organization_code)
+    p= link_to "Download Snapshot", task_snapshot_path(task_id: @task.id), method: :post
 
     = paginate @versions
     .table-responsive

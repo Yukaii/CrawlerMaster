@@ -30,4 +30,21 @@ class CrawlTask < ActiveRecord::Base
   validates :organization_code, :course_year, :course_term, presence: true
 
   self.inheritance_column = :_type_disabled
+
+  def generate_snapshot
+    filename = "#{course_year}_#{course_term}_#{organization_code}_course_snapshot_#{created_at.strftime('%Y%m%d-%H%M')}.xls"
+
+    book = Spreadsheet::Workbook.new
+
+    sheet = book.create_worksheet(name: created_at.strftime('%Y%m%d-%H%M'))
+    sheet.update_row(0, *Course::COLUMN_NAMES.map(&:to_s))
+
+    course_versions.find_each.with_index do |version, index|
+      course_snapshot = version.reify.nil? ? version.item : version.reify
+      row = Course::COLUMN_NAMES.map { |key| course_snapshot.send(key) }
+      sheet.update_row(index + 1, *row)
+    end
+
+    yield(book, filename)
+  end
 end

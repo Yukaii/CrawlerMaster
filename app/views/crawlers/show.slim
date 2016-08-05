@@ -89,7 +89,9 @@
               td= task.course_term
               td= task.created_at && "#{time_ago_in_words(task.created_at)} ago"
               td= task.finished_at && "#{time_ago_in_words(task.finished_at)} ago"
-              td= link_to "View Changes", task_changes_path(task_id: task.id)
+              td
+                div= link_to "View Changes", task_changes_path(task_id: task.id)
+                div= link_to "Download Snapshot", task_snapshot_path(task_id: task.id), method: :post
 
       / Rufus Jobs Table
       h4 Rufus Jobs
