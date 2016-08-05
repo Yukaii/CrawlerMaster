@@ -33,6 +33,7 @@ class CrawlTask < ActiveRecord::Base
 
   def generate_snapshot
     filename = "#{course_year}_#{course_term}_#{organization_code}_course_snapshot_#{created_at.strftime('%Y%m%d-%H%M')}.xls"
+    order_map = CoursePeriod.find!(organization_code).order_map
 
     book = Spreadsheet::Workbook.new
 
@@ -41,7 +42,13 @@ class CrawlTask < ActiveRecord::Base
 
     course_versions.find_each.with_index do |version, index|
       course_snapshot = version.reify.nil? ? version.item : version.reify
-      row = Course::COLUMN_NAMES.map { |key| course_snapshot.send(key) }
+      row = Course::COLUMN_NAMES.map do |key|
+        if key.to_s.include?('period')
+          course_snapshot.send(key) && order_map[course_snapshot.send(key)]
+        else
+          course_snapshot.send(key)
+        end
+      end
       sheet.update_row(index + 1, *row)
     end
 
