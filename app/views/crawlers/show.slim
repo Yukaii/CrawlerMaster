@@ -82,7 +82,7 @@
             th finished at
             th
 
-          - @crawler.crawl_tasks.order(:created_at, :desc).find_each do |task|
+          - @crawler.crawl_tasks.order(created_at: :desc).each do |task|
             tr
               td= task.id
               td= task.course_year
