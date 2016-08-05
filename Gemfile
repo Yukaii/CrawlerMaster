@@ -78,8 +78,8 @@ gem 'rufus-scheduler', '~> 3.1'
 
 gem 'redis-namespace'
 
-# Use Unicorn as the app server
-gem 'unicorn'
+# Use Puma as the app server
+gem 'puma'
 
 gem 'remote_syslog_logger'
 
