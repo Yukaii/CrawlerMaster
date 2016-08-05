@@ -20,7 +20,9 @@
           tr
             td= version.id
             td= version.event
-            td= Oj.dump(version.reify,     indent: 2, mode: :compat)
-            td= Oj.dump(version.changeset, indent: 2, mode: :compat)
+            td
+              pre = Oj.dump(version.reify,     indent: 4, mode: :compat)
+            td
+              pre = Oj.dump(version.changeset, indent: 4, mode: :compat)
 
     = paginate @versions
