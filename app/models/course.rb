@@ -181,7 +181,7 @@ class Course < ActiveRecord::Base
     :full_semester
   ].freeze
 
-  COLUMN_NAMES = (BASIC_COLUMNS + SCHEDULE_COLUMNS + ADDITIONAL_COLUMNS).freeze
+  COLUMN_NAMES = (BASIC_COLUMNS + ADDITIONAL_COLUMNS + SCHEDULE_COLUMNS).freeze
 
   DAYS = {
     1 => 'MO',
