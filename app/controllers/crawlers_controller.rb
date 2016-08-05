@@ -1,6 +1,6 @@
 class CrawlersController < ApplicationController
   before_action :authenticate_admin_user!
-  before_action :find_crawler, only: [:show, :setting, :run, :unschedule_job, :sync]
+  before_action :find_crawler, only: [:show, :setting, :run, :unschedule_job, :sync, :changes]
 
   def index
     available_crawler_names = CourseCrawler.crawler_list.map(&:to_s)
@@ -9,6 +9,11 @@ class CrawlersController < ApplicationController
 
   def show
     @title = "#{@crawler.name} | CrawlerMaster"
+  end
+
+  def changes
+    task = @crawler.crawl_tasks.find(params[:task_id])
+    @versions = task.course_versions.page(params[:page]).per(params[:paginate_by])
   end
 
   def setting
@@ -72,7 +77,7 @@ class CrawlersController < ApplicationController
       .map(&:to_s)
       .find { |cn| cn.match(/#{params[:id].downcase.capitalize}CourseCrawler/) } || not_found
 
-    @crawler = Crawler.includes(:rufus_jobs).find_or_create_by(name: demodulized_name)
+    @crawler = Crawler.includes(:rufus_jobs, :crawl_tasks).find_or_create_by(name: demodulized_name)
   end
 
   def create_missing_crwaler(available_crawler_names)
