@@ -118,4 +118,3 @@ group :development, :test do
 
   gem 'annotate'
 end
-
