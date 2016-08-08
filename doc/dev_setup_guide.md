@@ -10,6 +10,8 @@ sudo apt-get update
 sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev
 ```
 
+[安裝 PhantomJS](http://blog.daviddemartini.com/archives/6337)
+
 ### 安裝 Ruby
 
 使用 [rbenv](https://github.com/rbenv/rbenv)
