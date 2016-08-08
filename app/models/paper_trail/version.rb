@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: versions
+#
+#  id             :integer          not null, primary key
+#  item_type      :string           not null
+#  item_id        :integer          not null
+#  event          :string           not null
+#  whodunnit      :string
+#  object         :text(1073741823)
+#  created_at     :datetime
+#  object_changes :text(1073741823)
+#
+# Indexes
+#
+#  index_versions_on_item_type_and_item_id  (item_type,item_id)
+#
+
 module PaperTrail
   class Version < ActiveRecord::Base
     include PaperTrail::VersionConcern
