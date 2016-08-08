@@ -14,4 +14,22 @@ class CourseError < ActiveRecord::Base
   self.inheritance_column = :_type_disabled
 
   belongs_to :course_task_relation, foreign_key: :relation_id
+
+  enum type: [
+    # some required field for course
+    :invalid_lecturer,
+    :invalid_name,
+    :invalid_required,
+    :invalid_credits,
+
+    # no period no course(?)
+    :empty_day,
+    :empty_period,
+    :empty_location,
+
+    # most of the course a least have two periods
+    :only_one_period
+  ]
+
+  validates :type, presence: true
 end
