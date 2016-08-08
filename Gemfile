@@ -99,7 +99,13 @@ gem 'paper_trail'
 gem 'aws-sdk'
 gem 's3'
 
+# Performance & error tracking system
 gem 'rollbar'
+
+group :development do
+  gem 'rubycritic', require: false
+  gem 'rubocop', require: false
+end
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

@@ -152,7 +152,8 @@ class PccuCourseCrawler < CourseCrawler::Base
         course_days = []
         course_periods = []
         course_locations = []
-        datas[8] && datas[8].text.match(/(?<d>\d)\：(?<p>.{2}\-.{2})\s+(?<loc>.\s+\d+)/) do |m|
+        # \uFF1A for fullwith colon '：'
+        datas[8] && datas[8].text.match(/(?<d>\d)\uFF1A(?<p>.{2}\-.{2})\s+(?<loc>.\s+\d+)/) do |m|
           m[:p] && ps = m[:p].split('-')
           from = PERIODS[ps[0]]
           to = PERIODS[ps[1]]

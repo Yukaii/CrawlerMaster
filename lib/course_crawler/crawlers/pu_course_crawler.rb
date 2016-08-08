@@ -50,19 +50,21 @@ class PuCourseCrawler < CourseCrawler::Base
     doc = Nokogiri::HTML(r)
     doc.css('select[name="opunit"] option:not(:first-child)').map{|opt| [opt[:value], opt.text]}.each do |dep_c, dep_n|
 
-      r = %x{curl -s -d "ls_yearsem=#{@year-1911}#{@term}&selectno=&weekday=&section=&cus_select=&classattri=1&subjname=&teaname=&opunit=#{dep_c}&opclass=&lessonlang=&search=%E6%90%9C%E    5%B0%8B&click_ok=Y" #{@query_url}}
+      r = `curl -s -d "ls_yearsem=#{@year-1911}#{@term}&selectno=&weekday=&section=&cus_select=&classattri=1&subjname=&teaname=&opunit=#{dep_c}&opclass=&lessonlang=&search=%E6%90%9C%E    5%B0%8B&click_ok=Y" #{@query_url}`
       doc = Nokogiri::HTML(r)
       doc.css('table[class="table_info"] tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
         next if tr.text.include?("經濟部智慧財產局校園二手教科書網")
         data = tr.css('td').map{|td| td.text}
         data[5] = data[5].scan(/\d/)[0].to_i if data[5] != nil
         syllabus_url = "http://alcat.pu.edu.tw" + tr.css('td a').map{|a| a[:href]}[0][2..-1] if tr.css('td a').map{|a| a[:href]}[0] != nil
-        time_period_regex = /(?<day>[一二三四五六日])(?<peri_loc>(\　\s?(?<period>((\d+)?午?\、?)+)\：?(?<location>[伯思靜任一二計方格主體高室田游保]?[鐸源安垣研濟倫顧育校外徑場泳]?[館外池網]?\球?\場?(\d+)?))+)/
+        time_period_regex = /(?<day>[#{DAYS.join}])(?<peri_loc>(\　\s?(?<period>((\d+)?午?\、?)+)\：?(?<location>[伯思靜任一二計方格主體高室田游保]?[鐸源安垣研濟倫顧育校外徑場泳]?[館外池網]?\球?\場?(\d+)?))+)/
         course_days, course_periods, course_locations = [], [], []
         if data[7] != nil
           course_time_location = data[7].scan(time_period_regex)
           course_time_location.each do |k, v|
-            v.scan(/(?<period>([\d午][\d]?\、?)+)\：/)[0][0].split('、').each do |period|
+            # \uFF1A for fullwith colon '：'
+            # \u3001 for '、'
+            v.scan(/(?<period>([\d午][\d]?\u3001?)+)\uFF1A/)[0][0].split('、').each do |period|
               course_days << DAYS[k]
               course_periods << PERIODS[period]
               course_locations << v.split('：')[-1]
@@ -70,7 +72,7 @@ class PuCourseCrawler < CourseCrawler::Base
           end
         end
 
-        ###!!!課程代碼重複是因為一個課程有多位教師(官方設定的)!!!
+        ### !!!課程代碼重複是因為一個課程有多位教師(官方設定的)!!!
         general_code = data[0].scan(/\w+/)[0]
         next if general_code.nil?
 
@@ -85,7 +87,7 @@ class PuCourseCrawler < CourseCrawler::Base
           # general_code: data[0],    # 選課代碼
           url:          syllabus_url,    # 課程大綱之類的連結
           required:     data[2].include?('必'),    # 必修或選修
-          department:   "#{dep_n}" + " " + "#{data[1].scan(/\S+/)[0]}",        # 開課系所
+          department:   "#{dep_n} #{data[1].scan(/\S+/)[0]}",        # 開課系所
           # department_code: dep_c,
           # note: data[9],           # 備註說明
           # term_type: data[4],       # 學期別
