@@ -162,7 +162,8 @@ class TkuCourseCrawler < CourseCrawler::Base
   end
 
   def parse_courses doc, post_data
-    dep_regex = %r{系別\(Department\)\：(?<dep_c>.+)\.(?<dep_n>.+)\u3000}
+    # \uFF1A for fullwith colon '：'
+    dep_regex = %r{系別\(Department\)\uFF1A(?<dep_c>.+)\.(?<dep_n>.+)\u3000}
     course_rows = doc.css('table[bordercolorlight="#0080FF"] tr').select do |course_row|
       !course_row.text.include?('系別(Department)') &&
       !course_row.text.include?('選擇年級') &&
@@ -287,7 +288,8 @@ class TkuCourseCrawler < CourseCrawler::Base
 
         title_row = title_rows[title_row_index]
 
-        dep_regex = /系別\(Department\)\：(?<dep_c>.+)\.(?<dep_n>.+)\u3000/
+        # \uFF1A for fullwith colon '：'
+        dep_regex = /系別\(Department\)\uFF1A(?<dep_c>.+)\.(?<dep_n>.+)\u3000/
         department = nil; department_code = nil;
         title_row.text.match(dep_regex) do |m|
           department_code = m[:dep_c]

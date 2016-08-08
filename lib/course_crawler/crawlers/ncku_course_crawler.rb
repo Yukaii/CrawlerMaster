@@ -40,7 +40,8 @@ class NckuCourseCrawler < CourseCrawler::Base
 
     visit "http://course-query.acad.ncku.edu.tw/qry/index.php"
     deps_h = Hash[(@doc.css('.dept a') | @doc.css('.institute a')).map do |d|
-      m = d.text.gsub(/\s+/, ' ').match(/\ \(\ (?<dep_c>.{2})\ \）(?<dep>.+)\ /)
+      # \uff09 fullwidth right parenthesis '）'
+      m = d.text.gsub(/\s+/, ' ').match(/\s\(\s(?<dep_c>.{2})\s\uFF09(?<dep>.+)\s/)
       [m[:dep], m[:dep_c]]
     end]
 

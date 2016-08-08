@@ -215,7 +215,8 @@ class NthuCourseCrawler < CourseCrawler::Base
       page.css('tr:not(:first-child)').each do |row|
         datas = row.css('td')
 
-        lecturer = datas[5].text.strip.gsub(/\ /,'')
+        # \u00A0 for space ' '
+        lecturer = datas[5].text.strip.delete(/\u00A0/)
         lecturer = (lecturer.scan(/^[^A-Za-z0-9]+/).first unless lecturer.scan(/^[^A-Za-z0-9]+/).empty?)
         lecturer && lecturer.gsub!(/ /, '') && lecturer.gsub!(/ /, '')
 
@@ -306,7 +307,7 @@ class NthuCourseCrawler < CourseCrawler::Base
     (0...rows.count).step(2) do |i|
       datas = rows[i].css('td')
 
-      lecturer = datas[5].text.strip.gsub(/\ /,'')
+      lecturer = datas[5].text.strip.gsub(/\s/,'')
       lecturer = (lecturer.scan(/^[^A-Za-z0-9]+/).first unless lecturer.scan(/^[^A-Za-z0-9]+/).empty?)
       lecturer && lecturer.gsub!(/ /, '') && lecturer.gsub!(/ /, '')
 

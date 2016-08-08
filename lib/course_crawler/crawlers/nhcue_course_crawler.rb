@@ -81,7 +81,7 @@ class NhcueCourseCrawler < CourseCrawler::Base
         # #{這個裡面放變數}
         credits:      row.css('td')[3].text.strip.to_i,
         required:     row.css('td')[6].text.include?('必'),
-        lecturer:     row.css('td')[4].text.gsub(/\ /, '').strip,
+        lecturer:     row.css('td')[4].text.delete(/\u00A0/).strip,
         day_1:        course_days[0],
         day_2:        course_days[1],
         day_3:        course_days[2],
