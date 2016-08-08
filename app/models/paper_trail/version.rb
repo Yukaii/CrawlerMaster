@@ -34,5 +34,9 @@ module PaperTrail
       course_task_relations.first.course_errors
     end
 
+    def course_errors_size
+      course_task_relations.first.course_errors.size
+    end
+
   end
 end
