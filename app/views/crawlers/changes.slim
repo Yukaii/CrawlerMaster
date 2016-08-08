@@ -13,6 +13,7 @@
         tr
           th id
           th event
+          th errors
           th snapshot
           th changeset
 
@@ -21,8 +22,13 @@
             td= version.id
             td= version.event
             td
+              pre
+                - version.course_errors.each do |error|
+                  = "#{error.type}\n"
+            td
               pre = Oj.dump(version.reify,     indent: 4, mode: :compat)
             td
               pre = Oj.dump(version.changeset, indent: 4, mode: :compat)
+
 
     = paginate @versions
