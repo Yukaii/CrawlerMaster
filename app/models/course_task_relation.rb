@@ -21,7 +21,7 @@ class CourseTaskRelation < ActiveRecord::Base
   belongs_to :version, class_name: 'PaperTrail::Version', foreign_key: :version_id
   belongs_to :crawl_task, foreign_key: :task_id
 
-  has_many   :course_errors, foreign_key: :relation_id
+  has_many   :course_errors, foreign_key: :relation_id, dependent: :destroy
 
   after_create :validate_course
 
