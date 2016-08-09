@@ -59,6 +59,8 @@ class CrawlTask < ActiveRecord::Base
 
   def self.from_file(path)
     course_year, course_term, organization_code, = File.basename(path, '.xls').split('_')
+
+    code_map = CoursePeriod.find!(organization_code).code_map
     task = create!(
       type: :import,
       course_year: course_year,
@@ -73,7 +75,11 @@ class CrawlTask < ActiveRecord::Base
           row[Course::COLUMN_NAMES.index(:code)],
           Hash[
             Course::COLUMN_NAMES.each_with_index.map do |key, column_index|
-              [key, row[column_index]]
+              if key.to_s.include?('period')
+                [key, code_map[row[column_index]]]
+              else
+                [key, row[column_index]]
+              end
             end
           ]
         ]
