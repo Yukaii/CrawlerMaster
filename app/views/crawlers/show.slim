@@ -91,7 +91,8 @@
               td= task.finished_at && "#{time_ago_in_words(task.finished_at)} ago"
               td
                 div= link_to "View Changes", task_changes_path(task_id: task.id)
-                div= link_to "Download Snapshot", task_snapshot_path(task_id: task.id), method: :post
+                div= link_to "Download Snapshot[#{course_versions_count(task)}]", task_snapshot_path(task_id: task.id), method: :post
+                div= link_to "Download Snapshot[#{error_course_versions_count(task)}](Potential Errors Only)", task_snapshot_path(task_id: task.id, errors_only: true), method: :post
 
       / Rufus Jobs Table
       h4 Rufus Jobs
