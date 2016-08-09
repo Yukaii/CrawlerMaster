@@ -49,7 +49,7 @@ class CrawlTask < ActiveRecord::Base
           course_snapshot.send(key)
         end
       end
-      sheet.update_row(index + 1, *row)
+      sheet.update_row(index + 1, *row) # start fromm row 1, row 0 is the header row
     end
 
     yield(book, filename)
