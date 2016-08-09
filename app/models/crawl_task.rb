@@ -107,7 +107,7 @@ class CrawlTask < ActiveRecord::Base
     # TODO: improve SQL statement
     PaperTrail::Version.where(id: CourseTaskRelation.joins(:version, :course_errors) \
                                                     .where('versions.id in (?)', course_versions.pluck(:id)) \
-                                                    .group('course_errors.relation_id') \
+                                                    .group('course_errors.relation_id, course_task_relations.version_id') \
                                                     .having('COUNT(course_errors.relation_id) > 0').pluck(:version_id))
   end
 end
