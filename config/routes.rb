@@ -17,6 +17,9 @@ Rails.application.routes.draw do
     post   ':id/run',            action: :run,            as: :run_crawler
     post   ':id/sync',           action: :sync,           as: :sync_crawler
 
+    get    ':id/import',         action: :import,         as: :crawler_import
+    post   ':id/upload',         action: :upload,         as: :crawler_versions_upload
+
     get    ':id/tasks/:task_id',          action: :changes,        as: :task_changes
     post   ':id/tasks/:task_id/snapshot', action: :snapshot,       as: :task_snapshot
 

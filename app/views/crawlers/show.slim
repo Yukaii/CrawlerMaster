@@ -4,12 +4,7 @@
   .row
     .col-lg-8.col-lg-offset-2.col-md-10.col-md-offset-1.col-s-12
       / flash messages
-      - if flash.keys.any?
-        - flash.each do |fk, fv|
-          .alert.alert-dismissible class="alert-#{fk}" role="alert"
-            button type="button" class="close" data-dismiss="alert" aria-label="Close"
-              span aria-hidden="true" &times;
-            = fv
+      = render partial: 'partials/flash_messages'
 
       .container
         .row
@@ -21,11 +16,16 @@
             span
               button.btn.btn-primary style="margin: 0 1em;" type="submit" Run
 
+          span
+            a href=crawler_import_path(@crawler.organization_code)
+              button.btn.btn-primary style="margin: 0 1em;" Import
+
           / Sync button
           form action=sync_crawler_path(@crawler.organization_code) method="post" style="display: inline-block;"
             = hidden_field_tag :authenticity_token, form_authenticity_token
             span
               button.btn.btn-success style="margin: 0 1em;" type="submit" Sync
+
 
       h4 Status
       table.table
@@ -76,6 +76,7 @@
         table.table.table-hover
           tr
             th id
+            th type
             th year
             th term
             th started at
@@ -85,6 +86,7 @@
           - @crawler.crawl_tasks.order(created_at: :desc).each do |task|
             tr
               td= task.id
+              td= task.type
               td= task.course_year
               td= task.course_term
               td= task.created_at && "#{time_ago_in_words(task.created_at)} ago"

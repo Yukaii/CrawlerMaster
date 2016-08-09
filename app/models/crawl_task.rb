@@ -31,6 +31,8 @@ class CrawlTask < ActiveRecord::Base
 
   self.inheritance_column = :_type_disabled
 
+  FILENAME_REGEX = /^\d{4}_\d_[A-Z]+?_course_snapshot_/
+
   def generate_snapshot(errors_only: false)
     filename = "#{course_year}_#{course_term}_#{organization_code}_course_snapshot_#{created_at.strftime('%Y%m%d-%H%M')}.xls"
     order_map = CoursePeriod.find!(organization_code).order_map
@@ -49,10 +51,54 @@ class CrawlTask < ActiveRecord::Base
           course_snapshot.send(key)
         end
       end
-      sheet.update_row(index + 1, *row)
+      sheet.update_row(index + 1, *row) # start fromm row 1, row 0 is the header row
     end
 
     yield(book, filename)
+  end
+
+  def self.from_file(path)
+    course_year, course_term, organization_code, = File.basename(path, '.xls').split('_')
+
+    code_map = CoursePeriod.find!(organization_code).code_map
+    task = create!(
+      type: :import,
+      course_year: course_year,
+      course_term: course_term,
+      organization_code: organization_code
+    )
+
+    sheet = Spreadsheet.open(path).worksheet(0)
+    course_updates_hash = Hash[
+      sheet.each_with_index.map do |row|
+        [
+          row[Course::COLUMN_NAMES.index(:code)],
+          Hash[
+            Course::COLUMN_NAMES.each_with_index.map do |key, column_index|
+              if key.to_s.include?('period')
+                [key, code_map[row[column_index]]]
+              else
+                [key, row[column_index]]
+              end
+            end
+          ]
+        ]
+      end
+    ].except("code") # remove header
+
+    Course.where(
+      code: course_updates_hash.keys,
+      year: course_year,
+      term: course_term,
+      organization_code: organization_code
+    ).find_each do |course|
+      course.update!(course_updates_hash[course.code])
+      task.course_versions << course.versions.last if course.changed?
+    end
+
+    task.update(finished_at: Time.zone.now)
+
+    yield(task)
   end
 
   def select_course_versions(errors_only)

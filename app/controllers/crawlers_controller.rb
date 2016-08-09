@@ -65,6 +65,40 @@ class CrawlersController < ApplicationController
     redirect_to crawlers_path
   end
 
+  def upload
+    uploaded_file = params[:file]
+
+    if File.extname(uploaded_file.original_filename) != '.xls'
+      flash[:warning] = 'Wrong file extension'
+      redirect_to crawler_import_path(@crawler.organization_code)
+      return
+    end
+
+    unless uploaded_file.original_filename =~ CrawlTask::FILENAME_REGEX
+      flash[:warning] = "Wrong filename format, should match #{CrawlTask::FILENAME_REGEX.inspect}"
+      redirect_to crawler_import_path(@crawler.organization_code)
+      return
+    end
+
+    temp_file = Tempfile.new([File.basename(uploaded_file.original_filename, '.xls'), '.xls'])
+
+    File.open(temp_file.path, 'wb') do |file|
+      file.write(uploaded_file.read)
+    end
+
+    CrawlTask.from_file(temp_file.path) do |task|
+      if task.course_versions.size.zero?
+        task.destroy
+        flash[:warning] = 'No course changes'
+        redirect_to crawler_import_path(@crawler.organization_code)
+      else
+        redirect_to crawler_path(@crawler.organization_code)
+        flash[:success] = 'Successfully imported'
+      end
+    end
+
+  end
+
   def sync
     j = @crawler.sync_to_core
     flash[:success] = "job_id: #{j && j.id}"
