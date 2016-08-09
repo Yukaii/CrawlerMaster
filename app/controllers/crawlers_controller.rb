@@ -74,6 +74,12 @@ class CrawlersController < ApplicationController
       return
     end
 
+    unless uploaded_file.original_filename =~ CrawlTask::FILENAME_REGEX
+      flash[:warning] = "Wrong filename format, should match #{CrawlTask::FILENAME_REGEX.inspect}"
+      redirect_to crawler_import_path(@crawler.organization_code)
+      return
+    end
+
     temp_file = Tempfile.new([File.basename(uploaded_file.original_filename, '.xls'), '.xls'])
 
     File.open(temp_file.path, 'wb') do |file|

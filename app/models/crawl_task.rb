@@ -31,6 +31,8 @@ class CrawlTask < ActiveRecord::Base
 
   self.inheritance_column = :_type_disabled
 
+  FILENAME_REGEX = /^\d{4}_\d_[A-Z]+?_course_snapshot_/
+
   def generate_snapshot(errors_only: false)
     filename = "#{course_year}_#{course_term}_#{organization_code}_course_snapshot_#{created_at.strftime('%Y%m%d-%H%M')}.xls"
     order_map = CoursePeriod.find!(organization_code).order_map
