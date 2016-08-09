@@ -87,7 +87,7 @@
 #  index_courses_on_organization_code  (organization_code)
 #  index_courses_on_required           (required)
 #  index_courses_on_term               (term)
-#  index_courses_on_ucode              (ucode)
+#  index_courses_on_ucode              (ucode) UNIQUE
 #  index_courses_on_year               (year)
 #
 
