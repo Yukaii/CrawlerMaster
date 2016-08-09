@@ -4,12 +4,7 @@
   .row
     .col-lg-8.col-lg-offset-2.col-md-10.col-md-offset-1.col-s-12
       / flash messages
-      - if flash.keys.any?
-        - flash.each do |fk, fv|
-          .alert.alert-dismissible class="alert-#{fk}" role="alert"
-            button type="button" class="close" data-dismiss="alert" aria-label="Close"
-              span aria-hidden="true" &times;
-            = fv
+      = render partial: 'partials/flash_messages'
 
       .container
         .row
