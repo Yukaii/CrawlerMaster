@@ -9,6 +9,8 @@ module CourseCrawler
 
     def perform(*args)
       Course.import_to_course(*args)
+
+      CourseCacheGenerateJob.perform_later(*args)
     end
   end
 end
