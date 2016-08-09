@@ -31,7 +31,7 @@ class CrawlTask < ActiveRecord::Base
 
   self.inheritance_column = :_type_disabled
 
-  def generate_snapshot
+  def generate_snapshot(errors_only: false)
     filename = "#{course_year}_#{course_term}_#{organization_code}_course_snapshot_#{created_at.strftime('%Y%m%d-%H%M')}.xls"
     order_map = CoursePeriod.find!(organization_code).order_map
 
@@ -40,7 +40,7 @@ class CrawlTask < ActiveRecord::Base
     sheet = book.create_worksheet(name: created_at.strftime('%Y%m%d-%H%M'))
     sheet.update_row(0, *Course::COLUMN_NAMES.map(&:to_s))
 
-    course_versions.find_each.with_index do |version, index|
+    select_course_versions(errors_only).find_each.with_index do |version, index|
       course_snapshot = version.reify.nil? ? version.item : version.reify
       row = Course::COLUMN_NAMES.map do |key|
         if key.to_s.include?('period')
@@ -53,5 +53,15 @@ class CrawlTask < ActiveRecord::Base
     end
 
     yield(book, filename)
+  end
+
+  def select_course_versions(errors_only)
+    return course_versions unless errors_only
+
+    # TODO: improve SQL statement
+    PaperTrail::Version.where(id: CourseTaskRelation.joins(:version, :course_errors) \
+                                                    .where('versions.id in (?)', course_versions.pluck(:id)) \
+                                                    .group('course_errors.relation_id') \
+                                                    .having('COUNT(course_errors.relation_id) > 0').pluck(:version_id))
   end
 end
