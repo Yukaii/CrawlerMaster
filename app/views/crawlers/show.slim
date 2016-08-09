@@ -76,6 +76,7 @@
         table.table.table-hover
           tr
             th id
+            th type
             th year
             th term
             th started at
@@ -85,6 +86,7 @@
           - @crawler.crawl_tasks.order(created_at: :desc).each do |task|
             tr
               td= task.id
+              td= task.type
               td= task.course_year
               td= task.course_term
               td= task.created_at && "#{time_ago_in_words(task.created_at)} ago"
