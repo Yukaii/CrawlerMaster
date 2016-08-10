@@ -31,9 +31,6 @@ class Crawler < ActiveRecord::Base
   has_many :courses, foreign_key: :organization_code, primary_key: :organization_code
   has_many :crawl_tasks, primary_key: :organization_code, foreign_key: :organization_code
 
-  before_create :setup
-  after_create  :after_setup
-
   store :setting, accessors: [:schedule]
 
   SCHEDULE_KEYS = [
@@ -110,31 +107,15 @@ class Crawler < ActiveRecord::Base
     j
   end
 
-  private
-
+  before_create :setup
   def setup
-    klass                  = CourseCrawler.get_crawler(name)
+    klass                  = CourseCrawler.get_crawler(name) if name.present?
+    self.class_name        = klass.name if klass.present?
+    self.organization_code = name.match(/(.+?)CourseCrawler/)[1].upcase if name.present?
 
-    self.class_name        = klass.name
-    self.organization_code = name.match(/(.+?)CourseCrawler/)[1].upcase
     self.schedule          = { in: '1s' }
     self.year              = current_year
     self.term              = current_term
-  end
-
-  def after_setup
-
-    begin
-      data = Oj.load(RestClient.get("https://colorgy.io/api/v1/organizations/#{organization_code}.json"))
-
-      if data && data['name']
-        self.description = data['name']
-      end
-
-      save!
-    rescue Exception => e
-
-    end
   end
 
 end
