@@ -35,7 +35,7 @@ class CrawlTask < ActiveRecord::Base
 
   def generate_snapshot(errors_only: false)
     filename = "#{course_year}_#{course_term}_#{organization_code}_course_snapshot_#{created_at.strftime('%Y%m%d-%H%M')}.xls"
-    order_map = CoursePeriod.find!(organization_code).order_map
+    order_map = Colorgy::CoursePeriod.find!(organization_code).order_map
 
     book = Spreadsheet::Workbook.new
 
@@ -60,7 +60,7 @@ class CrawlTask < ActiveRecord::Base
   def self.from_file(path)
     course_year, course_term, organization_code, = File.basename(path, '.xls').split('_')
 
-    code_map = CoursePeriod.find!(organization_code).code_map
+    code_map = Colorgy::CoursePeriod.find!(organization_code).code_map
     task = create!(
       type: :import,
       course_year: course_year,

@@ -7,7 +7,7 @@ module CourseImport
       organization  = Colorgy::Organization.find_by!(code: organization_code)
       calendar      = Colorgy::Calendar.find_by!(owner_type: 'Organization', owner_id: organization.id)
 
-      periods       = CoursePeriod.find!(organization_code)
+      periods       = Colorgy::CoursePeriod.find!(organization_code)
 
       transaction do
         existing_courses = Colorgy::Course.where("data -> 'course_year' = '#{course_year}' AND data -> 'course_term' = '#{course_term}'").where(calendar_id: calendar.id).root

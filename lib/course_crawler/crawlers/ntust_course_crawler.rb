@@ -22,7 +22,7 @@ module CourseCrawler::Crawlers
       "日" => 7
     }
 
-    PERIODS = CoursePeriod.find('NTUST').code_map
+    PERIODS = Colorgy::CoursePeriod.find('NTUST').code_map
 
     DEPS = {
       "AD" => "建築系",

@@ -3,7 +3,7 @@
 
 module CourseCrawler::Crawlers
   class ThuCourseCrawler < CourseCrawler::Base
-	PERIODS = CoursePeriod.find('THU').code_map
+	PERIODS = Colorgy::CoursePeriod.find('THU').code_map
     def initialize(year: nil, term: nil, update_progress: nil, after_each: nil)
       @year                 = year || current_year
       @term                 = term || current_term
