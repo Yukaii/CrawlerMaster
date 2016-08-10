@@ -194,7 +194,7 @@ class Course < ActiveRecord::Base
   }.freeze
 
   def fetch_course_attributes(name)
-    (1..9).map { |i| :"#{name}_#{i}" }.map { |v| send(v) }
+    (1..9).map { |i| send(:"#{name}_#{i}") }
   end
 
   def course_days
