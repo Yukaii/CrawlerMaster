@@ -25,6 +25,8 @@ gem 'kaminari'
 
 gem 'slim'
 
+gem 'colorgy-course-period', github: 'colorgy/course-period', branch: 'master', require: 'colorgy/course_period'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 gem 'devise'

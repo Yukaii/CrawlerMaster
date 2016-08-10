@@ -8,6 +8,13 @@ GIT
       sass-rails (< 5.1)
       sprockets (< 4.0)
 
+GIT
+  remote: git://github.com/colorgy/course-period.git
+  revision: 726871632c005d01862cb1031f1feccb7e737a22
+  branch: master
+  specs:
+    colorgy-course-period (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -459,6 +466,7 @@ DEPENDENCIES
   capybara-webkit
   chronic
   coffee-rails (~> 4.1.0)
+  colorgy-course-period!
   compass-rails!
   crawler_rocks
   devise
