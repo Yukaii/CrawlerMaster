@@ -30,16 +30,16 @@
 
 ## Workers
 
-### CourseWorker
+### CourseCrawlerJob
 
-CourseWorker（`lib/course_crawler/course_worker.rb`）負責：
+CourseCrawlerJob（`app/jobs/course_crawler_job.rb`）負責：
 
 * 把課程爬蟲放進 Sidekiq Process 裡面跑
 * 儲存至 Database
-* ~~透過 HTTP API 同步至 Colorgy~~（目前已棄用）
 
-### CourseSyncWorker
+### CourseSyncJob
 
-CourseSyncWorker（`lib/course_crawler/course_sync_worker`）負責：
+CourseSyncJob（`app/jobs/course_sync_job`）負責：
 
-* ~~透過 HTTP API 同步至 Colorgy~~（目前已棄用）
+* 轉換 Course 成新版 Course model 寫入主要 repo 的 database
+* 根據新轉換的 Course，產生 json 存到 s3

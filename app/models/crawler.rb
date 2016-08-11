@@ -76,9 +76,9 @@ class Crawler < ActiveRecord::Base
     j = Rufus::Scheduler.s.send(:"schedule_#{job_type}", time_str) do
       Sidekiq::Client.push(
         'queue' => name,
-        'class' => CourseCrawler::CourseWorker,
+        'class' => CourseCrawlerJob,
         'args' => [
-          name,
+          organization_code,
           default_args
         ]
       )
@@ -92,8 +92,8 @@ class Crawler < ActiveRecord::Base
   def sync_to_core(year = self.year, term = self.term)
     j = Rufus::Scheduler.s.send(:schedule_in, '1s') do
       Sidekiq::Client.push(
-        'queue' => 'CourseCrawler::CourseSyncWorker',
-        'class' => CourseCrawler::CourseSyncWorker,
+        'queue' => 'CourseSyncJob',
+        'class' => CourseSyncJob,
         'args' => [
           organization_code,
           year,
