@@ -53,7 +53,7 @@
           td= @crawler.last_sync_at.nil? ? 'not available' : time_ago_in_words(@crawler.last_sync_at)
         tr
           th Queue size
-          td= "#{CourseCrawler::Crawlers.find_queued_jobs(@crawler.name).count}"
+          td= "#{CourseCrawler.find_queued_jobs(@crawler.name).count}"
         tr
           th Workers Overview
           td
@@ -64,10 +64,10 @@
                   th progress
                   th created_at
                   th failed_at
-                - CourseCrawler::Crawlers.find_workers(@crawler.name).each do |process_id, thread_id, work|
+                - CourseCrawler.find_workers(@crawler.name).each do |process_id, thread_id, work|
                   tr
                     td= work["payload"]["jid"]
-                    td= CourseCrawler::Crawlers.get_progress(@crawler.name, work["payload"]["jid"])
+                    td= CourseCrawler.get_progress(@crawler.name, work["payload"]["jid"])
                     td= work["payload"]["created_at"] && time_ago_in_words(Time.at(work["payload"]["created_at"])) + " ago"
                     td= work["payload"]["failed_at"] && Time.at(work["payload"]["failed_at"])
 
@@ -154,7 +154,7 @@
                     th failed_at
                     th retry_count
                     th retried_at
-                  - CourseCrawler::Crawlers.find_workers(@crawler.name).each do |process_id, thread_id, work|
+                  - CourseCrawler.find_workers(@crawler.name).each do |process_id, thread_id, work|
                     tr
                       td= process_id
                       td= thread_id

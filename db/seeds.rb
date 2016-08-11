@@ -8,7 +8,7 @@ def current_term
   (Time.zone.now.month.between?(2, 7) ? 2 : 1)
 end
 
-CourseCrawler.crawler_list.map(&:to_s).each do |crawler_name|
+CourseCrawler.demodulized_names do |crawler_name|
   crawler = Crawler.find_or_create_by(
     name: crawler_name
   )

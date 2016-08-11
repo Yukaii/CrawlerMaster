@@ -56,7 +56,7 @@ class Crawler < ActiveRecord::Base
   ].freeze
 
   def klass
-    CourseCrawler.get_crawler(name)
+    CourseCrawler.find!(organization_code)
   end
 
   def short_org
@@ -76,9 +76,9 @@ class Crawler < ActiveRecord::Base
     j = Rufus::Scheduler.s.send(:"schedule_#{job_type}", time_str) do
       Sidekiq::Client.push(
         'queue' => name,
-        'class' => CourseCrawler::CourseWorker,
+        'class' => CourseCrawlerJob,
         'args' => [
-          name,
+          organization_code,
           default_args
         ]
       )
@@ -89,11 +89,11 @@ class Crawler < ActiveRecord::Base
     j
   end
 
-  def sync_to_core(year = year, term = term)
+  def sync_to_core(year = self.year, term = self.term)
     j = Rufus::Scheduler.s.send(:schedule_in, '1s') do
       Sidekiq::Client.push(
-        'queue' => 'CourseCrawler::CourseSyncWorker',
-        'class' => CourseCrawler::CourseSyncWorker,
+        'queue' => 'CourseSyncJob',
+        'class' => CourseSyncJob,
         'args' => [
           organization_code,
           year,
@@ -109,9 +109,10 @@ class Crawler < ActiveRecord::Base
 
   before_create :setup
   def setup
-    klass                  = CourseCrawler.get_crawler(name) if name.present?
-    self.class_name        = klass.name if klass.present?
     self.organization_code = name.match(/(.+?)CourseCrawler/)[1].upcase if name.present?
+
+    klass                  = CourseCrawler.find!(organization_code) if organization_code.present?
+    self.class_name        = klass.name if klass.present?
 
     self.schedule          = { in: '1s' }
     self.year              = current_year
