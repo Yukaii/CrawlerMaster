@@ -19,6 +19,8 @@ class NcutCourseCrawler < CourseCrawler::Base
     @year                 = year || current_year
     @term                 = term || current_term
     #@post_url = "http://msd.ncut.edu.tw/wbcmsc/cmain.asp"
+    #新增此url
+    @query = "http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp"
     @update_progress_proc = update_progress
     @after_each_proc      = after_each
     @ic                   = Iconv.new('utf-8//IGNORE', 'big5')
@@ -29,15 +31,18 @@ class NcutCourseCrawler < CourseCrawler::Base
     year = @year
     term = @term
 
-    r = `curl -s "http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Cookie: __utmt=1; __utma=82590601.72128976.1440399078.1440399078.1440399078.1; __utmb=82590601.1.10.1440399078; __utmc=82590601; __utmz=82590601.1440399078.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not"%"20provided); sto-id-20480=AIEHIAIMFAAA; ASPSESSIONIDCQSARQCB=KOIMNKPAHGDEIELLEDMBKPOE" -H "Origin: http://msd.ncut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Connection: keep-alive" --data "dptcd=1150&gd=&schyy=#{year-1911}&smt=#{term}&action="%"BDT"%"A9w" --compressed`
+    puts "get url ..."
+    #直接用RestCline的get去改
+    r = RestClient.get (@query)
+    #r = `curl -s "http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Cookie: __utmt=1; __utma=82590601.72128976.1440399078.1440399078.1440399078.1; __utmb=82590601.1.10.1440399078; __utmc=82590601; __utmz=82590601.1440399078.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not"%"20provided); sto-id-20480=AIEHIAIMFAAA; ASPSESSIONIDCQSARQCB=KOIMNKPAHGDEIELLEDMBKPOE" -H "Origin: http://msd.ncut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Connection: keep-alive" --data "dptcd=1150&gd=&schyy=#{year-1911}&smt=#{term}&action="%"BDT"%"A9w" --compressed`
     doc = Nokogiri::HTML(@ic.iconv(r))
-
+    #binding.pry
     index_dep = doc.css('select[name="dptcd"] option')
     index_dep[1..-1].each do |department_select|
       department_code = department_select.text[0..3].to_s
       r = `curl -s "http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Cookie: __utmt=1; __utma=82590601.72128976.1440399078.1440399078.1440399078.1; __utmb=82590601.1.10.1440399078; __utmc=82590601; __utmz=82590601.1440399078.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not"%"20provided); sto-id-20480=AIEHIAIMFAAA; ASPSESSIONIDCQSARQCB=KOIMNKPAHGDEIELLEDMBKPOE" -H "Origin: http://msd.ncut.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: http://msd.ncut.edu.tw/wbcmsc/cdptgd.asp" -H "Connection: keep-alive" --data "dptcd=#{department_code}&gd=&schyy=#{year-1911}&smt=#{term}&action="%"BDT"%"A9w" --compressed`
 
-      set_progress "#{index_dep.index(department_select)} / #{index_dep.size-1}"
+      puts "data crawled : "+"#{index_dep.index(department_select)} / #{index_dep.size-1} ->" + department_select
 
       doc = Nokogiri::HTML(@ic.iconv(r))
       deparment_name = doc.css('select[name="dptcd"] option[selected]').text
@@ -110,6 +115,7 @@ class NcutCourseCrawler < CourseCrawler::Base
 
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

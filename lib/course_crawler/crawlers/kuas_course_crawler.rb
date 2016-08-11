@@ -15,23 +15,24 @@ class KuasCourseCrawler < CourseCrawler::Base
     "日" => 7,
     }
 
-  PERIODS = {
-    "M" => 1,
-    "1" => 2,
-    "2" => 3,
-    "3" => 4,
-    "4" => 5,
-    "A" => 6,
-    "5" => 7,
-    "6" => 8,
-    "7" => 9,
-    "8" => 10,
-    "B" => 11,
-    "11" => 12,
-    "12" => 13,
-    "13" => 14,
-    "14" => 15,
-    }
+  # PERIODS = {
+  #   "M" => 1,
+  #   "1" => 2,
+  #   "2" => 3,
+  #   "3" => 4,
+  #   "4" => 5,
+  #   "A" => 6,
+  #   "5" => 7,
+  #   "6" => 8,
+  #   "7" => 9,
+  #   "8" => 10,
+  #   "B" => 11,
+  #   "11" => 12,
+  #   "12" => 13,
+  #   "13" => 14,
+  #   "14" => 15,
+  #   }
+  PERIODS = CoursePeriod.find('KUAS').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil, params: nil
 
@@ -46,7 +47,7 @@ class KuasCourseCrawler < CourseCrawler::Base
   def courses detail: false
     @courses = []
     @threads = []
-
+    puts "get url ...."
     r = RestClient.post(@query_url + "perchk.jsp", {"uid" => "guest", "pwd" => "123"})
     cookies = r.cookies
 
@@ -74,6 +75,7 @@ class KuasCourseCrawler < CourseCrawler::Base
         "ls_yn" => "N",
         }, cookies: cookies )
       doc = Nokogiri::HTML(r)
+      puts "Department : " + dgr_n
 
       doc.css('table tr:nth-child(n+2) div').map{|td| [td[:onclick].scan(/\'(\w+)/)[0][0], td.text]}.each do |dep_c, dep_n|
         r = RestClient.post(@query_url + "ag_pro/ag304_03.jsp", {
@@ -85,8 +87,9 @@ class KuasCourseCrawler < CourseCrawler::Base
 
         doc.css('table[border="1"]:nth-child(2) tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
           data = tr.css('td:not(:last-child)').map{|td| td.text}
-          syllabus_url = "http://140.127.113.224/kuas/ag_pro/ag451.jsp?year=#{@year - 1911}&sms=#{@term}&dvs=all&dgr=all&unt=all&cls=#{dep_c}&sub=#{tr.css('td:last-child').map{|a| a[:onclick]}[0].scan(/\,(\w+)\./)[0][0]}&empidno=all"
 
+          #syllabus_url = "http://140.127.113.224/kuas/ag_pro/ag451.jsp?year=#{@year - 1911}&sms=#{@term}&dvs=all&dgr=all&unt=all&cls=#{dep_c}&sub=#{tr.css('td:last-child').map{|a| a[:onclick]}[0].scan(/\,(\w+)\./)[0][0]}&empidno=all"
+          syllabus_url = "url : error"
           time_period_regex = /(?<day>[一二三四五六日])\)(?<period>(\w+)\-?\,?(\w+)?\,?\-?(\w+)?\-?(\w+)?)/
           course_time_location = data[7].scan(time_period_regex).map{|day, period| [day, period]}
 
@@ -186,7 +189,7 @@ class KuasCourseCrawler < CourseCrawler::Base
     end
 
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @courses
   end
 end

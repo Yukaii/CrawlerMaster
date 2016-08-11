@@ -6,23 +6,9 @@ module CourseCrawler::Crawlers
 class HwhCourseCrawler < CourseCrawler::Base
 # 時間有分進修跟非進修
 # 以下為非進修
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "5" => 5,
-    "6" => 6,
-    "7" => 7,
-    "8" => 8,
-    "9" => 9,
-    "X" => 10,
-    "A" => 11,
-    "B" => 12,
-    "C" => 13,
-    "D" => 14,
-    "E" => 15
-    }
+
+  #抓節次
+  PERIODS = CoursePeriod.find('HWH').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -40,7 +26,7 @@ class HwhCourseCrawler < CourseCrawler::Base
 
     r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(r)
-
+    puts "get url ..."
     hidden = Hash[doc.css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
 
     doc.css('select[id="classList"] option:nth-child(n+2)').map{|opt| [opt[:value],opt.text]}.each do |dept_v,dept_n|
@@ -54,11 +40,13 @@ class HwhCourseCrawler < CourseCrawler::Base
         }) )
       doc = Nokogiri::HTML(r)
 
+      count = 1
       doc.css('table[id="GridView"] tr[align="center"]:nth-child(n+2)').each do |tr|
         data = tr.css('td').map{|td| td.text.gsub(/[\r\n\s]/,"")}
         next if data[2] == " "
         syllabus_url = "http://campus.hwh.edu.tw/Public/_courseComment.aspx?yrterm=#{@year-1911}#{@term}&cur_no=#{data[2]}"
-
+        puts "Department :" + dept_n +" , data crawled : " + count.to_s
+        count += 1
         course_id += 1
 
         course_time = data[10..16]
@@ -118,6 +106,7 @@ class HwhCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
+    puts "project finished !!!"
     @courses
   end
 

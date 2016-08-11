@@ -18,6 +18,7 @@ class MduCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
 
+    puts "get url ..."
     http_client.get_content "http://isc.mdu.edu.tw/net/cosinfo/pubinfomain.asp"
 
     doc = Nokogiri::HTML(http_client.get_content "http://isc.mdu.edu.tw/net/cosinfo/deptlist.asp")
@@ -26,6 +27,7 @@ class MduCourseCrawler < CourseCrawler::Base
 
     depts.each do |dept|
     grades.each do |grade|
+      puts "data crawled , Department : " + dept + ", Grade : " + grade
       parse_course(Nokogiri::HTML(http_client.get_content(@query_url, {
         :mDept_No   => dept,
         :mDept_year => grade,
@@ -33,7 +35,7 @@ class MduCourseCrawler < CourseCrawler::Base
         :mTchName   => ""
       })))
     end; end;
-
+    puts "Project finished !!!"
     @courses
   end
 

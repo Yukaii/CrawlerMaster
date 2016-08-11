@@ -21,6 +21,7 @@ class MmcCourseCrawler < CourseCrawler::Base
 	def courses
 		@courses = []
 
+		puts "get url ..."
     r = RestClient.get(@post_url);
     doc = Nokogiri::HTML(r.to_s)
 
@@ -41,7 +42,7 @@ class MmcCourseCrawler < CourseCrawler::Base
         'DDL_Degree' => degree_value,
         'Button1'    => '確定'
       }));
-
+			puts "data crawled : Department -> " + dept_name + " , Degree -> " + degree_name
       doc = Nokogiri::HTML(r)
       view_state = Hash[doc.css('input[type="hidden"]').map{|input| [ input[:name], input[:value] ] }]
 
@@ -114,7 +115,7 @@ class MmcCourseCrawler < CourseCrawler::Base
       set_progress "#{done_result} / #{total_count}"
     end
     end
-
+		puts "Project finished !!!"
 		@courses
 	end
 end

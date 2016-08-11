@@ -22,25 +22,27 @@ class KsuCourseCrawler < CourseCrawler::Base
 
     @update_progress_proc = update_progress
     @after_each_proc = after_each
-
+    @count = 1 #新增看資訊用
     @query_url = "http://120.114.50.49/TPS_Outline/Default.aspx"
   end
 
   def courses
     @courses = []
 
+    puts "get url ..."
     doc = Nokogiri::HTML(http_client.get_content(@query_url))
-
     initial_loop = true
 
     sections = get_opt_hash_from_doc(doc, "ctl00$MainContent$DropDownList4")
     sections.each_with_index do |(sec, sec_val), sec_index|
+
       if sec_index != 0
         doc = Nokogiri::HTML(submit(sec_val, nil, nil, parse_view_state(doc), "ctl00$MainContent$DropDownList4"))
       end
       depts = get_opt_hash_from_doc(doc, "ctl00$MainContent$DropDownList3")
 
       depts.each_with_index do |(dept, dept_val), dept_index|
+
         if dept_index != 0
           doc = Nokogiri::HTML(submit(sec_val, dept_val, nil, parse_view_state(doc), "ctl00$MainContent$DropDownList3"))
         end
@@ -51,7 +53,7 @@ class KsuCourseCrawler < CourseCrawler::Base
             doc = Nokogiri::HTML(submit(sec_val, dept_val, cla_val, parse_view_state(doc), "ctl00$MainContent$DropDownList2"))
             initial_loop = false
           end
-
+          
           if clas_index != 0
             doc = Nokogiri::HTML(submit(sec_val, dept_val, cla_val, parse_view_state(doc), "ctl00$MainContent$DropDownList5"))
           end
@@ -60,10 +62,13 @@ class KsuCourseCrawler < CourseCrawler::Base
         end # end each clas
       end # end each dept
     end # end each section
+    puts "Project finished !!!"
     @courses
   end
 
   def parse_course doc
+    puts "data crawled : " + @count.to_s
+    @count += 1
     doc.css('#MainContent_GridView1 tr:not(:first-child)').each do |row|
       datas  = row.xpath('td')
 

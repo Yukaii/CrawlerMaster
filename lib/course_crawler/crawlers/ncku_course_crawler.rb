@@ -5,24 +5,24 @@ module CourseCrawler::Crawlers
 class NckuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
 
-  PERIODS = {
-    "0" => 1,
-    "1" => 2,
-    "2" => 3,
-    "3" => 4,
-    "4" => 5,
-    "N" => 6,
-    "5" => 7,
-    "6" => 8,
-    "7" => 9,
-    "8" => 10,
-    "9" => 11,
-    "A" => 12,
-    "B" => 13,
-    "C" => 14,
-    "D" => 15,
-  }
-
+  # PERIODS = {
+  #   "0" => 1,
+  #   "1" => 2,
+  #   "2" => 3,
+  #   "3" => 4,
+  #   "4" => 5,
+  #   "N" => 6,
+  #   "5" => 7,
+  #   "6" => 8,
+  #   "7" => 9,
+  #   "8" => 10,
+  #   "9" => 11,
+  #   "A" => 12,
+  #   "B" => 13,
+  #   "C" => 14,
+  #   "D" => 15,
+  # }
+  PERIODS = CoursePeriod.find('NCKU').code_map
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     @query_url = "http://course-query.acad.ncku.edu.tw/qry/qry001.php"
@@ -37,7 +37,7 @@ class NckuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     @threads = []
-
+    puts "get url ..."
     visit "http://course-query.acad.ncku.edu.tw/qry/index.php"
     deps_h = Hash[(@doc.css('.dept a') | @doc.css('.institute a')).map do |d|
       m = d.text.gsub(/\s+/, ' ').match(/\ \(\ (?<dep_c>.{2})\ \）(?<dep>.+)\ /)
@@ -75,7 +75,7 @@ class NckuCourseCrawler < CourseCrawler::Base
             datas = row.css('td')
 
             next if datas[0].text == "系所名稱"
-
+            puts "data crawled : " + datas[10].text.strip
             serial_no = datas[2] && datas[2].text
             code = datas[3] && datas[3].text
             group_code = datas[4] && datas[4].text.strip
@@ -91,13 +91,18 @@ class NckuCourseCrawler < CourseCrawler::Base
             datas[16].search('br').each {|br| br.replace("\n") }
             datas[16].text.strip.split("\n").each do |pss|
               pss.match(/\[(?<d>\d)\](?<ps>.+)/) do |m|
-                _start = PERIODS[m[:ps].split('~').first]
-                _end = PERIODS[m[:ps].split('~').last]
-                (_start.._end).each do |period|
-                  course_days << m[:d].to_i
-                  course_periods << period
-                  course_locations << loc
+                # 少數課表有日期並非此格式，所以有空格的日期，代表課表與此正規表示法不符合，但是大部分都符合
+                # 例如 http://course-query.acad.ncku.edu.tw/qry/qry001.php?dept_no=S9&syear=105&sem=1
+                # 高等儀器分析(一) -> 日期是 [6]~9，所以_start會錯誤，所以這是比較特別的例外
+                if m[:ps][0] != "~"
+                  _start = PERIODS[m[:ps].split('~').first]
+                  _end = PERIODS[m[:ps].split('~').last]
+                  (_start.._end).each do |period|
+                    course_days << m[:d].to_i
+                    course_periods << period
+                    course_locations << loc
                 end
+              end
               end
             end
 

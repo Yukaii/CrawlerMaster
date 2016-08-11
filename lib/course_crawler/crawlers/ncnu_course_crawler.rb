@@ -4,25 +4,25 @@
 module CourseCrawler::Crawlers
 class NcnuCourseCrawler < CourseCrawler::Base
 
-  PERIODS = {
-    "x" => 1,
-    "y" => 2,
-    "a" => 3,
-    "b" => 4,
-    "c" => 5,
-    "d" => 6,
-    "z" => 7,
-    "e" => 8,
-    "f" => 9,
-    "g" => 10,
-    "h" => 11,
-    "i" => 12,
-    "j" => 13,
-    "k" => 14,
-    "l" => 15,
-    "m" => 16
-    }
-
+  # PERIODS = {
+  #   "x" => 1,
+  #   "y" => 2,
+  #   "a" => 3,
+  #   "b" => 4,
+  #   "c" => 5,
+  #   "d" => 6,
+  #   "z" => 7,
+  #   "e" => 8,
+  #   "f" => 9,
+  #   "g" => 10,
+  #   "h" => 11,
+  #   "i" => 12,
+  #   "j" => 13,
+  #   "k" => 14,
+  #   "l" => 15,
+  #   "m" => 16
+  #   }
+  PERIODS = CoursePeriod.find('NCNU').code_map
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year
@@ -35,7 +35,7 @@ class NcnuCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     doc = %x(curl -s '#{@query_url}services/course.aspx' --compressed)
 
     depts = doc.scan(/\"(?<dep>\w\w?\d\d\d?)\"/)[1..-1]
@@ -46,6 +46,7 @@ class NcnuCourseCrawler < CourseCrawler::Base
     depts_id = ["00","01","02","03","04","05","06","07","08","09","11","12","13","14","18","19","21","22","23","24","28","29","35","38","39","45","46","C2","Z6","Zc"]
     ["B","G","P"].each do |i|
       depts_id.each do |dept|
+        puts "data crawled : " +i + "->" + dept
         doc = %x(curl -s '#{@query_url}webservice/csvDepartRequireCourses.aspx?year=#{@year-1911}&deptid=#{dept}&class=#{i}' --compressed)
         required += doc[1..-4].split("\"\r\n\"")[2..-1].map{|required_course| required_course.split("\",\"")[3]}
 
@@ -126,6 +127,7 @@ class NcnuCourseCrawler < CourseCrawler::Base
 
       end
     end
+    puts "Project fininshed !!!"
     @courses
   end
 

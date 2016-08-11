@@ -39,7 +39,7 @@ class MhchcmCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     course_id = 0
-
+    puts "get url ..."
     # r = RestClient.get(@query_url+"minhwei_courseqry.asp")
     # doc = Nokogiri::HTML(r)
 
@@ -63,7 +63,7 @@ class MhchcmCourseCrawler < CourseCrawler::Base
     doc = Nokogiri::HTML(r)
 
     doc.css('table table tr td a:nth-child(1)').map{|a| a[:href].split('"')}.each do |url_temp|
-# puts "#{course_id}/#{url_temp[3]}"
+      puts "data crawled : "+"#{course_id}/#{url_temp[3]}"
       r = RestClient.post(@query_url+"minhwei_courseqry3.asp", {
         "ysem" => "#{@year-1911}#{@term}",
         # "ysemt" => "104%BE%C7%A6%7E%B2%C4%A4G%BE%C7%B4%C1",
@@ -145,6 +145,7 @@ class MhchcmCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

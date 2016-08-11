@@ -5,24 +5,24 @@ module CourseCrawler::Crawlers
 class LtuCourseCrawler < CourseCrawler::Base
 
 # 日夜六日的節次不同
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "A" => 5,
-    "5" => 6,
-    "6" => 7,
-    "7" => 8,
-    "8" => 9,
-    "9" => 10,
-    "B" => 11,
-    "一" => 12,
-    "二" => 13,
-    "三" => 14,
-    "四" => 15,
-    }
-
+  # PERIODS = {
+  #   "1" => 1,
+  #   "2" => 2,
+  #   "3" => 3,
+  #   "4" => 4,
+  #   "A" => 5,
+  #   "5" => 6,
+  #   "6" => 7,
+  #   "7" => 8,
+  #   "8" => 9,
+  #   "9" => 10,
+  #   "B" => 11,
+  #   "一" => 12,
+  #   "二" => 13,
+  #   "三" => 14,
+  #   "四" => 15,
+  #   }
+  PERIODS = CoursePeriod.find('LTU').code_map
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year
@@ -36,12 +36,12 @@ class LtuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     course_id = 0
-
+    puts "get url ..."
     r = RestClient.get(@query_url+"StudySelect.aspx")
     doc = Nokogiri::HTML(r)
 
     hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
-
+    # 選擇 [關鍵字] -> 在查詢輸入%
     r = RestClient.post(@query_url+"StudySelect.aspx", hidden.merge({
       "TBid" => "",
       "TBpass" => "",
@@ -54,8 +54,12 @@ class LtuCourseCrawler < CourseCrawler::Base
       }) )
     doc = Nokogiri::HTML(r)
 
+    # 顯示資料進度用 , count
+    count = 1
     doc.css('table[class="GridViewStyle"] tr:nth-child(n+2)').each do |tr|
       data = tr.css('td').map{|td| td.text.gsub(/[\r\n\s]/,"")}
+      puts "data crawled : " + count.to_s + "__" + data[3]
+      count+=1
       data[2] = 0 if data[2] == " "
       syllabus_url = @query_url+tr.css('td a')[0][:href] if not tr.css('td a')[0][:href].include?("javascript")
 
@@ -123,6 +127,7 @@ class LtuCourseCrawler < CourseCrawler::Base
 
       @courses << course
     end
+    puts "Project finished !!!"
     @courses
   end
 end
