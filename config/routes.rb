@@ -28,7 +28,11 @@ Rails.application.routes.draw do
     post   'batch_run',          action: :batch_run,      as: :batch_run_crawler
   end
 
-  get 'courses' => 'courses#index', as: :courses
+  resources :courses, only: [:index] do
+    collection do
+      post 'download'
+    end
+  end
 
   # Sidekiq
   require 'sidekiq/web'
