@@ -30,7 +30,6 @@ module CourseImport
               location:      course_locations[0],
               rrule:         rrule,
               period_string: period_string,
-              period:        period,
               calendar_id:   calendar.id,
               start_time:    period.start_time(semester_date.nearest_day(course_days[0])),
               end_time:      period.end_time(semester_date.nearest_day(course_days[0]))
@@ -46,7 +45,6 @@ module CourseImport
               location:      course_locations[index + 1], # skip the root course
               rrule:         rrule,
               period_string: period_string,
-              period:        period,
               calendar_id:   calendar.id,
               start_time:    period.start_time(semester_date.nearest_day(day)),
               end_time:      period.end_time(semester_date.nearest_day(day))
@@ -62,7 +60,7 @@ module CourseImport
       end # end transaction do
     end # end import
 
-    def self.build_course_attributes(legacy_course: nil, location: nil, rrule: nil, period_string: nil, calendar_id: nil, start_time: nil, end_time: nil)
+    def build_course_attributes(legacy_course: nil, location: nil, rrule: nil, period_string: nil, calendar_id: nil, start_time: nil, end_time: nil)
       {
         name:            legacy_course.name,
         course_year:     legacy_course.year,
@@ -82,5 +80,5 @@ module CourseImport
         end_time:        end_time
       }
     end
-  end
+  end # end class_methods do
 end
