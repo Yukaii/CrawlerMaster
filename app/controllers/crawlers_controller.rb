@@ -18,14 +18,14 @@ class CrawlersController < ApplicationController
 
   def snapshot
     task = @crawler.crawl_tasks.find(params[:task_id])
-    task.generate_snapshot(errors_only: params[:errors_only]) do |book, filename|
-      temp_file = Tempfile.new(filename)
-      book.write(temp_file.path)
-      send_data(File.read(temp_file), type: 'application/xls', filename: filename)
+    book, filename = task.generate_snapshot(errors_only: params[:errors_only])
 
-      temp_file.close
-      temp_file.unlink
-    end
+    temp_file = Tempfile.new(filename)
+    book.write(temp_file.path)
+    send_data(File.read(temp_file), type: 'application/xls', filename: filename)
+
+    temp_file.close
+    temp_file.unlink
   end
 
   def setting
