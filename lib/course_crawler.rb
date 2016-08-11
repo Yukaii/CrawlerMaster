@@ -1,4 +1,6 @@
 module CourseCrawler
+  extend SidekiqHelper
+
   class << self
     include Enumerable
 
