@@ -17,7 +17,7 @@
               button.btn.btn-primary style="margin: 0 1em;" type="submit" Run
 
           span
-            a href=crawler_import_path(@crawler.organization_code)
+            a href=import_crawler_path(@crawler.organization_code)
               button.btn.btn-primary style="margin: 0 1em;" Import
 
           / Sync button
@@ -92,9 +92,9 @@
               td= task.created_at && "#{time_ago_in_words(task.created_at)} ago"
               td= task.finished_at && "#{time_ago_in_words(task.finished_at)} ago"
               td
-                div= link_to "View Changes", task_changes_path(task_id: task.id)
-                div= link_to "Download Snapshot[#{course_versions_count(task)}]", task_snapshot_path(task_id: task.id), method: :post
-                div= link_to "Download Snapshot[#{error_course_versions_count(task)}](Potential Errors Only)", task_snapshot_path(task_id: task.id, errors_only: true), method: :post
+                div= link_to "View Changes", changes_crawler_task_path(@crawler.organization_code, task)
+                div= link_to "Download Snapshot[#{course_versions_count(task)}]", snapshot_crawler_task_path(@crawler.organization_code, task), method: :post
+                div= link_to "Download Snapshot[#{error_course_versions_count(task)}](Potential Errors Only)", snapshot_crawler_task_path(@crawler.organization_code, task, errors_only: true), method: :post
 
       / Rufus Jobs Table
       h4 Rufus Jobs
@@ -116,7 +116,7 @@
               td= rfj.last_time
               td= rfj.scheduled_at
               td
-                = link_to 'Unschedule', unschedule_job_path(@crawler.organization_code, rfj.id), method: :delete, :class => 'btn btn-mini btn-danger'
+                = link_to 'Unschedule', crawler_job_path(@crawler.organization_code, rfj.id), method: :delete, :class => 'btn btn-mini btn-danger'
 
       / Setting form
       .panel-group#crawler-statistic
