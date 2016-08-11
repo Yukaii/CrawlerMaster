@@ -1,5 +1,5 @@
 ##
-# A few general crawler methods
+# general crawler methods
 #
 require 'rest-client'
 require 'thwait'
@@ -31,7 +31,7 @@ module CourseCrawler
     end
 
     def power_strip(str)
-      str.strip.gsub(/^[ |\s]*|[ |\s]*$/,'')
+      str.strip.gsub(/^[ |\s]*|[ |\s]*$/, '')
     end
   end
 end

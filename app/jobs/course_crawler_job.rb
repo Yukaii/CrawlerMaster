@@ -1,13 +1,11 @@
 ##
-# A general crawler containing worker class. Works for all classes of crawler.
-# It would automatically lookup classes under "Crawler" module and call default
-# execution method.
+# crawler container worker class
 #
 # Example:
-#   CourseCrawlerJob.perform_async "NtustCourseCrawler", { year: 2015, term: 2 }
+#   CourseCrawlerJob.perform_async "NTUST", { year: 2015, term: 2 }
 #
-# The class CourseCrawler::Crawler::NtustCourseCrawler will be loaded and create an instance
-# then call default method "courses".
+# The instance CourseCrawler::Crawler::NtustCourseCrawler will be created
+# and call its default crawler method "courses"
 
 class CourseCrawlerJob
   include Sidekiq::Worker
