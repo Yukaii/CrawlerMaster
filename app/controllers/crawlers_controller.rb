@@ -3,7 +3,7 @@ class CrawlersController < ApplicationController
   before_action :find_crawler, except: [:index, :batch_run]
 
   def index
-    available_crawler_names = CourseCrawler.crawler_list.map(&:to_s)
+    available_crawler_names = CourseCrawler.demodulized_names
     create_missing_crwaler(available_crawler_names)
   end
 
@@ -119,8 +119,7 @@ class CrawlersController < ApplicationController
   def find_crawler
     demodulized_name =
       CourseCrawler
-      .crawler_list
-      .map(&:to_s)
+      .demodulized_names
       .find { |cn| cn.match(/#{params[:id].downcase.capitalize}CourseCrawler/) } || not_found
 
     @crawler = Crawler.includes(:rufus_jobs, :crawl_tasks).find_or_create_by(name: demodulized_name)

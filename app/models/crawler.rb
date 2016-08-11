@@ -56,7 +56,7 @@ class Crawler < ActiveRecord::Base
   ].freeze
 
   def klass
-    CourseCrawler.get_crawler(name)
+    CourseCrawler.find!(organization_code)
   end
 
   def short_org
@@ -109,9 +109,10 @@ class Crawler < ActiveRecord::Base
 
   before_create :setup
   def setup
-    klass                  = CourseCrawler.get_crawler(name) if name.present?
-    self.class_name        = klass.name if klass.present?
     self.organization_code = name.match(/(.+?)CourseCrawler/)[1].upcase if name.present?
+
+    klass                  = CourseCrawler.find!(organization_code) if organization_code.present?
+    self.class_name        = klass.name if klass.present?
 
     self.schedule          = { in: '1s' }
     self.year              = current_year
