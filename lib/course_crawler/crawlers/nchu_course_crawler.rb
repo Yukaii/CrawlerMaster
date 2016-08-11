@@ -5,25 +5,25 @@ module CourseCrawler::Crawlers
 class NchuCourseCrawler < CourseCrawler::Base
   include CrawlerRocks::DSL
 
-  PERIODS = {
-    # Note:
-    # 1st period start from 8:00 am
-    # may need to change period code
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "5" => 5,
-    "6" => 6,
-    "7" => 7,
-    "8" => 8,
-    "9" => 9,
-    "A" => 10,
-    "B" => 11,
-    "C" => 12,
-    "D" => 13,
-  }
-
+  # PERIODS = {
+  #   # Note:
+  #   # 1st period start from 8:00 am
+  #   # may need to change period code
+  #   "1" => 1,
+  #   "2" => 2,
+  #   "3" => 3,
+  #   "4" => 4,
+  #   "5" => 5,
+  #   "6" => 6,
+  #   "7" => 7,
+  #   "8" => 8,
+  #   "9" => 9,
+  #   "A" => 10,
+  #   "B" => 11,
+  #   "C" => 12,
+  #   "D" => 13,
+  # }
+  PERIODS = CoursePeriod.find('NCHU').code_map
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     # @query_url = "https://onepiece.nchu.edu.tw/cofsys/plsql/crseqry_all"
@@ -40,7 +40,7 @@ class NchuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     year_term = "#{@year-1911}#{@term}"
-
+    puts "get url ..."
     visit @query_url + "?v_year=#{year_term}"
     @deps_h = Hash[@doc.css('select[name="v_dept"] option').map{ |opt| [opt[:value], opt.text.delete(opt[:value]).strip] }]
     @deps_h_rev = Hash[@deps_h.map{|k, v| [v, k]}]
@@ -62,7 +62,7 @@ class NchuCourseCrawler < CourseCrawler::Base
       end
     end
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @courses
   end
 

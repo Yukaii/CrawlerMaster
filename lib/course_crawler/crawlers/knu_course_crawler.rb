@@ -32,7 +32,7 @@ class KnuCourseCrawler < CourseCrawler::Base
 
     r = RestClient.get(@query_url+"Application/COU/COU200M_01v1.aspx")
     doc = Nokogiri::HTML(r)
-
+    puts "get url ..."
 
     url = doc.css('table[class="sortable"] tr:nth-child(n+2)').map{|tr| tr}
     (0..url.count-1).each do |u|
@@ -43,14 +43,18 @@ class KnuCourseCrawler < CourseCrawler::Base
     end
 
     r = %x(curl -s '#{url}' --compressed)
+
     doc = File.new("knu_course_data_temp","w")
     doc.write(r)
     doc = Spreadsheet.open "knu_course_data_temp"
-    File.delete("knu_course_data_temp")
-
+    ##  Errno::ETXTBSY: Text file busy @ unlink_internal , 所以先暫時註解掉
+    #File.delete("knu_course_data_temp")
+    ##
+    count = 1
     doc.worksheets[0].map{|row| row}[1..-1].each do |data|
       course_id += 1
-
+      puts "data crawled : " + count.to_s
+      count += 1
       course_time_location = data[11].scan(/週(?<day>[一二三四五六日])(?<period>\d+)(?<loc>\w+)/)
 
       course_days, course_periods, course_locations = [], [], []
@@ -105,6 +109,7 @@ class KnuCourseCrawler < CourseCrawler::Base
 
       @courses << course
     end
+    puts "Project finished !!!"
     @courses
   end
 end

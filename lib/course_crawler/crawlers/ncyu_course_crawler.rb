@@ -1,4 +1,5 @@
 # 國立嘉義大學
+#https://web085003.adm.ncyu.edu.tw/pub_depta1.aspx
 
 module CourseCrawler::Crawlers
 class NcyuCourseCrawler < CourseCrawler::Base
@@ -13,23 +14,23 @@ class NcyuCourseCrawler < CourseCrawler::Base
     "日" => 7,
   }
 
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "F" => 5,
-    "5" => 6,
-    "6" => 7,
-    "7" => 8,
-    "8" => 9,
-    "9" => 10,
-    "A" => 11,
-    "B" => 12,
-    "C" => 13,
-    "D" => 14,
-  }
-
+  # PERIODS = {
+  #   "1" => 1,
+  #   "2" => 2,
+  #   "3" => 3,
+  #   "4" => 4,
+  #   "F" => 5,
+  #   "5" => 6,
+  #   "6" => 7,
+  #   "7" => 8,
+  #   "8" => 9,
+  #   "9" => 10,
+  #   "A" => 11,
+  #   "B" => 12,
+  #   "C" => 13,
+  #   "D" => 14,
+  # }
+  PERIODS = CoursePeriod.find('NCYU').code_map
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year                 = year
@@ -43,7 +44,7 @@ class NcyuCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     doc = Nokogiri::HTML(http_client.get_content(@query_url))
     depts = doc.css('select[name="WebDep67"] option').map{|opt| opt[:value] }
 
@@ -55,7 +56,7 @@ class NcyuCourseCrawler < CourseCrawler::Base
         "WebTerm1" => @term,
         "WebDep67" => dept
       })
-
+      puts "data crawled : " + dept
       doc = Nokogiri::HTML(r.body)
       rows = doc.css('table')[3].css('tr:not(:first-child)')
 
@@ -118,7 +119,7 @@ class NcyuCourseCrawler < CourseCrawler::Base
         }
       end
     end # end each depts
-
+    puts "Project finished !!!"
     @courses
   end # end courses method
 end

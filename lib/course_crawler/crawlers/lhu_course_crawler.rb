@@ -36,6 +36,7 @@ class LhuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
 
+    puts "get url ..."
     r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(r)
 
@@ -43,7 +44,7 @@ class LhuCourseCrawler < CourseCrawler::Base
 
     course_id = 0
     doc.css('select[id="DDL_Dept"] option:nth-child(n+2)').map{|opt| opt[:value]}.each do |dept|
-
+      puts "Department crawled : " + dept
       r = RestClient.post(@query_url, hidden.merge({
         "TB_TYear" => @year-1911,
         "TB_TTerm" => @term,
@@ -119,7 +120,7 @@ class LhuCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
-
+    puts "Project finished !!!"
     @courses
   end
 

@@ -23,9 +23,8 @@ class NctuCourseCrawler < CourseCrawler::Base
     "J" => 14,
     "K" => 15,
     "L" => 16,
-
   }
-
+  #PERIODS = CoursePeriod.find('NCTU').code_map
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     @year = year || current_year
@@ -38,6 +37,7 @@ class NctuCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
+    puts "get url ..."
     cc = NctuCourse.new(year: @year, term: @term)
 
     @threads = []
@@ -63,7 +63,7 @@ class NctuCourseCrawler < CourseCrawler::Base
       )
       @threads << Thread.new do
         old_course = Hashie::Mash.new old_course
-
+        puts "data crawled : " + old_course.cos_cname
         year = old_course.acy.to_i + 1911
         term = old_course.sem.to_i
 
@@ -128,7 +128,7 @@ class NctuCourseCrawler < CourseCrawler::Base
       end # end Thread
     end
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @new_courses
   end
 

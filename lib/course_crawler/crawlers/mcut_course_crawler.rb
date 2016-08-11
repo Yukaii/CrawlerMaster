@@ -17,7 +17,7 @@ class McutCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = {}
-
+    puts "get url ..."
     doc = Nokogiri::HTML(http_client.get_content @query_url)
     view_state = Hash[doc.css('input[type="hidden"]').map{|input| [input[:name], input[:value]] }]
 
@@ -30,7 +30,7 @@ class McutCourseCrawler < CourseCrawler::Base
 
     doc.css('#GridView1 tr:not(:first-child)').each do |row|
       datas = row.xpath('td')
-
+      puts "data crawled : " + datas[3].text.to_s
       general_code = datas[2].text
 
       @courses[general_code] ||= {}

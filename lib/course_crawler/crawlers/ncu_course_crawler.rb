@@ -58,7 +58,7 @@ class NcuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = {}
     @get_datas = []
-
+    puts "get url ..."
     r = RestClient.get "https://course.ncu.edu.tw/Course/main/query/byClass", accept_language: 'zh-TW'
     doc = Nokogiri::HTML(r.to_s)
 
@@ -104,7 +104,7 @@ class NcuCourseCrawler < CourseCrawler::Base
       end
     end
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @courses.values
   end
 
@@ -122,7 +122,7 @@ class NcuCourseCrawler < CourseCrawler::Base
     dep_h = Hash[doc.css('select[name="selectDept"] option').map{|d| [d[:value], d.text.gsub(/　/, '')]}.select {|arr| arr[0].match(/^#{@year-1911}#{@term}/)}]
 
     dep_h.each do |dep_code, dep|
-      puts dep
+      #puts "Department : " + dep
       page_count = 1
       # visit each department
       r = RestClient.get("#{@query_url}?#{URI.encode({
@@ -135,7 +135,7 @@ class NcuCourseCrawler < CourseCrawler::Base
       }.map {|k, v| "#{k}=#{v}"}.join('&'))}", accept_language: 'zh-TW')
 
       while true
-        print "#{page_count}, "
+        #print "#{page_count}, "
         page_count += 1
 
         doc = Nokogiri::HTML(r.to_s)
@@ -187,7 +187,7 @@ class NcuCourseCrawler < CourseCrawler::Base
 
     general_code = datas[0] && datas[0].text
     code = "#{year}-#{term}-#{general_code}-#{dep_code.to_s}"
-
+  #  puts "data crawled : " +  names[0]
     course = {
       year: year,
       term: term,

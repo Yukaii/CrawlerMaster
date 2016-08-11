@@ -37,14 +37,23 @@ class MustCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     course_id = 0
-
+    puts "get url ..."
     r = RestClient.get(@query_url+"qry_cosbyname.asp")
     doc = Nokogiri::HTML(r)
 
     doc.css('select[name="DiviList"] option').map{|opt| opt[:value]}.each do |divi|
       r = %x(curl -s '#{@query_url}qry_cosbyname.asp' --data 'YearList=#{@year-1911}&SmtrList=#{@term}&DiviList=#{divi}&CosName=+' --compressed)
-      doc = Nokogiri::HTML(@ic.iconv(r))
+      # r = RestClient.post(@query_url+"qry_cosbyname.asp" , {
+      #   "YearList"  =>  "105" ,
+      #   "SmtrList"  =>  "1"   ,
+      #   "DiviList"  =>  "1"   ,
+      #   "CosName"   =>  "+"   ,
+      # })
 
+      doc = Nokogiri::HTML(@ic.iconv(r))
+    
+
+      puts "data crawled : " + divi
       doc.css('body > center table tr:nth-child(n+2)').each do |tr|
         data = tr.css('td').map{|td| td.text}
         syllabus_url = "#{@query_url}#{tr.css('a').map{|a| a[:value]}[0]}" if tr.css('a').map{|a| a[:value]}[0] != nil
@@ -127,6 +136,7 @@ class MustCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

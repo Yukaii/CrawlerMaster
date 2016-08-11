@@ -29,7 +29,7 @@ class NdhuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     course_id = 0
-
+    puts "get url ..."
     r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(r)
 
@@ -55,6 +55,7 @@ class NdhuCourseCrawler < CourseCrawler::Base
       doc = Nokogiri::HTML(r)
       hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
       # 選擇系所
+
       doc.css('select[name="ddlDEP"] option').map{|opt| [opt[:value],opt.text]}.each do |dept_v,dept_n|
         r = RestClient.post(@query_url, hidden.merge({
           "ddlYEAR" => "#{@year-1911}/#{@term}",
@@ -73,7 +74,7 @@ class NdhuCourseCrawler < CourseCrawler::Base
           "btnCourse" => "查詢(中文)"
           }) )
         doc = Nokogiri::HTML(r)
-
+        puts "data crawled : " + dept_n
         doc.css('table[id="GridView1"] tr:nth-child(n+2)').each do |tr|
           data = tr.css('td').map{|td| td.text.gsub(/[\r\n\s　]/,"")}
           next if data.length < 6
@@ -140,6 +141,7 @@ class NdhuCourseCrawler < CourseCrawler::Base
         end
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

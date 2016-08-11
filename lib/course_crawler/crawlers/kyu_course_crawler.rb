@@ -66,16 +66,17 @@ class KyuCourseCrawler < CourseCrawler::Base
     @courses = []
     course_id = 0
     kyu_term = {1=>"U", 2=>"D"}
-
+    puts "get url ..."
     r = RestClient.get(@query_url)
     hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
 
     r = %x(curl -s '#{@query_url}' --data '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=#{URI.escape(hidden["__VIEWSTATE"],"/=+")}&__VIEWSTATEGENERATOR=BD2CDF3C&__EVENTVALIDATION=#{URI.escape(hidden["__EVENTVALIDATION"],"/=+")}&ctl00%24ContentPlaceHolder1%24drp_slSemester=#{@year-1911}#{kyu_term[@term]}&ctl00%24ContentPlaceHolder1%24text_CosName=%25&ctl00%24ContentPlaceHolder1%24text_seqNO=&ctl00%24ContentPlaceHolder1%24btn_Cossl=%E6%9F%A5%E8%A9%A2' --compressed)
     doc = Nokogiri::HTML(r)
-
+    count = 1
     doc.css('table[id="ctl00_ContentPlaceHolder1_ListView1_itemPlaceholderContainer"] tr:nth-child(n+2)').each do |tr|
       data = tr.css('td').map{|td| td.text}
-
+      puts "data crawled : " + count.to_s
+      count += 1
       course_id += 1
 
       course_time = data[14].scan(/(?<day>[一二三四五六日])\((?<period>[中午\w\~,]+)/)
@@ -144,6 +145,7 @@ class KyuCourseCrawler < CourseCrawler::Base
 
       @courses << course
     end
+    puts "Project fininshed !!!"
     @courses
   end
 

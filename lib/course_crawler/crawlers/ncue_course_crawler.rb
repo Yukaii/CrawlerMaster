@@ -29,7 +29,7 @@ class NcueCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     # start write your crawler here:
     r = RestClient.get @query_url
     doc = Nokogiri::HTML(r)
@@ -101,7 +101,7 @@ class NcueCourseCrawler < CourseCrawler::Base
             end
           end
 
-
+          puts "data crawled : " + columns[3].text
         course = {
           department:   columns[2].text,
           name:         columns[3].text,
@@ -163,7 +163,7 @@ class NcueCourseCrawler < CourseCrawler::Base
     end # end each dept_values
 
     # puts "hello"
-
+    puts "Project finished !!!"
     @courses
   end # end courses method
 

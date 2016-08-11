@@ -15,25 +15,25 @@ class NccuCourseCrawler < CourseCrawler::Base
     "日" => 7,
   }
 
-  PERIODS = {
-    "A" => 1,
-    "B" => 2,
-    "1" => 3,
-    "2" => 4,
-    "3" => 5,
-    "4" => 6,
-    "C" => 7,
-    "D" => 8,
-    "5" => 9,
-    "6" => 10,
-    "7" => 11,
-    "8" => 12,
-    "E" => 13,
-    "F" => 14,
-    "G" => 15,
-    "H" => 16
-  }
-
+  # PERIODS = {
+  #   "A" => 1,
+  #   "B" => 2,
+  #   "1" => 3,
+  #   "2" => 4,
+  #   "3" => 5,
+  #   "4" => 6,
+  #   "C" => 7,
+  #   "D" => 8,
+  #   "5" => 9,
+  #   "6" => 10,
+  #   "7" => 11,
+  #   "8" => 12,
+  #   "E" => 13,
+  #   "F" => 14,
+  #   "G" => 15,
+  #   "H" => 16
+  # }
+  PERIODS = CoursePeriod.find('NCCU').code_map
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
     @query_url = "http://wa.nccu.edu.tw/QryTor/"
 
@@ -49,7 +49,7 @@ class NccuCourseCrawler < CourseCrawler::Base
     @threads = []
 
     visit @query_url
-
+    puts "get url ..."
     inst_h = Hash[@doc.css('select[name="t_colLB"] option:not(:first-child)').map{|opt| [opt[:value], opt.text.split('　')[0]]}]
 
     post_hash = {
@@ -60,6 +60,7 @@ class NccuCourseCrawler < CourseCrawler::Base
 
     inst_h.keys.each do |inst|
       visit @query_url
+      puts "data crawled : " + inst
 
       r = RestClient.post(@query_url, post_hash.merge(get_view_state).merge({
         "__EVENTTARGET" => 't_colLB',
@@ -176,7 +177,7 @@ class NccuCourseCrawler < CourseCrawler::Base
     end
 
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @courses
   end
 

@@ -1,21 +1,27 @@
+##
+#高雄醫學大學爬蟲
+#網址 : https://wac.kmu.edu.tw/qur/qurq0006.php
+#
 module CourseCrawler::Crawlers
 class KmuCourseCrawler < CourseCrawler::Base
 
-  PERIODS = {
-    "1" =>  1,
-    "2" =>  2,
-    "3" =>  3,
-    "4" =>  4,
-    "5" =>  5,
-    "6" =>  6,
-    "7" =>  7,
-    "8" =>  8,
-    "9" =>  9,
-    "A" => 10,
-    "B" => 11,
-    "C" => 12,
-    "D" => 13
-  }
+  # PERIODS = {
+  #   "1" =>  1,
+  #   "2" =>  2,
+  #   "3" =>  3,
+  #   "4" =>  4,
+  #   "5" =>  5,
+  #   "6" =>  6,
+  #   "7" =>  7,
+  #   "8" =>  8,
+  #   "9" =>  9,
+  #   "A" => 10,
+  #   "B" => 11,
+  #   "C" => 12,
+  #   "D" => 13
+  # }
+  # 改成新的模式 , SCV
+  PERIODS = CoursePeriod.find('KMU').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
     #@post_url = "https://wac.kmu.edu.tw/qur/qurq0006.php"
@@ -30,12 +36,17 @@ class KmuCourseCrawler < CourseCrawler::Base
     @courses = []
     year = @year
     term = @term
+    puts "get url ..."
+    # 直接抓curl , 直接獲得全部課程表
     r = `curl "https://wac.kmu.edu.tw/qur/qurq0006.php" -H "Origin: https://wac.kmu.edu.tw" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4" -H "Upgrade-Insecure-Requests: 1" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Referer: https://wac.kmu.edu.tw/qur/qurq0006.php" -H "Connection: keep-alive" --data "_CD_SYEAR=#{year-1911}&_CD_SEM=#{term}&_CD_DEPTNO=&_CD_GRADE="%"25&_CD_SEQNO=&_CD_CHINESECO=&_CD_TEA=&_CD_ROOMNO=&_CD_CSK=&_CD_CLWEEK=&_CD_OPENYN=Y&m_SQR_FD"%"5B"%"5D=SYEAR&m_SQR_FD"%"5B"%"5D=SEM&m_SQR_FD"%"5B"%"5D=SEQNO&m_SQR_FD"%"5B"%"5D=DEPTNO&m_SQR_FD"%"5B"%"5D=MASTER&m_SQR_FD"%"5B"%"5D=SECNAM&m_SQR_FD"%"5B"%"5D=ACADNO&m_SQR_FD"%"5B"%"5D=CONO&m_SQR_FD"%"5B"%"5D=OPENYN&m_SQR_FD"%"5B"%"5D=NETYN&m_SQR_FD"%"5B"%"5D=CHOOSEMAN&m_SQR_FD"%"5B"%"5D=GRADE&m_SQR_FD"%"5B"%"5D=CLASSCODE&m_SQR_FD"%"5B"%"5D=SECQTY&m_SQR_FD"%"5B"%"5D=CHINESECO&m_SQR_FD"%"5B"%"5D=SM&m_SQR_FD"%"5B"%"5D=CREDIT&m_SQR_FD"%"5B"%"5D=CSK&m_SQR_FD"%"5B"%"5D=TEAFNAM&m_SQR_FD"%"5B"%"5D=COKIND&m_SQR_FD"%"5B"%"5D=CLWEEK&m_SQR_FD"%"5B"%"5D=BCL&m_SQR_FD"%"5B"%"5D=ECL&m_SQR_FD"%"5B"%"5D=W0&m_SQR_FD"%"5B"%"5D=W1&m_SQR_FD"%"5B"%"5D=W2&m_SQR_FD"%"5B"%"5D=W3&m_SQR_FD"%"5B"%"5D=W4&m_SQR_FD"%"5B"%"5D=W5&m_SQR_FD"%"5B"%"5D=W6&m_SQR_FD"%"5B"%"5D=ROOMNO&m_SQR_FD"%"5B"%"5D=RMK&m_SQR_OD1=&m_SQR_OD2=&m_SQR_OD3=&m_SQR_OD4=&m_SQR_OD5=&m_Action="%"BF"%"E9"%"A5X"%"C2"%"B2"%"B3t"%"AA"%"ED&m_CurRec=0&m_UPDMode=0&m_InSearch=&m_SearchSQL=" --compressed`
 
     doc = Nokogiri::HTML(@ic.iconv(r))
 
     index = doc.css('tr')
+    count = 1
     index[1..-1].each do |row|
+      puts "data crawled : " + count.to_s + " / " +(index.count-1).to_s
+      count += 1
       datas = row.css('td')
 
       course_days, course_periods, course_locations = [], [], []
@@ -95,6 +106,7 @@ class KmuCourseCrawler < CourseCrawler::Base
       @after_each_proc.call(course: course) if @after_each_proc
       @courses << course
     end
+    puts "Project finished !!!"
     @courses
   end
 

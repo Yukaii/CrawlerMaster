@@ -91,6 +91,7 @@
 #  index_courses_on_year               (year)
 #
 
+
 class Course < ActiveRecord::Base
   include CourseImport
 

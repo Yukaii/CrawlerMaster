@@ -15,6 +15,7 @@
 #  index_course_task_relations_on_version_id              (version_id)
 #
 
+
 class CourseTaskRelation < ActiveRecord::Base
   include CourseValidationConcern
 

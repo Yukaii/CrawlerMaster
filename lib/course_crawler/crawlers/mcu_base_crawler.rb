@@ -40,6 +40,7 @@ class McuBaseCrawler < CourseCrawler::Base
   end
 
   def courses
+    puts "get url ..."
     @preload_url = "http://www.mcu.edu.tw/student/new-query/sel-query/query_0_1.asp?gdb=#{@term}&gyy=#{@year-1911}"
     @courses = []
 
@@ -64,7 +65,7 @@ class McuBaseCrawler < CourseCrawler::Base
         r = RestClient.post(@post_url, {
           sch: sch
         }, cookies: @cookies)
-
+        puts "data crawled : " + sch
         doc = Nokogiri::HTML(@ic.iconv(r))
         rows = doc.css('table tr:not(:first-child)')
 
@@ -195,7 +196,7 @@ class McuBaseCrawler < CourseCrawler::Base
       }
     end
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @courses
   end # def course
 end # class McuCourseCrawler
