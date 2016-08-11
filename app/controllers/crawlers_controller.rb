@@ -11,23 +11,6 @@ class CrawlersController < ApplicationController
     @title = "#{@crawler.name} | CrawlerMaster"
   end
 
-  def changes
-    @task = @crawler.crawl_tasks.find(params[:task_id])
-    @versions = @task.course_versions.page(params[:page]).per(params[:paginate_by])
-  end
-
-  def snapshot
-    task = @crawler.crawl_tasks.find(params[:task_id])
-    book, filename = task.generate_snapshot(errors_only: params[:errors_only])
-
-    temp_file = Tempfile.new(filename)
-    book.write(temp_file.path)
-    send_data(File.read(temp_file), type: 'application/xls', filename: filename)
-
-    temp_file.close
-    temp_file.unlink
-  end
-
   def setting
     params[:schedule].slice(*Crawler::SCHEDULE_KEYS).each do |hkey, value|
       @crawler.schedule[hkey] = value
@@ -70,13 +53,13 @@ class CrawlersController < ApplicationController
 
     if File.extname(uploaded_file.original_filename) != '.xls'
       flash[:warning] = 'Wrong file extension'
-      redirect_to crawler_import_path(@crawler.organization_code)
+      redirect_to import_crawler_path(@crawler.organization_code)
       return
     end
 
     unless uploaded_file.original_filename =~ CrawlTask::FILENAME_REGEX
       flash[:warning] = "Wrong filename format, should match #{CrawlTask::FILENAME_REGEX.inspect}"
-      redirect_to crawler_import_path(@crawler.organization_code)
+      redirect_to import_crawler_path(@crawler.organization_code)
       return
     end
 
@@ -90,7 +73,7 @@ class CrawlersController < ApplicationController
       if task.course_versions.size.zero?
         task.destroy
         flash[:warning] = 'No course changes'
-        redirect_to crawler_import_path(@crawler.organization_code)
+        redirect_to import_crawler_path(@crawler.organization_code)
       else
         redirect_to crawler_path(@crawler.organization_code)
         flash[:success] = 'Successfully imported'
