@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  devise_for :admin_users
-
   root 'crawlers#index'
+
+  devise_for :admin_users
 
   resources :crawlers, only: [:index, :show] do
     member do
