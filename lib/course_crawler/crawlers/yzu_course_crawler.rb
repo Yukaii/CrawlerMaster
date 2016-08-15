@@ -3,7 +3,7 @@
 
 module CourseCrawler::Crawlers
 class YzuCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include DSL
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
     @url = "https://portal.yzu.edu.tw/cosSelect/index.aspx?Lang=TW&D=G"

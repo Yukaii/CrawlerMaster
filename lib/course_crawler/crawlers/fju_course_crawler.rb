@@ -5,7 +5,7 @@
 
 module CourseCrawler::Crawlers
 class FjuCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include DSL
 
   DAYS = {
     "一" => 1,

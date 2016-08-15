@@ -4,7 +4,7 @@
 #
 module CourseCrawler::Crawlers
 class CycuCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include DSL
 
   PERIODS = {
     "特早" => 1,

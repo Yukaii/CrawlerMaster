@@ -3,7 +3,7 @@
 
 module CourseCrawler::Crawlers
 class NccuCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include DSL
 
   DAYS = {
     "一" => 1,

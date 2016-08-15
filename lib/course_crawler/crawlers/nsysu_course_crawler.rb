@@ -5,7 +5,7 @@
 
 module CourseCrawler::Crawlers
 class NsysuCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include DSL
 
   DAYS = %w(一 二 三 四 五 六 日)
 

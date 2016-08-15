@@ -3,7 +3,7 @@
 
 module CourseCrawler::Crawlers
 class CguCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include DSL
 
   DAYS = {
     "Mon" => 1,
