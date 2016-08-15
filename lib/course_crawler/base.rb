@@ -7,7 +7,7 @@ require 'thread'
 
 module CourseCrawler
   class Base
-    include Mixin
+    include DateMixin
 
     attr_reader   :year, :term
     attr_accessor :worker

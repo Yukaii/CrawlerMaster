@@ -26,7 +26,7 @@
 
 
 class Crawler < ActiveRecord::Base
-  include CourseCrawler::Mixin
+  include CourseCrawler::DateMixin
 
   has_many :rufus_jobs
   has_many :courses, foreign_key: :organization_code, primary_key: :organization_code
