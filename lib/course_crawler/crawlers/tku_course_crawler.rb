@@ -6,7 +6,7 @@ require 'capybara/poltergeist'
 
 module CourseCrawler::Crawlers
 class TkuCourseCrawler < CourseCrawler::Base
-  include DSL
+  include ::CourseCrawler::DSL
   include Capybara::DSL
 
   DAYS = {
