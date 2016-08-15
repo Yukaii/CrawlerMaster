@@ -4,7 +4,7 @@
 module CourseCrawler::Crawlers
   class NtuCourseCrawler < CourseCrawler::Base
 
-    include DSL
+    include ::CourseCrawler::DSL
 
     DAYS = {
       "一" => 1,

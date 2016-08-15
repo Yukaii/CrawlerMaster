@@ -1,6 +1,6 @@
 module CourseCrawler::Crawlers
 class NctuCourse
-  include DSL
+  include ::CourseCrawler::DSL
 
   def initialize year: nil, term: nil
     @host = "http://timetable.nctu.edu.tw/"
