@@ -3,11 +3,11 @@ module CourseValidationConcern
 
   included do
     def name_valid?(course)
-      !course.name.nil? || !course.name.empty?
+      course.name.present? && !course.name.empty?
     end
 
     def lecturer_valid?(course)
-      !course.lecturer.nil? || !course.lecturer.empty?
+      course.lecturer.present? && !course.lecturer.empty?
     end
 
     def required_valid?(course)
