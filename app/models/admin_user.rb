@@ -24,7 +24,6 @@
 #  index_admin_users_on_username              (username) UNIQUE
 #
 
-
 class AdminUser < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable

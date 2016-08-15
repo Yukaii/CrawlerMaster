@@ -24,7 +24,6 @@
 #  last_run_at                  :datetime
 #
 
-
 class Crawler < ActiveRecord::Base
   include CourseCrawler::DateMixin
 

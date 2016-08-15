@@ -19,7 +19,6 @@
 #  index_crawl_tasks_on_type               (type)
 #
 
-
 class CrawlTask < ActiveRecord::Base
   has_many :course_task_relations, foreign_key: :task_id
   has_many :course_versions, through: :course_task_relations, source: :version
