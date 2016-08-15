@@ -9,7 +9,7 @@
 
 class CourseCrawlerJob
   include Sidekiq::Worker
-  include CourseCrawler::Mixin
+  include CourseCrawler::DateMixin
 
   sidekiq_options retry: false
 
