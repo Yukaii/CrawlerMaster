@@ -78,9 +78,9 @@ sudo apt-get install libpq-dev imagemagick libmagickwand-dev libqt4-dev libqtweb
 
 ```bash
 sudo apt-get install redis-server
-sudo services redis-server status # 看一下有沒有跑起來
+sudo service redis-server status # 看一下有沒有跑起來
 
-sudo services redis-server start # optional，redis 沒有跑起來的話
+sudo service redis-server start # optional，redis 沒有跑起來的話
 ```
 
 ### 設置專案
@@ -96,6 +96,7 @@ REDIS_NAMESPACE=crawler_master
 
 bundle install
 
+cp config/database.yml.example config/database.yml
 rake db:setup && rake db:migrate && rake db:seed
 ```
 
