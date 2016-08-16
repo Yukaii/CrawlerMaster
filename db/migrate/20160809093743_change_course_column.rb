@@ -6,7 +6,7 @@ class ChangeCourseColumn < ActiveRecord::Migration
     # destroy those courses using
     # => Course.where(organization_code: ['NTUST', 'YUNTECH']).destroy_all
     # to fix them, then run rake db:migrate again
-    remove_index :courses, :ucode
+    remove_index :courses, column: :ucode
     add_index    :courses, :ucode, unique: true
   end
 end
