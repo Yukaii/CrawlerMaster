@@ -90,6 +90,10 @@ class CourseCrawlerJob
       end
     end
 
+    if Course.where(organization_code: organization_code).group(:ucode).having('COUNT(courses.ucode) > 1').any?
+      puts "Duplicate code!" if $PROGRAM_NAME =~ /rake$/
+    end
+
     crawler_record.update!(last_run_at: Time.zone.now)
     task.update!(finished_at: Time.zone.now)
 
