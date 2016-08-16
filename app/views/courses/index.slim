@@ -9,7 +9,7 @@
     - @courses.any?
       p= link_to "<<", crawler_path(@courses.first.organization_code)
     p= "Total Courses Count: #{@courses.total_count}"
-    = course_download_link(params)
+    = course_download_link(params) if @render_download_button
 
     = paginate @courses
     .table-responsive

@@ -27,7 +27,7 @@ class CrawlersController < ApplicationController
     @crawler.save!
 
     flash[:success] = 'Settings has been successfully updated'
-    redirect_to crawler_path(@crawler.organization_code)
+    redirect_to crawler_path(@crawler)
   end
 
   def run
@@ -37,7 +37,7 @@ class CrawlersController < ApplicationController
 
     flash[:success] = "job_ids: #{jobs.map { |j| j && j.id }}"
 
-    redirect_to crawler_path(@crawler.organization_code)
+    redirect_to crawler_path(@crawler)
   end
 
   def batch_run
@@ -48,18 +48,25 @@ class CrawlersController < ApplicationController
     redirect_to crawlers_path
   end
 
+  def duplicate_courses
+    course_codes = Course.where(organization_code: params[:id]).group(:ucode).having('COUNT(courses.ucode) > 1').pluck(:code)
+    @courses     = Course.where(code: course_codes).page(params[:page]).per(params[:paginate_by])
+    @render_download_button = false
+    render('courses/index')
+  end
+
   def upload
     uploaded_file = params[:file]
 
     if File.extname(uploaded_file.original_filename) != '.xls'
       flash[:warning] = 'Wrong file extension'
-      redirect_to import_crawler_path(@crawler.organization_code)
+      redirect_to import_crawler_path(@crawler)
       return
     end
 
     unless uploaded_file.original_filename =~ CrawlTask::FILENAME_REGEX
       flash[:warning] = "Wrong filename format, should match #{CrawlTask::FILENAME_REGEX.inspect}"
-      redirect_to import_crawler_path(@crawler.organization_code)
+      redirect_to import_crawler_path(@crawler)
       return
     end
 
@@ -73,9 +80,9 @@ class CrawlersController < ApplicationController
       if task.course_versions.size.zero?
         task.destroy
         flash[:warning] = 'No course changes'
-        redirect_to import_crawler_path(@crawler.organization_code)
+        redirect_to import_crawler_path(@crawler)
       else
-        redirect_to crawler_path(@crawler.organization_code)
+        redirect_to crawler_path(@crawler)
         flash[:success] = 'Successfully imported'
       end
     end
@@ -85,7 +92,7 @@ class CrawlersController < ApplicationController
   def sync
     j = @crawler.sync_to_core
     flash[:success] = "job_id: #{j && j.id}"
-    redirect_to crawler_path(@crawler.organization_code)
+    redirect_to crawler_path(@crawler)
   end
 
   def unschedule_job
@@ -94,7 +101,7 @@ class CrawlersController < ApplicationController
 
     job.destroy
 
-    redirect_to crawler_path(@crawler.organization_code)
+    redirect_to crawler_path(@crawler)
   end
 
   private

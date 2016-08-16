@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     member do
       get  'import'
       post 'upload' # upload edited crawler version snapshot
+      get  'duplicate_courses'
 
       post 'setting'
       post 'run'
