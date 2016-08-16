@@ -11,17 +11,17 @@
           h3
             = @crawler.name
           / Run button
-          form action=run_crawler_path(@crawler.organization_code) method="post" style="display: inline-block;"
+          form action=run_crawler_path(@crawler) method="post" style="display: inline-block;"
             = hidden_field_tag :authenticity_token, form_authenticity_token
             span
               button.btn.btn-primary style="margin: 0 1em;" type="submit" Run
 
           span
-            a href=import_crawler_path(@crawler.organization_code)
+            a href=import_crawler_path(@crawler)
               button.btn.btn-primary style="margin: 0 1em;" Import
 
           / Sync button
-          form action=sync_crawler_path(@crawler.organization_code) method="post" style="display: inline-block;"
+          form action=sync_crawler_path(@crawler) method="post" style="display: inline-block;"
             = hidden_field_tag :authenticity_token, form_authenticity_token
             span
               button.btn.btn-success style="margin: 0 1em;" type="submit" Sync
@@ -92,9 +92,9 @@
               td= task.created_at && "#{time_ago_in_words(task.created_at)} ago"
               td= task.finished_at && "#{time_ago_in_words(task.finished_at)} ago"
               td
-                div= link_to "View Changes", changes_crawler_task_path(@crawler.organization_code, task)
-                div= link_to "Download Snapshot[#{course_versions_count(task)}]", snapshot_crawler_task_path(@crawler.organization_code, task), method: :post
-                div= link_to "Download Snapshot[#{error_course_versions_count(task)}](Potential Errors Only)", snapshot_crawler_task_path(@crawler.organization_code, task, errors_only: true), method: :post
+                div= link_to "View Changes", changes_crawler_task_path(@crawler, task)
+                div= link_to "Download Snapshot[#{course_versions_count(task)}]", snapshot_crawler_task_path(@crawler, task), method: :post
+                div= link_to "Download Snapshot[#{error_course_versions_count(task)}](Potential Errors Only)", snapshot_crawler_task_path(@crawler, task, errors_only: true), method: :post
 
       / Rufus Jobs Table
       h4 Rufus Jobs
@@ -116,7 +116,7 @@
               td= rfj.last_time
               td= rfj.scheduled_at
               td
-                = link_to 'Unschedule', crawler_job_path(@crawler.organization_code, rfj.id), method: :delete, :class => 'btn btn-mini btn-danger'
+                = link_to 'Unschedule', crawler_job_path(@crawler, rfj.id), method: :delete, :class => 'btn btn-mini btn-danger'
 
       / Setting form
       .panel-group#crawler-statistic

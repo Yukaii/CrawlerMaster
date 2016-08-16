@@ -55,6 +55,10 @@ class Crawler < ActiveRecord::Base
     :sync
   ].freeze
 
+  def to_param
+    organization_code
+  end
+
   def klass
     CourseCrawler.find!(organization_code)
   end
