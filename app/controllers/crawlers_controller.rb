@@ -49,7 +49,7 @@ class CrawlersController < ApplicationController
   end
 
   def duplicate_courses
-    course_codes = Course.where(organization_code: params[:id]).group(:ucode).having('COUNT(courses.ucode) > 1').pluck(:code)
+    course_codes = Course.where(organization_code: params[:id]).group(:ucode, :code).having('COUNT(courses.ucode) > 1').pluck(:code)
     @courses     = Course.where(code: course_codes).page(params[:page]).per(params[:paginate_by])
     @render_download_button = false
     render('courses/index')
