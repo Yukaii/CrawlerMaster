@@ -27,7 +27,7 @@ class CjcuCourseCrawler < CourseCrawler::Base
     '6'  => 7,
     '7'  => 8,
     '8'  => 9,
-    '9'  => 10
+    '9'  => 10,
     '10' => 11,
     '11' => 12,
     '12' => 13,
