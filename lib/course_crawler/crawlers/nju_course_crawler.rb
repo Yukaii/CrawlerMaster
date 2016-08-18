@@ -46,6 +46,7 @@ class NjuCourseCrawler < CourseCrawler::Base
     @courses = []
     course_id = 0
 
+    puts "get url ..."
     r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(r)
     cookie = r.cookies
@@ -131,7 +132,7 @@ class NjuCourseCrawler < CourseCrawler::Base
               end
             end
           end
-
+          puts "data crawled : " + data[1]
           course = {
             year: @year,    # 西元年
             term: @term,    # 學期 (第一學期=1，第二學期=2)
@@ -180,6 +181,7 @@ class NjuCourseCrawler < CourseCrawler::Base
         end
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

@@ -17,6 +17,7 @@ class NfuCourseCrawler < CourseCrawler::Base
 
 	def courses
 		@courses = []
+		puts "get url ..."
 		dep = []
 		year = (@year-1911).to_s
 		term = @term.to_s
@@ -32,7 +33,7 @@ class NfuCourseCrawler < CourseCrawler::Base
 
 		#do search datas
 		dep.each do |dep_no|
-			set_progress "#{dep.index(dep_no)+1} / #{dep.size.to_s}"
+			puts"data crawled : "+"#{dep.index(dep_no)+1} / #{dep.size.to_s} -> " + dep_no
 
 			r = RestClient.post( @post_url , {
 					pselyr: all_yt,
@@ -108,6 +109,7 @@ class NfuCourseCrawler < CourseCrawler::Base
 				end
 			end
 		end
+		puts "Project finished !!!"
 		@courses
 	end
 end

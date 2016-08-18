@@ -43,7 +43,7 @@ class NiuCourseCrawler < CourseCrawler::Base
 
 	def courses
     return if @query.nil?
-
+    puts "get url ..."
 		r = RestClient.get @query
 		@cookies = r.cookies
 
@@ -93,7 +93,7 @@ class NiuCourseCrawler < CourseCrawler::Base
 			end
 
       next if row[1].nil?
-
+      puts "data crawled : " + row[2]
 			course ={
         department:   row[0].split(","),
         name:         row[2],
@@ -137,7 +137,7 @@ class NiuCourseCrawler < CourseCrawler::Base
 
 			@courses << course
 		end # sheet1 do
-
+    puts "Project finished !!!"
 		@courses
 	end # end courses
 end # class

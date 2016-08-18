@@ -34,7 +34,7 @@ class CmuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     course_id = 0
-
+    puts "get url ..."
     r = RestClient.get(@query_url+"get_dept.asp?cos_year=#{@year-1911}&cos_smtr=#{@term}&ref_type=&i18n=zh")
     doc = Nokogiri::HTML(r)
 
@@ -112,6 +112,7 @@ class CmuCourseCrawler < CourseCrawler::Base
         if data_next.count > 11
           course_id += 1
 
+          puts "data crawled : " + data[2]
           course = {
             year: @year,    # 西元年
             term: @term,    # 學期 (第一學期=1，第二學期=2)
@@ -163,6 +164,7 @@ class CmuCourseCrawler < CourseCrawler::Base
         end
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

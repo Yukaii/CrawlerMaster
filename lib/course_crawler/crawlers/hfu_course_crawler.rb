@@ -33,7 +33,7 @@ class HfuCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     r = HTTPClient.get(@query_url).body
     doc = Nokogiri::HTML(r)
 
@@ -131,6 +131,7 @@ class HfuCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 

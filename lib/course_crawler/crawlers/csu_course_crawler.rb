@@ -48,7 +48,7 @@ class CsuCourseCrawler < CourseCrawler::Base
     @courses = []
     # repeat_list = []
     course_id = 0
-
+    puts "get url ..."
     r = RestClient.get(@query_url+"course11.asp")
     doc_main = Nokogiri::HTML(r)
 
@@ -94,7 +94,7 @@ class CsuCourseCrawler < CourseCrawler::Base
                   course_periods << PERIODS[time[1]]
                   course_locations << data[7].gsub(/[\t\r\n\s]/,"")
                 end
-
+                  puts "data crawled : " + data[2]
                 course = {
                   year: @year,    # 西元年
                   term: @term,    # 學期 (第一學期=1，第二學期=2)
@@ -145,7 +145,7 @@ class CsuCourseCrawler < CourseCrawler::Base
         end
       end
     end
-
+    puts "Project finished !!!"
     @courses
   end
 

@@ -42,7 +42,7 @@ class FeuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     course_id = 0
-
+    puts "get url ..."
     r = RestClient.post(@query_url+"classcour3b.asp", {
       "YEAR" => @year-1911,
       "SEM" => @term,
@@ -67,7 +67,7 @@ class FeuCourseCrawler < CourseCrawler::Base
           course_locations << data[7]
         end
       end
-
+      puts "data crawled : "+data[2]
       course = {
         year: @year,    # 西元年
         term: @term,    # 學期 (第一學期=1，第二學期=2)
@@ -113,6 +113,7 @@ class FeuCourseCrawler < CourseCrawler::Base
 
       @courses << course
     end
+    puts "Project finished !!!"
     @courses
   end
 end

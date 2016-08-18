@@ -24,6 +24,7 @@ class NkmuCourseCrawler < CourseCrawler::Base
   def courses
     @courses=[]
     @threads=[]
+    puts "get url ..."
 
     res1 = clnt.post("http://info.nkmu.edu.tw/nkmu/perchk.jsp", {
       uid: 'guest',
@@ -103,7 +104,7 @@ class NkmuCourseCrawler < CourseCrawler::Base
             course_locations << table_data[9].text.strip
           end
         end
-
+        puts "data crawled : " + course_name
         course = {
           :year => @year,    # 西元年
           :term => @term,    # 學期 (第一學期=1，第二學期=2)
@@ -150,6 +151,7 @@ class NkmuCourseCrawler < CourseCrawler::Base
       end #end thread
     end #end each tr
     ThreadsWait.all_waits(*@threads)
+    puts "Project finished !!!"
     @courses
   end #end courses
 

@@ -46,7 +46,7 @@ class CsmuCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     r = RestClient.get(@query_url + 'ByTimeQueryX.asp')
     doc = Nokogiri::HTML(@ic.iconv(r))
 
@@ -93,7 +93,7 @@ class CsmuCourseCrawler < CourseCrawler::Base
               course_locations << data[9]
             end
           end
-
+          puts "data crawled : " + data[2]
           course = {
             year: @year,    # 西元年
             term: @term,    # 學期 (第一學期=1，第二學期=2)
@@ -139,6 +139,7 @@ class CsmuCourseCrawler < CourseCrawler::Base
         end
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

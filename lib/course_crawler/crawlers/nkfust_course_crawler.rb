@@ -53,7 +53,7 @@ class NkfustCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     doc = Nokogiri::HTML(http_client.get_content(@query_url))
 
     # select year
@@ -111,7 +111,7 @@ class NkfustCourseCrawler < CourseCrawler::Base
         course_periods   << PERIODS[m[1]]
         course_locations << m[2]
       end
-
+      puts "data crawled : " + power_strip(datas[3].text)
       @courses << {
         :year         => @year,
         :term         => @term,
@@ -152,7 +152,7 @@ class NkfustCourseCrawler < CourseCrawler::Base
       }
 
     end
-
+    puts "Project finished !!!"
     @courses
   end
 

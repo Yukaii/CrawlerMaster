@@ -2,6 +2,10 @@
 # 長榮大學課程爬蟲
 # 選課網址：https://eportal.cjcu.edu.tw/syllabus/home
 #
+# 因為一開始錯誤為Capybara錯誤，之後就先註解掉
+# 而後又因為SSLCertificateNotVerified問題，把RestClient改為 :
+# RestClient::Request.execute(:url => "https://eportal.cjcu.edu.tw/syllabus/home", :method => :get, :verify_ssl => false)
+# 而程是馬改動不少，詳情請讀程式碼
 
 require 'capybara/dsl'
 
@@ -22,7 +26,7 @@ class CjcuCourseCrawler < CourseCrawler::Base
     '6'  => 7,
     '7'  => 8,
     '8'  => 9,
-    '9'  => 10,
+    '9'  => 10
     '10' => 11,
     '11' => 12,
     '12' => 13,
@@ -51,12 +55,12 @@ class CjcuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    Capybara.register_driver :poltergeist do |app|
-      Capybara::Poltergeist::Driver.new(app,  js_errors: false)
-    end
-
-    Capybara.javascript_driver = :poltergeist
-    Capybara.current_driver = :poltergeist
+    # Capybara.register_driver :poltergeist do |app|
+    #   Capybara::Poltergeist::Driver.new(app,  js_errors: false)
+    # end
+    #
+    # Capybara.javascript_driver = :poltergeist
+    # Capybara.current_driver = :poltergeist
 
   end
 
@@ -68,24 +72,36 @@ class CjcuCourseCrawler < CourseCrawler::Base
 
     edu_dep_h = {}
 
-    visit "https://eportal.cjcu.edu.tw/syllabus/home"
-    all('select[name="edus"] option').count.times do |edu_i|
-      edu_opt = all('select[name="edus"] option')[edu_i]
-      edu_opt.select_option
+    #visit "https://eportal.cjcu.edu.tw/syllabus/home"
+    #r = RestClient.get "https://eportal.cjcu.edu.tw/syllabus/home"
+    #doc = Nokogiri::HTML(r)
+    puts "get url ..."
+    r = RestClient::Request.execute(:url => "https://eportal.cjcu.edu.tw/syllabus/home", :method => :get, :verify_ssl => false)
+    doc = Nokogiri::HTML(r)
 
-      edu_dep_h[edu_opt.value] = all('select[name="deps"] option').map{|opt| opt.value}
-    end;
+    edu_opt = doc.css('select[name="edus"] option')[0..-1]
+    edu_opt.each do |edu|
+      e = edu.values[0]
+      r = RestClient::Request.execute(:url => "https://eportal.cjcu.edu.tw/api/Deps/GetByEduNo/#{e}", :method => :get, :verify_ssl => false)
+      doc = Oj.load(r)
+      doc.each do |dept|
+        department = dept["edu_system_no"]
 
 
-    edu_dep_h.each do |_, depts|
-      depts.each do |department|
+    # all('select[name="edus"] option').count.times do |edu_i|
+    #   edu_opt = all('select[name="edus"] option')[edu_i]
+    #   edu_opt.select_option
+    #
+    #   edu_dep_h[edu_opt.value] = all('select[name="deps"] option').map{|opt| opt.value}
+    # end;
+
+        puts "data crawled : " + dept["name"]
         Grade.each do |grade|
-        # puts "grade: " + Grade.size.to_s + "/" +(Grade.index(grade)+1).to_s + " , dep:"+DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
           Classes.each do |class_no| # class_name
 
             @url_Get = "https://eportal.cjcu.edu.tw/api/Course/Get/?syear=#{year-1911}&semester=#{term}&dep=#{department}&grade=#{grade}&classno=#{class_no}"
-
-            r = RestClient.get @url_Get , accept: 'application/json'
+            r = RestClient::Request.execute(:url => @url_Get, :method => :get, :verify_ssl => false)
+            #r = RestClient.get @url_Get , accept: 'application/json'
             #doc = Nokogiri::HTML(r)
             data = Oj.load(r)
 
@@ -156,8 +172,8 @@ class CjcuCourseCrawler < CourseCrawler::Base
 
     puts "ForeignLanguages : Running..."
     @url_GetInForeign = "https://eportal.cjcu.edu.tw/api/Course/GetByTaughtInForeignLanguages/?syear=#{year-1911}&semester=#{term}"
-    r_Foregin = RestClient.get @url_GetInForeign , accept: 'application/json'
-
+    #r_Foregin = RestClient.get @url_GetInForeign , accept: 'application/json'
+    r_Foregin = RestClient::Request.execute(:url => @url_GetInForeign, :method => :get, :verify_ssl => false)
     data_Foregin = Oj.load(r_Foregin)
     data_Foregin.each do |array|
 
@@ -218,7 +234,7 @@ class CjcuCourseCrawler < CourseCrawler::Base
       @courses << course
     end
 
-    puts "End"
+    puts "Project finished !!!"
     @courses.uniq
   end
 

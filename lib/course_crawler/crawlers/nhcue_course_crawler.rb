@@ -29,13 +29,24 @@ class NhcueCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     # start write your crawler here:
     r = RestClient.get @query_url
     @cookies = r.cookies
     doc = Nokogiri::HTML(@ic.iconv(r))
 
-    r = `curl -s 'http://140.126.22.95/wbcmsc/cdptgd1.asp' -H 'Origin: http://140.126.22.95' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Cache-Control: max-age=0' -H 'Referer: http://140.126.22.95/wbcmsc/cdptgd1.asp' -H 'Connection: keep-alive' --data 'submit2=0&qdptcd=&qdivis=0&qgd=&qschyy=#{@year-1911}&qsmt=#{@term}&action=%BDT%A9w' --compressed`
+    # r = RestClient.post(@post_url , {
+    #   "submit2"=> "0",
+    #   "qdptcd"=> "",
+    #   "qdivis"=> "0",
+    #   "qgd"=> "",
+    #   "qschyy" => "#{year-1911}",
+    #   "qsmt" => "#{term}",
+    #   "action" => "%BDT%A9w",
+    #   },{
+    #
+    #     })
+    r = %x(curl -s 'http://140.126.22.95/wbcmsc/cdptgd1.asp' -H 'Cookie: ASPSESSIONIDSSDBBSQS=JLDLGBCCNFKGOJECMEAJMIOJ' -H 'Origin: http://140.126.22.95' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Cache-Control: max-age=0' -H 'Referer: http://140.126.22.95/wbcmsc/cdptgd1.asp' -H 'Connection: keep-alive' --data 'submit2=0&qdptcd=&qdivis=0&qgd=&qschyy=#{year-1911}&qsmt=#{term}&action=%BDT%A9w' --compressed)
 
       # department = dept_names[index]
     doc = Nokogiri::HTML(@ic.iconv(r))
@@ -43,7 +54,7 @@ class NhcueCourseCrawler < CourseCrawler::Base
 
     # doc.css('table tr:not(:first-child)')[1].text.strip
     doc.css('table tbody tr').each do |row|
-
+      puts "data crawled : " + row.css('td')[2].text.strip
       temp_data = row.css('td')[8].text.strip
       reg = /(?<day>[一二三四五六日])(?<start_time>[0-9]{2})-(?<stop_time>[0-9]{2})\((?<loc>[NA]{0,4}[0-9]{0,4}[AB]{0,4})\)/
       course_days = []
@@ -54,7 +65,7 @@ class NhcueCourseCrawler < CourseCrawler::Base
 
       arr.each do |str|
         str.match(reg) do |m|
-
+          
             day = DAYS[m[:day]]
 
             start_period = m[:start_time].to_i
@@ -81,7 +92,7 @@ class NhcueCourseCrawler < CourseCrawler::Base
         # #{這個裡面放變數}
         credits:      row.css('td')[3].text.strip.to_i,
         required:     row.css('td')[6].text.include?('必'),
-        lecturer:     row.css('td')[4].text.delete(/\u00A0/).strip,
+        lecturer:     row.css('td')[4].text.delete("\u00A0").strip,
         day_1:        course_days[0],
         day_2:        course_days[1],
         day_3:        course_days[2],
@@ -114,7 +125,7 @@ class NhcueCourseCrawler < CourseCrawler::Base
       @after_each_proc.call(course: course) if @after_each_proc
       @courses << course
     end
-
+    puts "Project finished !!!"
     @courses
   end # end courses method
 end # end

@@ -23,34 +23,34 @@ class CcuCourseCrawler < CourseCrawler::Base
     "日" => 7,
   }
 
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "5" => 5,
-    "6" => 6,
-    "7" => 7,
-    "8" => 8,
-    "9" => 9,
-    "10" => 10,
-    "11" => 11,
-    "12" => 12,
-    "13" => 13,
-    "14" => 14,
-    "15" => 15,
-    "A" => 16,
-    "B" => 17,
-    "C" => 18,
-    "D" => 19,
-    "E" => 20,
-    "F" => 21,
-    "G" => 22,
-    "H" => 23,
-    "I" => 24,
-    "J" => 25
-  }
-
+  # PERIODS = {
+  #   "1" => 1,
+  #   "2" => 2,
+  #   "3" => 3,
+  #   "4" => 4,
+  #   "5" => 5,
+  #   "6" => 6,
+  #   "7" => 7,
+  #   "8" => 8,
+  #   "9" => 9,
+  #   "10" => 10,
+  #   "11" => 11,
+  #   "12" => 12,
+  #   "13" => 13,
+  #   "14" => 14,
+  #   "15" => 15,
+  #   "A" => 16,
+  #   "B" => 17,
+  #   "C" => 18,
+  #   "D" => 19,
+  #   "E" => 20,
+  #   "F" => 21,
+  #   "G" => 22,
+  #   "H" => 23,
+  #   "I" => 24,
+  #   "J" => 25
+  # }
+  PERIODS = CoursePeriod.find('CCU').code_map
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     @year = year || current_year
@@ -58,6 +58,9 @@ class CcuCourseCrawler < CourseCrawler::Base
 
     @update_progress_proc = update_progress
     @after_each_proc = after_each
+
+    #區分general_code
+    @code_count = 1
 
     @download_path = "https://kiki.ccu.edu.tw/~ccmisp06/Course/zipfiles/"
     @filename = "#{@year-1911}#{@term}.tgz"
@@ -69,7 +72,7 @@ class CcuCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     @threads = []
-
+    puts "get url ..."
     # if not Dir.exist?(@dir_name)
       # FileUtils.mkdir_p @dir_name
       File.write(@file_path, open("#{@download_path}#{@filename}", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read.force_encoding("utf-8"))
@@ -97,14 +100,15 @@ class CcuCourseCrawler < CourseCrawler::Base
 
             code = nil; name = nil; lecturer = nil; credits = nil; required = nil;
             url = nil; times = nil; location = nil; group_code = nil; general_code = nil;
-
+            # 新增 @general_code_count 去區分重複的代碼
             if department == '通識教育中心'
               times =  datas[9] && datas[9].text
               location =  datas[10] && datas[10].text
               group_code = datas[3] && datas[3].text
 
-              code         = datas[3] && "#{@year}-#{@term}-#{datas[2].text}-#{group_code}"
-              general_code = "#{datas[2].text}-#{group_code}"
+              code         = datas[3] && "#{@year}-#{@term}-#{datas[2].text}-#{group_code}-#{@code_count}"
+              general_code = "#{datas[2].text}-#{group_code}-#{@code_count}"
+              @code_count += 1
               name         = datas[4] && datas[4].text && datas[4].text.strip
               lecturer     = datas[5] && datas[5].text && datas[5].text.strip
               credits      = datas[7] && datas[7].text && datas[7].text.to_i
@@ -115,9 +119,9 @@ class CcuCourseCrawler < CourseCrawler::Base
               location     = datas[9] && datas[9].text
               group_code   = datas[2] && datas[2].text
 
-              code         = datas[2] && "#{@year}-#{@term}-#{datas[1].text}-#{group_code}"
-              general_code = "#{datas[1].text}-#{group_code}"
-
+              code         = datas[2] && "#{@year}-#{@term}-#{datas[1].text}-#{group_code}-#{@code_count}"
+              general_code = "#{datas[1].text}-#{group_code}-#{@code_count}"
+              @code_count += 1
               name         = datas[3] && datas[3].text && datas[3].text.strip
               lecturer     = datas[4] && datas[4].text && datas[4].text.strip
               credits      = datas[6] && datas[6].text && datas[6].text.to_i
@@ -140,7 +144,7 @@ class CcuCourseCrawler < CourseCrawler::Base
                 end
               end
             end
-
+            puts "data crawled : " + name
             course = {
               year: @year,
               term: @term,
@@ -184,20 +188,18 @@ class CcuCourseCrawler < CourseCrawler::Base
             }
 
             @after_each_proc.call(course: course) if @after_each_proc
-
             @courses << course
             # if not document.css('h1').text.include?('系所別: 通識教育中心')
             #   course[:grade] = datas[0] && datas[0].text
             #   course[:type] = datas[10] && datas[10].text
             # end
 
-            course
           end # end Thread
         end # document.css('table tr:not(:first-child)').map
       end # if not document.css('h1').text.include?
     end # .inject { |arr, nxt| arr.concat nxt }
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @courses
   end
 end

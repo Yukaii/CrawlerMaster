@@ -29,7 +29,7 @@ class CguCourseCrawler < CourseCrawler::Base
   def courses
     @courses_h = {}
     @threads = []
-
+    puts "get url ..."
     visit @query_url
 
     dept_h = Hash[@doc.css('select[name="_ctl1:departmentsList"] option:not(:first-child)').map{|opt| [opt[:value], opt.text.split(' ')[0]]}]
@@ -81,7 +81,7 @@ class CguCourseCrawler < CourseCrawler::Base
       url = datas[5].css('a')[0][:href].prepend(@base_url)
       department = datas[3] && datas[3].text.strip
       department_code = dept_rev[department]
-
+      puts "data crawled : " + name
       @courses_h[code] = {
         year: @year,
         term: @term,
@@ -101,7 +101,7 @@ class CguCourseCrawler < CourseCrawler::Base
     # parse detail
     parse_time_location
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @courses_h.values
   end # end courses method
 

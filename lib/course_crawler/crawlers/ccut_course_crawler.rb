@@ -35,7 +35,7 @@ class CcutCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     @credit_data = {}
-
+    puts "get url ..."
     r = RestClient.get(@query_url+"comm_class.php?Year=#{@year-1911}&Sem=#{@term}")
     doc = Nokogiri::HTML(r)
 
@@ -55,11 +55,11 @@ class CcutCourseCrawler < CourseCrawler::Base
           "Class" => dept_v
           })
         doc = Nokogiri::HTML(r)
-
+        puts "data crawled : " + dept_n
         scan_courses(doc,dept_v,dept_n)
       end
     end
-
+    puts "Project finished !!!"
     @courses
   end
 
@@ -74,7 +74,6 @@ class CcutCourseCrawler < CourseCrawler::Base
         })
       doc = Nokogiri::HTML(r)
       credit_data = get_credit(doc)
-
       credit_data = switch_page(credit_data,doc,dept_v)
 
       @credit_data[dept_v[1..2]] = credit_data

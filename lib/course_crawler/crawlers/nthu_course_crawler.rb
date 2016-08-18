@@ -216,7 +216,7 @@ class NthuCourseCrawler < CourseCrawler::Base
         datas = row.css('td')
 
         # \u00A0 for space ' '
-        lecturer = datas[5].text.strip.delete(/\u00A0/)
+        lecturer = datas[5].text.strip.gsub(/\u00A0$/, '')
         lecturer = (lecturer.scan(/^[^A-Za-z0-9]+/).first unless lecturer.scan(/^[^A-Za-z0-9]+/).empty?)
         lecturer && lecturer.gsub!(/ /, '') && lecturer.gsub!(/ /, '')
 
