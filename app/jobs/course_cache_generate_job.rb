@@ -36,6 +36,8 @@ class CourseCacheGenerateJob < ActiveJob::Base
       tempfile.close
       tempfile.unlink
     end
+
+    Crawler.find_by!(organization_code: organization_code).update!(last_sync_at: Time.zone.now)
   end
 
 end
