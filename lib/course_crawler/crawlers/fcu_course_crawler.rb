@@ -24,13 +24,13 @@ class FcuCourseCrawler < CourseCrawler::Base
     @term = term
     @update_progress_proc = update_progress
     @after_each_proc = after_each
-
+    @count = 1
     @query_url = 'http://sdsweb.oit.fcu.edu.tw/coursequest/'
   end
 
   def courses
     @courses = []
-
+    puts "get url ..."
     cookie = RestClient.post(@query_url+"condition.jsp", {
       "userID" => "guest",
       "userPW" => "guest",
@@ -70,15 +70,15 @@ class FcuCourseCrawler < CourseCrawler::Base
             course_locations << nil # 沒有上課地點
           end
         end
-
+        puts "data crawled : " + data[1]
         course = {
           year: @year,    # 西元年
           term: @term,    # 學期 (第一學期=1，第二學期=2)
           name: data[1],    # 課程名稱
           lecturer: nil,    # 授課教師
           credits: data[3].to_i,    # 學分數(需要轉換成數字，可以用.to_i)
-          code: "#{@year}-#{@term}-#{course_code}-#{data[0]}",
-          general_code: data[0],    # 選課代碼
+          code: "#{@year}-#{@term}-#{course_code}-#{data[0]}-#{@count}",
+          general_code: data[0]+"-#{@count}",    # 選課代碼
           url: syllabus_url,    # 課程大綱之類的連結(如果有的話)
           required: nil,    # 必修或選修
           department: data[6],    # 開課系所
@@ -116,13 +116,13 @@ class FcuCourseCrawler < CourseCrawler::Base
           location_8: course_locations[7],
           location_9: course_locations[8],
           }
-
+        @count += 1
         @after_each_proc.call(course: course) if @after_each_proc
 
         @courses << course
       end
     end
-
+    puts "Project finished !!!"
     @courses
   end
 

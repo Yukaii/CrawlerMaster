@@ -14,22 +14,23 @@ module CourseCrawler::Crawlers
       "日" => 7
     }.freeze
 
-    PERIODS = {
-      "1" => 1,
-      "2" => 2,
-      "3" => 3,
-      "4" => 4,
-      "5" => 5,
-      "6" => 6,
-      "7" => 7,
-      "8" => 8,
-      "9" => 9,
-      "A" => 10,
-      "B" => 11,
-      "C" => 12,
-      "D" => 13,
-      "E" => 14
-    }.freeze
+    # PERIODS = {
+    #   "1" => 1,
+    #   "2" => 2,
+    #   "3" => 3,
+    #   "4" => 4,
+    #   "5" => 5,
+    #   "6" => 6,
+    #   "7" => 7,
+    #   "8" => 8,
+    #   "9" => 9,
+    #   "A" => 10,
+    #   "B" => 11,
+    #   "C" => 12,
+    #   "D" => 13,
+    #   "E" => 14
+    # }.freeze
+    PERIODS = CoursePeriod.find('CHU').code_map.freeze
 
     COLLEGE_TYPE = %w(B H S).freeze
 
@@ -50,6 +51,7 @@ module CourseCrawler::Crawlers
       @courses = []
       course_id = 0
       #首先大學部
+      puts "get url ..."
       r = RestClient.get(@query_url)
       doc = Nokogiri::HTML(r)
       dept_master = doc.css('select[name="master_select"]').css('option')[1..-1].each do |master_dept|
@@ -131,12 +133,12 @@ module CourseCrawler::Crawlers
 
         end
       end
-
+      puts "Project finished !!!"
       @courses
     end
 
     def input_course_to_hash(doc, course_id , dept)
-
+      puts "data crawled : " + dept.text
       doc.css('table[bgcolor="#FFFFFF"] tr[bgcolor="#EEEEEE"]').each do |tr|
         data = tr.css('td').map(&:text)
         course_id += 1

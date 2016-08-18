@@ -12,7 +12,7 @@ class CtuCourseCrawler < CourseCrawler::Base
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
     @year = year
     @term = term
-
+    @count = 1
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
@@ -21,7 +21,7 @@ class CtuCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     doc = Nokogiri::HTML(http_client.get_content(@query_url))
     view_state = Hash[ doc.css(%Q{input[type="hidden"]}).map{|input| [ input[:name], input[:value] ] } ]
 
@@ -49,7 +49,7 @@ class CtuCourseCrawler < CourseCrawler::Base
       parse_course(Nokogiri::HTML(http_client.get_content(url)))
 
     }}}}}
-
+    puts "Project finished !!!"
     @courses
   end
 
@@ -64,19 +64,20 @@ class CtuCourseCrawler < CourseCrawler::Base
 
       day_course = datas[7].text.split(/(..)/)
       day_course.each do |course|
-        next if course.size.empty?
+      #  binding.pry
+        next if course.size == 0
 
         course_days      << course[0]
         course_periods   << course[1]
         course_locations << datas[8].text.strip
       end
-
+      puts "data crawled : " + datas[2].css('a')[0].text.strip
       course = {
         :name         => datas[2].css('a')[0].text.strip,
         :year         => @year,
         :term         => @term,
-        :code         => "#{@year}-#{@term}-#{datas[0].text.strip}",
-        :general_code => datas[0].text.strip,
+        :code         => "#{@year}-#{@term}-#{datas[0].text.strip}-#{@count}",
+        :general_code => datas[0].text.strip+"-#{@count}",
         :degree       => datas[1].text.strip,
         :credits      => datas[3].text.strip,
         :lecturer     => datas[6].text.strip,
@@ -108,7 +109,7 @@ class CtuCourseCrawler < CourseCrawler::Base
         :location_8   => course_locations[7],
         :location_9   => course_locations[8],
       }
-
+      @count += 1
       @after_each_proc.call(course: course) if @after_each_proc
       @courses << course
 

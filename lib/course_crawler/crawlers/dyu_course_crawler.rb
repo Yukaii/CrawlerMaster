@@ -47,6 +47,7 @@ class DyuCourseCrawler < CourseCrawler::Base
 
     year = @year - 1911
 
+    puts "get url ..."
     # 依系所別
     r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(r)
@@ -87,7 +88,7 @@ class DyuCourseCrawler < CourseCrawler::Base
 
       course_temp(doc, group_c, group_n)
     end
-
+    puts "Project finished !!!"
     @courses
    end
 
@@ -111,7 +112,7 @@ class DyuCourseCrawler < CourseCrawler::Base
           course_locations << k[2]
         end
       end
-
+      puts "data crawled : " + data[3]
       course = {
         year:         @year,    # 西元年
         term:         @term,    # 學期 (第一學期=1，第二學期=2)

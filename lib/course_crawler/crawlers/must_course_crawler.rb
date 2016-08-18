@@ -51,7 +51,7 @@ class MustCourseCrawler < CourseCrawler::Base
       # })
 
       doc = Nokogiri::HTML(@ic.iconv(r))
-    
+
 
       puts "data crawled : " + divi
       doc.css('body > center table tr:nth-child(n+2)').each do |tr|

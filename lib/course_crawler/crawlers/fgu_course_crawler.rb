@@ -122,6 +122,7 @@ class FguCourseCrawler < CourseCrawler::Base
     @term                 = term || current_term
     @update_progress_proc = update_progress
     @after_each_proc      = after_each
+		@count = 1
 	end
 
 	def courses
@@ -130,7 +131,7 @@ class FguCourseCrawler < CourseCrawler::Base
 		year = @year
 		term = @term
 
-		puts "Initializie the data ..."
+		puts "get url ..."
 		DEP.each do |department|
 			set_progress DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
 			puts "Data crawled : " + DEP.size.to_s + "/" + (DEP.index(department)+1).to_s
@@ -163,8 +164,8 @@ class FguCourseCrawler < CourseCrawler::Base
             name:         "#{datas[3].text.strip}",
             year:         @year,
             term:         @term,
-            code:         "#{@year}-#{@term}-"+ "#{datas[1].text.strip}",
-            general_code: datas[1].text.strip,
+            code:         "#{@year}-#{@term}-"+ "#{datas[1].text.strip}-#{@count}",
+            general_code: datas[1].text.strip+"-#{@count}",
             credits:      "#{datas[5].text[0]}",
             grade:        "#{datas[7].text.strip}",
             lecturer:     "#{datas[9].text.strip}",
@@ -196,7 +197,7 @@ class FguCourseCrawler < CourseCrawler::Base
             location_8:   course_locations[7],
             location_9:   course_locations[8],
 				  }
-
+					@count += 1
 			    @after_each_proc.call(course: course) if @after_each_proc
 			    @courses << course
 				end

@@ -56,7 +56,7 @@ class ChihleeCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     course_id = 0
-
+    puts "get url ..."
     r = %x(curl -s '#{@query_url}' --compressed)
     doc = Nokogiri::HTML(r)
 
@@ -88,7 +88,7 @@ class ChihleeCourseCrawler < CourseCrawler::Base
           end
           course_locations << loc
         end
-
+        puts "data crawled : " + data[7]
         course = {
           year: @year,    # 西元年
           term: @term,    # 學期 (第一學期=1，第二學期=2)
@@ -135,6 +135,7 @@ class ChihleeCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

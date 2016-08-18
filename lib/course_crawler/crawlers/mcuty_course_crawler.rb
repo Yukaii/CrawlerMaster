@@ -1,4 +1,7 @@
-module CourseCrawler::Crawlers
+#桃園銘傳大學
+#使用到McuBaseCrawler
+
+ CourseCrawler::Crawlers
 class McutyCourseCrawler < McuBaseCrawler
   alias old_courses courses
 

@@ -3,7 +3,7 @@
 
 module CourseCrawler::Crawlers
 class NckuCourseCrawler < CourseCrawler::Base
-  include ::CourseCrawler::DSL
+  include CrawlerRocks::DSL
 
   # PERIODS = {
   #   "0" => 1,

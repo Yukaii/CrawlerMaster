@@ -38,7 +38,7 @@ class CycuCourseCrawler < CourseCrawler::Base
   def courses detail: false
     @courses = []
     @threads = []
-
+    puts "get url ..."
     url = "https://itouch.cycu.edu.tw/active_system/CourseQuerySystem/GetCourses.jsp?yearTerm=#{@year-1911}#{@term}"
 
     #r = RestClient.get(url)
@@ -82,7 +82,7 @@ class CycuCourseCrawler < CourseCrawler::Base
       end
 
       lecturer_code = datas[15] && CGI.escape(datas[15]).tr('%', '')
-
+        puts "data crawled : " + datas[10]
       course = {
         # cros_inst: datas[1], # 跨部
         # cros_dep: datas[2], # 跨系
@@ -151,7 +151,7 @@ class CycuCourseCrawler < CourseCrawler::Base
       end
     }
     ThreadsWait.all_waits(*@threads)
-
+    puts "Project finished !!!"
     @courses
   end
 

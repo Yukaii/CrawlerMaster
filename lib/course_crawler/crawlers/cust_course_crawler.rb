@@ -28,7 +28,7 @@ class CustCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
     course_id = 0
-
+    puts "get url ..."
     r, cookie = nil, nil
     error_times = 0
 
@@ -93,7 +93,7 @@ class CustCourseCrawler < CourseCrawler::Base
             course_locations << loc
           end
         end
-
+        puts "data crawled : "+data[2]
         course = {
           year: @year,    # 西元年
           term: @term,    # 學期 (第一學期=1，第二學期=2)
@@ -139,7 +139,7 @@ class CustCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
-
+    puts "Project finished !!!"
     @courses
   end
 

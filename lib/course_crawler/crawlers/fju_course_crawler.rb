@@ -17,24 +17,24 @@ class FjuCourseCrawler < CourseCrawler::Base
     "日" => 7,
   }
 
-  PERIODS = {
-    "D0" =>  1,
-    "D1" =>  2,
-    "D2" =>  3,
-    "D3" =>  4,
-    "D4" =>  5,
-    "DN" =>  6,
-    "D5" =>  7,
-    "D6" =>  8,
-    "D7" =>  9,
-    "D8" => 10,
-    "E0" => 11,
-    "E1" => 12,
-    "E2" => 13,
-    "E3" => 14,
-    "E4" => 15,
-  }
-
+  # PERIODS = {
+  #   "D0" =>  1,
+  #   "D1" =>  2,
+  #   "D2" =>  3,
+  #   "D3" =>  4,
+  #   "D4" =>  5,
+  #   "DN" =>  6,
+  #   "D5" =>  7,
+  #   "D6" =>  8,
+  #   "D7" =>  9,
+  #   "D8" => 10,
+  #   "E0" => 11,
+  #   "E1" => 12,
+  #   "E2" => 13,
+  #   "E3" => 14,
+  #   "E4" => 15,
+  # }
+  PERIODS = CoursePeriod.find('FJU').code_map
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     @year = year || current_year
@@ -91,22 +91,24 @@ class FjuCourseCrawler < CourseCrawler::Base
     puts "step 4 , final fetch"
 
     parse_course_list(doc)
-
-    @courses.each do |course|
       puts "data saved ...."
+    @courses.each do |course|
+
 
       sleep(1) until (
         @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
         @threads.count < ( (ENV['MAX_THREADS'] && ENV['MAX_THREADS'].to_i) || 30)
-      )
+    )
       @threads << Thread.new {
         @after_each_proc.call(course: course) if @after_each_proc
       }
     end
 
     ThreadsWait.all_waits(*@threads)
-    @courses
+
     puts "Project finished !!!"
+
+    @courses
   end
 
   def parse_course_list doc

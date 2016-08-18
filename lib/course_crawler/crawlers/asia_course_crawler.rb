@@ -64,6 +64,7 @@ class AsiaCourseCrawler < CourseCrawler::Base
   def courses
     @courses = []
 
+    puts "get url ..."
     begin
         r =
         RestClient::Request.execute(
@@ -78,14 +79,11 @@ class AsiaCourseCrawler < CourseCrawler::Base
       )
 
     rescue Exception => e
-
       r = e.response.follow_redirection
-
     end
 
 
     doc = Nokogiri::HTML(r)
-
     course_id = 1
 
     all_page = (1..doc.css('table[id="Table4"] td[align="center"]').text.split('/')[-1].to_i).each do |page|
@@ -109,12 +107,12 @@ class AsiaCourseCrawler < CourseCrawler::Base
              r = e.response.follow_redirection
          end
         doc = Nokogiri::HTML(r)
-
         course_id += 1
       end
-
+      puts "data crawled page : " + page.to_s
       doc.css('table[width="99%"]:not(:first-child) tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
-        puts all_page.size.to_s +"/"+ (all_page.index(page)+1).to_s
+        #puts all_page.size.to_s +"/"+ (all_page.index(page)+1).to_s
+
         data = tr.css('td').map{|td| td.text}
         syllabus_url = @query_url + tr.css('td a').map{|a| a[:href]}[0]
 
@@ -176,6 +174,7 @@ class AsiaCourseCrawler < CourseCrawler::Base
         @courses << course
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 end

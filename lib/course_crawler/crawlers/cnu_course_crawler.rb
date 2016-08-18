@@ -2,7 +2,7 @@
 # 課程查詢網址：http://192.192.45.38/SC2008/Main4ST.asp?ScrX=1920&ScrY=1080&RUN=
 
 # 1. 此大學年級代號是shadow MOD，所以本人使用使動方式輸入
-# 2. 此大學只有104學年資料
+# 2. 此大學只有105學年資料
 # 3. 極少數課程日期時間會跑掉
 module CourseCrawler::Crawlers
 class CnuCourseCrawler < CourseCrawler::Base
@@ -72,7 +72,7 @@ class CnuCourseCrawler < CourseCrawler::Base
 	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 		@year = year
    		@term = term
-
+			@count = 1
     	@update_progress_proc = update_progress
     	@after_each_proc = after_each
     	@ic = Iconv.new('utf-8//IGNORE', 'big5')
@@ -89,7 +89,7 @@ class CnuCourseCrawler < CourseCrawler::Base
 	    have_sch = doc.css('table')[0].css('tr')[2].css('td')[1].text[0..-1] # if class exist ? , > 0 is yes
 
 	    if(have_sch.size > 10)
-	    	puts "in sch!!!"
+	     #	puts "in sch!!!"
 		    index = doc.css('table')[0].css('tr')
 
 		    index[2..-1].each do |row|
@@ -132,8 +132,8 @@ class CnuCourseCrawler < CourseCrawler::Base
 						name: datas[1].text[11..-1],
 						lecturer: datas[5].css('font')[1].text,
 						credits: datas[3].text.scan(/\d/)[0].to_i,
-						code: "#{@year}-#{@term}-#{datas[1].css('font')[1].text}",
-						general_code: datas[1].css('font')[1].text,
+						code: "#{@year}-#{@term}-#{datas[1].css('font')[1].text}-#{@count}",
+						general_code: datas[1].css('font')[1].text+"-#{@count}",
 			      url: nil,
 	          required: datas[2].text.include?('必'),
 						department: datas[5].css('font')[0].text,
@@ -165,7 +165,7 @@ class CnuCourseCrawler < CourseCrawler::Base
 						location_8: course_locations[7],
 						location_9: course_locations[8],
 						}
-
+						@count += 1
 						@after_each_proc.call(course: course) if @after_each_proc
 						@courses << course
 		    	end

@@ -20,7 +20,7 @@ class FyCourseCrawler < CourseCrawler::Base
     @courses = []
     @repeat_list = []
     @course_id = 0
-
+    puts "get url ..."
     r = RestClient.get(@query_url+"yco_3100.asp")
     doc_top = Nokogiri::HTML(r)
 
@@ -48,14 +48,14 @@ class FyCourseCrawler < CourseCrawler::Base
     if yt.include?("#{@year-1911}#{@term}") == true
       analyze_coures_table(yt)
     end
-
+    puts "Project finished !!!"
     @courses
   end
 
   def analyze_coures_table part_url
     r = RestClient.get(@query_url+part_url)
     doc = Nokogiri::HTML(r)
-
+    #puts "analyze the courses ..."
     # 開始一堂一堂的爬
     doc.css('table table:last-child a').map{|a| a}.each do |cor|
 
@@ -86,6 +86,7 @@ class FyCourseCrawler < CourseCrawler::Base
             if not course_table_repeat.include?(department_code)
               @course_id += 1
               course_table_repeat[department_code] = @course_id
+              puts "course ID : "+ @course_id.to_s
             end
 
             syllabus_url = course_table_obj.css('>font a')[0][:href]
@@ -105,7 +106,7 @@ class FyCourseCrawler < CourseCrawler::Base
             else
               next
             end
-
+            puts "data crawled : " + name
             courses_temp << [course_table_repeat[department_code],[day+1,period+1,location],[name,teacher,credits,general_code,syllabus_url.gsub(/'/,"%27"),department_code,department]]
           end
         end

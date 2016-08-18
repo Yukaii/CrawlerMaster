@@ -29,8 +29,9 @@ class CtustCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-
+    puts "get url ..."
     r = RestClient.get(@query_url+"crq.aspx")
+
     hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
     doc = Nokogiri::HTML(r)
     cookie = nil
@@ -52,6 +53,7 @@ class CtustCourseCrawler < CourseCrawler::Base
         "ddlMaxCnt" => "10000",
         "btnQuery" => "查詢",
         }) )
+
       doc = Nokogiri::HTML(r)
       hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
 # puts doc.css('table table tr:nth-child(5) td span').text
@@ -73,10 +75,11 @@ class CtustCourseCrawler < CourseCrawler::Base
         "BtnPrintSelectedItem" => "批次列印",
         "DatagridCourseIntroList$ctl01$CheckBoxInGridHead" => "on",
         }) )
+
       doc = Nokogiri::HTML(r)
       hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
       cookie = r.cookies if cookie == nil
-
+      binding.pry
       r = RestClient.get(@query_url+"crpcm2.aspx", {:cookies => cookie})
       doc = Nokogiri::HTML(r)
 
@@ -99,7 +102,7 @@ class CtustCourseCrawler < CourseCrawler::Base
           course_periods << period.to_i
           course_locations << loc
         end
-
+        puts "data crawled : " + data[1]
         course = {
           year: @year,    # 西元年
           term: @term,    # 學期 (第一學期=1，第二學期=2)
@@ -142,11 +145,12 @@ class CtustCourseCrawler < CourseCrawler::Base
           }
 
         @after_each_proc.call(course: course) if @after_each_proc
-        
+
         @courses << course
       end
       cookie = nil
     end
+    puts "Project finished !!!"
     @courses
   end
 

@@ -58,12 +58,13 @@ class DilaCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
+    @count = 1
     @query_url = 'http://ecampus.dila.edu.tw/ddb/'
   end
 
   def courses
     @courses = []
-
+    puts "get url ..."
     r = RestClient.get(@query_url + 'LoginDDB.aspx')
 
     cookie = "49BAC005-7D5B-4231-8CEA-16939BEACD67=guest; 2BCD80435-67EA-B52D-9E10-234EB74D1A165DCA=ddm; B2380ACE1-3B7A-E1D0-79AC-4512BAC397DB486D=DDM; ASP.NET_SessionId=#{r.cookies["ASP.NET_SessionId"]}"
@@ -103,15 +104,15 @@ class DilaCourseCrawler < CourseCrawler::Base
             end
           end
 
-
+          puts "data crawled : " + data[3]
           course = {
             year:         @year,    # 西元年
             term:         @term,    # 學期 (第一學期=1，第二學期=2)
             name:         data[3],    # 課程名稱
             lecturer:     lecturer,    # 授課教師
             credits:      data[6].to_i,    # 學分數
-            code:         "#{@year}-#{@term}-#{dept_c}_#{data[0].scan(/\w+/)[0]}",
-            general_code: data[0].scan(/\w+/)[0],
+            code:         "#{@year}-#{@term}-#{dept_c}_#{data[0].scan(/\w+/)[0]}-#{@count}",
+            general_code: data[0].scan(/\w+/)[0]+"-#{@count}",
             url:          nil,    # 課程大綱之類的連結(不能直接從外部連結，會顯示登入逾時)
             required:     data[5].include?('必'),    # 必修或選修
             department:   data[1],    # 開課系所
@@ -145,7 +146,7 @@ class DilaCourseCrawler < CourseCrawler::Base
             location_8:   course_locations[7],
             location_9:   course_locations[8],
           }
-
+          @count += 1
 
           @after_each_proc.call(course: course) if @after_each_proc
 
@@ -153,6 +154,7 @@ class DilaCourseCrawler < CourseCrawler::Base
         end
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 

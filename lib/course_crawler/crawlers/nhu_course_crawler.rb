@@ -39,12 +39,13 @@ class NhuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
+    @code_count = 1
     @query_url = 'http://203.72.2.6/acad2008NET4/QrySemCourses.aspx'
   end
 
   def courses
     @courses = []
-
+    puts "get url ..."
     year = @year - 1911
 
     r = RestClient.get(@query_url)
@@ -81,14 +82,14 @@ class NhuCourseCrawler < CourseCrawler::Base
           end
 
           general_code = data[0] && data[0].strip
-
+          puts "data crawled : " + dep_n +"-> "+ data[2].strip
           course = {
             year:         @year,    # 西元年
             term:         @term,    # 學期 (第一學期=1，第二學期=2)
             name:         data[2] && data[2].strip,    # 課程名稱
             lecturer:     data[5] && data[5].strip,    # 授課教師
             credits:      data[7] && data[7].to_i,    # 學分數
-            code:         "#{@year}-#{@term}-#{data[1].scan(/\d+/)[0]}-#{general_code}",
+            code:         "#{@year}-#{@term}-#{data[1].scan(/\d+/)[0]}-#{general_code}-#{@code_count}",
             # general_code: old_course.cos_code,    # 選課代碼
             general_code: general_code,
             url:          syllabus_url,    # 課程大綱之類的連結
@@ -124,13 +125,14 @@ class NhuCourseCrawler < CourseCrawler::Base
             location_8:   course_locations[7],
             location_9:   course_locations[8],
           }
-
+          @code_count += 1
           @after_each_proc.call(course: course) if @after_each_proc
 
           @courses << course
         end
       end
     end
+    puts "Project finished !!!"
     @courses
   end
 

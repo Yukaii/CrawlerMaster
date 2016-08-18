@@ -15,11 +15,12 @@ class CuteCourseCrawler < CourseCrawler::Base
     @after_each_proc = after_each
 
     @query_url = "http://192.192.78.80/acad_curr/T_CourseInfo.aspx"
+    @count = 1
   end
 
   def courses
     @courses = []
-
+    puts "get url ..."
     doc = Nokogiri::HTML(http_client.get_content @query_url)
 
     view_state = Hash[doc.css('input[type="hidden"]').map{|input| [input[:name], input[:value]] }]
@@ -44,18 +45,19 @@ class CuteCourseCrawler < CourseCrawler::Base
 
       dept_code, dept    = datas[0].text.strip.split(/\s+/)
       general_code, name = datas[3].text.strip.split(/\s+/)
-
+      puts "data crawled : " + name
       @courses << {
         :year         => @year,
         :term         => @term,
         :name         => name,
         :lecturer     => datas[4].text.strip,
         :credits      => datas[6].text.strip.to_i,
-        :general_code => general_code,
-        :code         => "#{@year}-#{@term}-#{general_code}"
+        :general_code => general_code+"-#{@count}",
+        :code         => "#{@year}-#{@term}-#{general_code}-#{@count}"
       }
+      @count += 1
      end
-
+     puts "Project finished !!!"
     @courses
   end
 end
