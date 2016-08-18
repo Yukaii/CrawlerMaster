@@ -26,14 +26,12 @@ class NknuCourseCrawler < CourseCrawler::Base
 
   def courses
     courses = []
-    query_page = "http://140.127.40.75/schedule/scheduleDepartment.aspx"
+    query_page = "http://140.127.40.173/Stu/Day/outEnroll/scheduleDepartment.aspx"
 
     # doc = Nokogiri::HTML("<html></html>")
     # doc.css('html')
-
-    doc = Nokogiri::HTML(http_client.get_content(query_page))
+    doc = Nokogiri::HTML(open(URI(query_page).normalize))
     departments = doc.css('select#ctl00_phMain_uDepartment option:not(:first-child)').map{|opt| [opt.text, opt[:value]] }
-
     departments.each do |dept_arr|
       view_state = Hash[doc.css('input[type="hidden"]').map{|input| [input[:name], input[:value]] }]
 
@@ -75,7 +73,6 @@ class NknuCourseCrawler < CourseCrawler::Base
           :code         => code,
           :general_code => "#{@year}-#{@term}-#{code}",
           :name         => cols[2].text,
-          :url          => "http://140.127.40.75#{cols[2].css('a')[0][:href]}",
           :credits      => cols[3].text.to_i,
           :required     => cols[4].text.include?('必'),
           :department   => cols[5].text,
