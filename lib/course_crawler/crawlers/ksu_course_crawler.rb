@@ -53,7 +53,7 @@ class KsuCourseCrawler < CourseCrawler::Base
             doc = Nokogiri::HTML(submit(sec_val, dept_val, cla_val, parse_view_state(doc), "ctl00$MainContent$DropDownList2"))
             initial_loop = false
           end
-          
+
           if clas_index != 0
             doc = Nokogiri::HTML(submit(sec_val, dept_val, cla_val, parse_view_state(doc), "ctl00$MainContent$DropDownList5"))
           end

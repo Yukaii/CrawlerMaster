@@ -41,12 +41,12 @@ gem 'hirb-unicode',  require: false
 # http clients
 gem 'rest-client'
 gem 'httpclient', '~> 2.7'
+gem 'curb'
 
 # encoding
 gem 'iconv'
 
 # crawler helpers
-gem 'crawler_rocks'
 gem 'nokogiri'
 gem 'hashie'
 gem 'thu_course'

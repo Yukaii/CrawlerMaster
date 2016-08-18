@@ -1,7 +1,9 @@
 # 修平科技大學
 # 課程查詢網址：http://pisj.hust.edu.tw/jack2005/DataQuery/QueryOpenCourse.jsp
-
 # 無法選擇學年度與學期
+#
+# 資訊管理系用的查詢系統
+# http://www.im.hust.edu.tw/query.asp
 module CourseCrawler::Crawlers
 class HustCourseCrawler < CourseCrawler::Base
 

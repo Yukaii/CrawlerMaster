@@ -1,5 +1,5 @@
 module CourseCrawler
-  module Mixin
+  module DateMixin
     def self.included(base)
       base.include(InstanceMethods)
     end

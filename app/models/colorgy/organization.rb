@@ -2,13 +2,14 @@
 #
 # Table name: organizations
 #
-#  id         :integer          not null, primary key
-#  code       :string
-#  name       :string
-#  short_name :string
-#  enabled    :boolean          default(TRUE), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                            :integer          not null, primary key
+#  code                          :string
+#  name                          :string
+#  short_name                    :string
+#  enabled                       :boolean          default(TRUE), not null
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  user_school_system_data_count :integer          default(0)
 #
 # Indexes
 #

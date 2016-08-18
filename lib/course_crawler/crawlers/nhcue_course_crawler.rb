@@ -65,7 +65,7 @@ class NhcueCourseCrawler < CourseCrawler::Base
 
       arr.each do |str|
         str.match(reg) do |m|
-          
+
             day = DAYS[m[:day]]
 
             start_period = m[:start_time].to_i

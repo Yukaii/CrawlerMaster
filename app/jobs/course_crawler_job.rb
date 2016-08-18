@@ -9,7 +9,7 @@
 
 class CourseCrawlerJob
   include Sidekiq::Worker
-  include CourseCrawler::Mixin
+  include CourseCrawler::DateMixin
 
   sidekiq_options retry: false
 
@@ -88,6 +88,10 @@ class CourseCrawlerJob
         course.update!(course_updates_hash[course[:code]])
         task.course_versions << course.versions.last if course.changed?
       end
+    end
+
+    if Course.where(organization_code: organization_code).group(:ucode).having('COUNT(courses.ucode) > 1').any?
+      puts "Duplicate code!" if $PROGRAM_NAME =~ /rake$/
     end
 
     crawler_record.update!(last_run_at: Time.zone.now)

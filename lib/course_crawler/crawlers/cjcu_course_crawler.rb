@@ -8,6 +8,7 @@
 # 而程是馬改動不少，詳情請讀程式碼
 
 require 'capybara/dsl'
+require 'capybara/poltergeist'
 
 module CourseCrawler::Crawlers
 class CjcuCourseCrawler < CourseCrawler::Base

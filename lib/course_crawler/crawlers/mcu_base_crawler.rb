@@ -5,7 +5,7 @@
 
 module CourseCrawler::Crawlers
 class McuBaseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include ::CourseCrawler::DSL
 
   PERIODS = {
     "01" =>  1,

@@ -6,7 +6,7 @@
 
     h3 Import Course
 
-    p= link_to "<<", crawler_path(@crawler.organization_code)
+    p= link_to "<<", crawler_path(@crawler)
 
     = form_tag({action: :upload}, multipart: true) do |f|
       = file_field_tag 'file', accept: '.xls'

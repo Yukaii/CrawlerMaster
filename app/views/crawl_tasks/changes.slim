@@ -4,9 +4,9 @@
   .col-lg-12.col-md-12
     h3 Task Changes
 
-    p= link_to "<<", crawler_path(@crawler.organization_code)
-    p= link_to "Download Snapshot[#{course_versions_count(@task)}]", task_snapshot_path(task_id: @task.id), method: :post
-    p= link_to "Download Snapshot[#{error_course_versions_count(@task)}](Potential Errors Only)", task_snapshot_path(task_id: @task.id, errors_only: true), method: :post
+    p= link_to "<<", crawler_path(@crawler)
+    p= link_to "Download Snapshot[#{course_versions_count(@task)}]", snapshot_crawler_task_path(@crawler, @task), method: :post
+    p= link_to "Download Snapshot[#{error_course_versions_count(@task)}](Potential Errors Only)", snapshot_crawler_task_path(@crawler, @task, errors_only: true), method: :post
 
     = paginate @versions
     .table-responsive

@@ -2,7 +2,7 @@ require_relative './ttu_course_crawler/ttu_code'
 
 module CourseCrawler::Crawlers
 class TtuCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include ::CourseCrawler::DSL
   include TtuCode
 
   DAYS = [6, 5, 4, 3, 2, 1]

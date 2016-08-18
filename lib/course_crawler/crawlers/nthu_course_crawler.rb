@@ -9,7 +9,7 @@ require 'tempfile'
 
 module CourseCrawler::Crawlers
 class NthuCourseCrawler < CourseCrawler::Base
-  include CrawlerRocks::DSL
+  include ::CourseCrawler::DSL
 
   DAYS = {
     "M" => 1,

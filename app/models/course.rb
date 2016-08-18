@@ -87,10 +87,9 @@
 #  index_courses_on_organization_code  (organization_code)
 #  index_courses_on_required           (required)
 #  index_courses_on_term               (term)
-#  index_courses_on_ucode              (ucode) UNIQUE
+#  index_courses_on_ucode              (ucode)
 #  index_courses_on_year               (year)
 #
-
 
 class Course < ActiveRecord::Base
   include CourseImport
@@ -208,6 +207,44 @@ class Course < ActiveRecord::Base
 
   def course_locations
     fetch_course_attributes('location')
+  end
+
+  def self.export(filters, organization_code)
+    filename = [
+      filters[:year],
+      filters[:term],
+      organization_code,
+      'courses_data'
+    ].join('_').concat('.xls')
+
+    order_map = CoursePeriod.find!(organization_code).order_map
+
+    book = Spreadsheet::Workbook.new
+    sheet = book.create_worksheet
+    sheet.update_row(0, *Course::COLUMN_NAMES.map(&:to_s))
+
+    where(filters).find_each.with_index do |course_snapshot, index|
+      row = Course::COLUMN_NAMES.map do |key|
+        if key.to_s.include?('period')
+          course_snapshot.send(key) && order_map[course_snapshot.send(key)]
+        else
+          course_snapshot.send(key)
+        end
+      end
+      sheet.update_row(index + 1, *row) # start fromm row 1, row 0 is the header row
+    end
+
+    [book, filename]
+  end
+
+  def self.new_from_changeset(changeset)
+    new(
+      Hash[
+        changeset.map do |key, changes|
+          [key, changes[1]]
+        end
+      ]
+    )
   end
 
 end

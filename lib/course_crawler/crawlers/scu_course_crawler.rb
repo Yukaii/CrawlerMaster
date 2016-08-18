@@ -4,6 +4,7 @@
 # 用舊版的部屬在 heroku 跑：https://github.com/Colorgy/crawler-SCU-course
 #
 require 'capybara/dsl'
+require 'capybara/poltergeist'
 
 module CourseCrawler::Crawlers
 class ScuCourseCrawler < CourseCrawler::Base

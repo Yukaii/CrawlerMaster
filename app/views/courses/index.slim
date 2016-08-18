@@ -3,9 +3,13 @@
 - table_columns = ([:id, :year, :term, :name, :code, :general_code, :required, :credits] + Course::COLUMN_NAMES).uniq
 .container
   .col-lg-12.col-md-12
+
+    = render partial: 'partials/flash_messages'
+
     - @courses.any?
       p= link_to "<<", crawler_path(@courses.first.organization_code)
     p= "Total Courses Count: #{@courses.total_count}"
+    = course_download_link(params) if @render_download_button
 
     = paginate @courses
     .table-responsive

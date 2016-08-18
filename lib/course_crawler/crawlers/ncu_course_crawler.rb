@@ -1,4 +1,3 @@
-require 'crawler_rocks'
 require 'pry'
 require 'json'
 

@@ -11,23 +11,6 @@ class CrawlersController < ApplicationController
     @title = "#{@crawler.name} | CrawlerMaster"
   end
 
-  def changes
-    @task = @crawler.crawl_tasks.find(params[:task_id])
-    @versions = @task.course_versions.page(params[:page]).per(params[:paginate_by])
-  end
-
-  def snapshot
-    task = @crawler.crawl_tasks.find(params[:task_id])
-    task.generate_snapshot(errors_only: params[:errors_only]) do |book, filename|
-      temp_file = Tempfile.new(filename)
-      book.write(temp_file.path)
-      send_data(File.read(temp_file), type: 'application/xls', filename: filename)
-
-      temp_file.close
-      temp_file.unlink
-    end
-  end
-
   def setting
     params[:schedule].slice(*Crawler::SCHEDULE_KEYS).each do |hkey, value|
       @crawler.schedule[hkey] = value
@@ -44,7 +27,7 @@ class CrawlersController < ApplicationController
     @crawler.save!
 
     flash[:success] = 'Settings has been successfully updated'
-    redirect_to crawler_path(@crawler.organization_code)
+    redirect_to crawler_path(@crawler)
   end
 
   def run
@@ -54,7 +37,7 @@ class CrawlersController < ApplicationController
 
     flash[:success] = "job_ids: #{jobs.map { |j| j && j.id }}"
 
-    redirect_to crawler_path(@crawler.organization_code)
+    redirect_to crawler_path(@crawler)
   end
 
   def batch_run
@@ -65,18 +48,25 @@ class CrawlersController < ApplicationController
     redirect_to crawlers_path
   end
 
+  def duplicate_courses
+    course_codes = Course.where(organization_code: params[:id]).group(:ucode, :code).having('COUNT(courses.ucode) > 1').pluck(:code)
+    @courses     = Course.where(code: course_codes).page(params[:page]).per(params[:paginate_by])
+    @render_download_button = false
+    render('courses/index')
+  end
+
   def upload
     uploaded_file = params[:file]
 
     if File.extname(uploaded_file.original_filename) != '.xls'
       flash[:warning] = 'Wrong file extension'
-      redirect_to crawler_import_path(@crawler.organization_code)
+      redirect_to import_crawler_path(@crawler)
       return
     end
 
     unless uploaded_file.original_filename =~ CrawlTask::FILENAME_REGEX
       flash[:warning] = "Wrong filename format, should match #{CrawlTask::FILENAME_REGEX.inspect}"
-      redirect_to crawler_import_path(@crawler.organization_code)
+      redirect_to import_crawler_path(@crawler)
       return
     end
 
@@ -90,9 +80,9 @@ class CrawlersController < ApplicationController
       if task.course_versions.size.zero?
         task.destroy
         flash[:warning] = 'No course changes'
-        redirect_to crawler_import_path(@crawler.organization_code)
+        redirect_to import_crawler_path(@crawler)
       else
-        redirect_to crawler_path(@crawler.organization_code)
+        redirect_to crawler_path(@crawler)
         flash[:success] = 'Successfully imported'
       end
     end
@@ -102,7 +92,7 @@ class CrawlersController < ApplicationController
   def sync
     j = @crawler.sync_to_core
     flash[:success] = "job_id: #{j && j.id}"
-    redirect_to crawler_path(@crawler.organization_code)
+    redirect_to crawler_path(@crawler)
   end
 
   def unschedule_job
@@ -111,7 +101,7 @@ class CrawlersController < ApplicationController
 
     job.destroy
 
-    redirect_to crawler_path(@crawler.organization_code)
+    redirect_to crawler_path(@crawler)
   end
 
   private

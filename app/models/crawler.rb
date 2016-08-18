@@ -24,9 +24,8 @@
 #  last_run_at                  :datetime
 #
 
-
 class Crawler < ActiveRecord::Base
-  include CourseCrawler::Mixin
+  include CourseCrawler::DateMixin
 
   has_many :rufus_jobs
   has_many :courses, foreign_key: :organization_code, primary_key: :organization_code
@@ -55,6 +54,10 @@ class Crawler < ActiveRecord::Base
     :save_to_db,
     :sync
   ].freeze
+
+  def to_param
+    organization_code
+  end
 
   def klass
     CourseCrawler.find!(organization_code)
