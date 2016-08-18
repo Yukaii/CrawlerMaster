@@ -26,7 +26,7 @@
             span
               button.btn.btn-success style="margin: 0 1em;" type="submit" Sync
 
-      = link_to "Duplicate Courses", duplicate_courses_crawler_path(@crawler)
+      = link_to "Duplicate Courses[#{@duplicate_counts}]", duplicate_courses_crawler_path(@crawler)
 
       h4 Status
       table.table

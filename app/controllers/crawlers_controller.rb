@@ -9,6 +9,7 @@ class CrawlersController < ApplicationController
 
   def show
     @title = "#{@crawler.name} | CrawlerMaster"
+    @duplicate_counts = Course.where(organization_code: params[:id]).group(:ucode, :code).having('COUNT(courses.ucode) > 1').size.values.inject(:+)
   end
 
   def setting
