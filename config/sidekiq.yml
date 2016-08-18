@@ -3,3 +3,5 @@
 :dynamic: true
 development:
   :concurrency: 3
+staging:
+  :concurrency: 2
