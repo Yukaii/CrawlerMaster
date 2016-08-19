@@ -6,25 +6,7 @@ module CourseCrawler::Crawlers
 class CycuCourseCrawler < CourseCrawler::Base
   include ::CourseCrawler::DSL
 
-  PERIODS = {
-    "特早" => 1,
-    "A"    => 2,
-    "1"    => 3,
-    "2"    => 4,
-    "3"    => 5,
-    "4"    => 6,
-    "B"    => 7,
-    "5"    => 8,
-    "6"    => 9,
-    "7"    => 10,
-    "8"    => 11,
-    "C"    => 12,
-    "D"    => 13,
-    "E"    => 14,
-    "F"    => 15,
-    "G"    => 16,
-    "H"    => 17
-  }
+  PERIODS = CoursePeriod.find('CYCU').code_map
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
