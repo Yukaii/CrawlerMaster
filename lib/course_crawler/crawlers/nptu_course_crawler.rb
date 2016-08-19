@@ -35,8 +35,8 @@ module CourseCrawler::Crawlers
     }.freeze
 
     def initialize(year: nil, term: nil, update_progress: nil, after_each: nil)
-      @year = year - 1911
-      @term = term
+      @year = year || current_year
+      @term = term || current_term
       @update_progress_proc = update_progress
       @after_each_proc = after_each
 
@@ -74,7 +74,7 @@ module CourseCrawler::Crawlers
       end
       sleep 2
       within_frame('MAIN') do
-        find("#A0425Q3_ddlSYSE option[value='#{@year}#{@term}']").select_option
+        find("#A0425Q3_ddlSYSE option[value='#{@year-1911}#{@term}']").select_option
         sleep 1
         data = Nokogiri::HTML(html)
         doc = data.css('#A0425Q3_ddlDEPT_ID')
@@ -85,7 +85,7 @@ module CourseCrawler::Crawlers
         end
         dps = dps.uniq
         dps.each do |dp|
-          find("#A0425Q3_ddlSYSE option[value='#{@year}#{@term}']").select_option
+          find("#A0425Q3_ddlSYSE option[value='#{@year-1911}#{@term}']").select_option
           sleep 1
           find("#A0425Q3_ddlDEPT_ID option[value='#{dp}']").select_option
           click_on '查詢'
