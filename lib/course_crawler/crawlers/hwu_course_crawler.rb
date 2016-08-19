@@ -45,7 +45,7 @@ class HwuCourseCrawler < CourseCrawler::Base
         "sys_kind" => "01",
         })
     rescue Exception => e
-      binding.pry
+      # binding.pry
        r = e.response.follow_redirection
        cookie = r.cookies
     end
