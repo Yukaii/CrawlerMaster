@@ -4,24 +4,7 @@
 module CourseCrawler::Crawlers
 class LhuCourseCrawler < CourseCrawler::Base
 
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "5" => 5,
-    "6" => 6,
-    "7" => 7,
-    "8" => 8,
-    "9" => 9,
-    "A" => 10,
-    "B" => 11,
-    "C" => 12,
-    "D" => 13,
-    "E" => 14,
-    "F" => 15,
-    "G" => 16
-    }
+  PERIODS = CoursePeriod.find('LHU').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
