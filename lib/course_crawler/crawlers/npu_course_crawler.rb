@@ -41,7 +41,6 @@ module CourseCrawler::Crawlers
         find('#pwd').set('123')
         click_on '確定送出'
       end
-	  puts 'login...'
       sleep 1
       within_frame('Lmenu') do
         find('#fspan1').click
@@ -52,12 +51,10 @@ module CourseCrawler::Crawlers
           end
         end
       end
-	  puts 'search course'
       sleep 1
       within_frame('Main') do
         find("#yms_yms option[value='#{@year - 1911}##{@term}']").select_option
         click_on '查詢'
-		puts 'get course data'
         course_parse(html)
       end
       @courses

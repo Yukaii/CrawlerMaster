@@ -40,7 +40,7 @@ class NtuaCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    @query_url = "http://uaap3.ntua.edu.tw/ntua/index.html"
+    @query_url = "https://uaap.ntua.edu.tw/ntua/index.html"
     @ic = Iconv.new('utf-8//IGNORE//translit', 'big5')
   end
 
@@ -49,20 +49,25 @@ class NtuaCourseCrawler < CourseCrawler::Base
 
     setup;
 
-    doc = Nokogiri::HTML(http_client.get_content("http://uaap3.ntua.edu.tw/ntua/ag_pro/ag304_01.jsp"))
+    doc = Nokogiri::HTML(http_client.get_content("https://uaap.ntua.edu.tw/ntua/ag_pro/ag304_01.jsp"))
     depts = doc.css('select[name="rtxt_untid"] option').map{|opt| opt[:value] }
 
     depts.each do |dept|
       doc = Nokogiri::HTML(
-        http_client.post("http://uaap3.ntua.edu.tw/ntua/ag_pro/ag304_02.jsp", {
+        http_client.post("https://uaap.ntua.edu.tw/ntua/ag_pro/ag304_02.jsp", {
           :yms_yms    => "#{@year-1911}##{@term}",
           :rtxt_untid => dept
         }).body
       )
 
-      doc.css('table td').select{|td| td.text != '班級名稱'}.map{|td| td[:onclick] && td[:onclick].match(/window\.open\(\'(.+)\'\)/)[1] }.reject(&:nil?).map{|url| "http://uaap3.ntua.edu.tw/ntua/ag_pro/#{url}" }.each do |url|
-        doc = Nokogiri::HTML(http_client.get_content(url))
-
+      doc.css('table td').select{|td| td.text != '班級名稱'}.map{|td| td[:onclick] && td[:onclick].match(/window\.open\(\'(.+)\'\)/)[1] }.reject(&:nil?).map{|url| "https://uaap.ntua.edu.tw/ntua/ag_pro/#{url}" }.each do |url|
+        begin
+			doc = Nokogiri::HTML(http_client.get_content(url))
+		rescue
+			setup;
+			sleep 1
+			doc = Nokogiri::HTML(http_client.get_content(url))
+		end
         doc.css('table.stable tr:not(:first-child)').each do |row|
           datas = row.xpath('td')
 
@@ -126,15 +131,15 @@ class NtuaCourseCrawler < CourseCrawler::Base
   end # end courses method
 
   def setup
-    http_client.post("http://uaap3.ntua.edu.tw/ntua/get_sts.jsp", {
+    http_client.post("https://uaap.ntua.edu.tw/ntua/get_sts.jsp", {
       "uid"       => 'guest',
       "pwd"       => 123,
       "sys_name"  => 'webweb',
       "ls_chochk" => 'N',
       "navigator" => 'Chrome 或 Safari',
     });
-
-    http_client.post("http://uaap3.ntua.edu.tw/ntua/perchk.jsp", {
+	sleep 0.1
+    http_client.post("https://uaap.ntua.edu.tw/ntua/perchk.jsp", {
       'uid'          => 'guest',
       'pwd'          => 123,
       'sys_name'     => 'webweb',
@@ -144,15 +149,15 @@ class NtuaCourseCrawler < CourseCrawler::Base
       'ls_stsid'     => 66,
       'ls_loginkind' => 'TRIPLE_DES'
     });
-
-    http_client.post("http://uaap3.ntua.edu.tw/ntua/fnc.jsp", {
+	sleep 0.1
+    http_client.post("https://uaap.ntua.edu.tw/ntua/fnc.jsp", {
       'fncid' => 'AG304',
       'std_id' => '',
       'local_ip' => '',
       'web_sys' => 'web'
     })
-
-    http_client.post("http://uaap3.ntua.edu.tw/ntua/ag_pro/ag304_00.jsp", {
+	sleep 0.1
+    http_client.post("https://uaap.ntua.edu.tw/ntua/ag_pro/ag304_00.jsp", {
       'arg01' => @year-1911,
       'arg02' => @term,
       'arg03' => 'guest',
