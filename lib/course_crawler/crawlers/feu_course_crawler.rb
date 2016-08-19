@@ -4,29 +4,14 @@
 module CourseCrawler::Crawlers
 class FeuCourseCrawler < CourseCrawler::Base
 
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "午休" => 5,
-    "5" => 6,
-    "6" => 7,
-    "7" => 8,
-    "8" => 9,
-    "9" => 10,
-    "A" => 11,
-    "B" => 12,
-    "C" => 13,
-    "D" => 14,
-    "E" => 15,
+  PERIODS = CoursePeriod.find('FEU').code_map
+
   # 進修部
   #   "1" => 10,
   #   "2" => 11,
   #   "3" => 12,
   #   "4" => 13,
   #   "5" => 14
-    }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
