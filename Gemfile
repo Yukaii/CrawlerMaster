@@ -68,6 +68,7 @@ gem 'rubyXL'
 # image processing library
 gem 'rtesseract',   require: false
 gem 'rmagick',      require: false
+gem 'mini_magick',  require: false
 
 # Task runner
 gem 'sidekiq', '~> 4.0'
