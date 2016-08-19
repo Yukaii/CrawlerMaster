@@ -38,7 +38,7 @@ class OcuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    @query_url = 'http://192.192.125.219'
+    @query_url = 'http://192.192.125.211'
   end
 
   def courses

@@ -32,7 +32,6 @@ class PuCourseCrawler < CourseCrawler::Base
     "12" => 13,
     "13" => 14,
     }
-
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year                 = year || current_year
@@ -50,14 +49,14 @@ class PuCourseCrawler < CourseCrawler::Base
     doc = Nokogiri::HTML(r)
     doc.css('select[name="opunit"] option:not(:first-child)').map{|opt| [opt[:value], opt.text]}.each do |dep_c, dep_n|
 
-      r = `curl -s -d "ls_yearsem=#{@year-1911}#{@term}&selectno=&weekday=&section=&cus_select=&classattri=1&subjname=&teaname=&opunit=#{dep_c}&opclass=&lessonlang=&search=%E6%90%9C%E    5%B0%8B&click_ok=Y" #{@query_url}`
+      r = `curl -s -d "ls_yearsem=#{@year-1911}#{@term}&selectno=&weekday=&section=&cus_select=&classattri=1&subjname=&teaname=&opunit=#{dep_c}&opclass=&lessonlang=&search=%E6%90%9C%E5%B0%8B&click_ok=Y" #{@query_url}`
       doc = Nokogiri::HTML(r)
       doc.css('table[class="table_info"] tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
         next if tr.text.include?("經濟部智慧財產局校園二手教科書網")
         data = tr.css('td').map{|td| td.text}
         data[5] = data[5].scan(/\d/)[0].to_i if data[5] != nil
         syllabus_url = "http://alcat.pu.edu.tw" + tr.css('td a').map{|a| a[:href]}[0][2..-1] if tr.css('td a').map{|a| a[:href]}[0] != nil
-        time_period_regex = /(?<day>[#{DAYS.join}])(?<peri_loc>(\　\s?(?<period>((\d+)?午?\、?)+)\：?(?<location>[伯思靜任一二計方格主體高室田游保]?[鐸源安垣研濟倫顧育校外徑場泳]?[館外池網]?\球?\場?(\d+)?))+)/
+        time_period_regex = /(?<day>[#{DAYS.to_a.join}])(?<peri_loc>(\　\s?(?<period>((\d+)?午?\、?)+)\：?(?<location>[伯思靜任一二計方格主體高室田游保]?[鐸源安垣研濟倫顧育校外徑場泳]?[館外池網]?\球?\場?(\d+)?))+)/
         course_days, course_periods, course_locations = [], [], []
         if data[7] != nil
           course_time_location = data[7].scan(time_period_regex)
