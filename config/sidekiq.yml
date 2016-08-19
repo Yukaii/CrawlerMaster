@@ -4,4 +4,6 @@
 development:
   :concurrency: 3
 staging:
-  :concurrency: 2
+  :concurrency: 1
+production:
+  :concurrency: 1
