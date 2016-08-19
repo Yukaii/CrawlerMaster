@@ -9,25 +9,11 @@ class NiuCourseCrawler < CourseCrawler::Base
 
   QUERY_URLS = {
     "1041" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADUAMAAvAFQASwBFADUAMAAxADAAXwAwADEALgBhAHMAcAB4AD8AQQBZAEUAQQBSAFMATQBTAD0AMQAwADQAMQA=",
-    "1042" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFAAUgBHAC8AUABSAEcAMQAxADAAMABfADAAMQAuAGEAcwBwAHgAPwBhAHkAZQBhAHIAcwBtAHMAPQAxADAANAAyAA=="
+    "1042" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFAAUgBHAC8AUABSAEcAMQAxADAAMABfADAAMQAuAGEAcwBwAHgAPwBhAHkAZQBhAHIAcwBtAHMAPQAxADAANAAyAA==",
+    "1051" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADUAMAAvAFQASwBFADUAMAAxADAAXwAwADEALgBhAHMAcAB4AD8AYQB5AGUAYQByAHMAbQBzAD0AMQAwADUAMQA=&GUID="
   }
 
-	PERIODS = {
-		"00" => 1,
-		"01" => 2,
-		"02" => 3,
-		"03" => 4,
-		"04" => 5,
-		"05" => 6,
-		"06" => 7,
-		"07" => 8,
-		"08" => 9,
-		"09" => 10,
-		"0A" => 11,
-		"0B" => 12,
-		"0C" => 13,
-		"0D" => 14
-	}
+  PERIODS = CoursePeriod.find('NIU').code_map
 
 	def initialize year: nil, term: nil, update_progress: nil, after_each: nil
     @year                 = year || current_year
