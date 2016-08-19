@@ -6,8 +6,8 @@ namespace :course_crawler do
       args.organization_code.upcase,
       year:       args.year && !args.year.to_i.zero? && args.year.to_i,
       term:       args.term && !args.term.to_i.zero? && args.term.to_i,
-      save_json:  true || args.save_json == 'true',
-      save_to_db: false || args.save_to_db == 'true'
+      save_json:  args.save_json == 'true',
+      save_to_db: args.save_to_db == 'true'
     )
   end
 
