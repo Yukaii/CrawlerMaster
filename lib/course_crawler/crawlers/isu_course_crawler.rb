@@ -6,23 +6,7 @@
 module CourseCrawler::Crawlers
 class IsuCourseCrawler < CourseCrawler::Base
 
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "z" => 5,
-    "Z" => 5,
-    "5" => 6,
-    "6" => 7,
-    "7" => 8,
-    "8" => 9,
-    "9" => 10,
-    "A" => 11,
-    "B" => 12,
-    "C" => 13,
-    "D" => 14,
-  }
+  PERIODS = CoursePeriod.find('ISU').code_map.merge("z" => 5)
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
