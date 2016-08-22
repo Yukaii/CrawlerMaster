@@ -49,17 +49,17 @@ class AsiaCourseCrawler < CourseCrawler::Base
 
     puts "get url ..."
     begin
-        r =
-        RestClient::Request.execute(
-        :method => :post,
-        :url => "#{@query_url}courselist.asp",
-        :timeout => 600,
-        :payload => {
-          "cos_setyear_q" => @year - 1911,
-          "cos_setterm_q" => @term,
-          "Qry" => "送出查詢",
-        }
-      )
+      r = RestClient::Request.execute(
+            :method => :post,
+            :url => "#{@query_url}courselist.asp",
+            :timeout => 600,
+            :verify_ssl => false,
+            :payload => {
+              "cos_setyear_q" => @year - 1911,
+              "cos_setterm_q" => @term,
+              "Qry" => "送出查詢",
+            }
+          )
 
     rescue Exception => e
       r = e.response.follow_redirection
