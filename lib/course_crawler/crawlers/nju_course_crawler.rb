@@ -12,25 +12,9 @@ class NjuCourseCrawler < CourseCrawler::Base
     "五" => 5,
     "六" => 6,
     "日" => 7
-    }
+  }.freeze
 
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "5" => 5,
-    "6" => 6,
-    "7" => 7,
-    "8" => 8,
-    "9" => 9,
-    "10" => 10,
-    "11" => 11,
-    "12" => 12,
-    "13" => 13,
-    "14" => 14,
-    "15" => 15
-    }
+  PERIODS = CoursePeriod.find('NJU').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
