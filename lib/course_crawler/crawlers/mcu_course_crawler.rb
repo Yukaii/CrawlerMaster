@@ -4,6 +4,6 @@
 #
 
 module CourseCrawler::Crawlers
-class McuCourseCrawler < McuBaseCrawler
-end
+  class McuCourseCrawler < McuBaseCrawler
+  end
 end

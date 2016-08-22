@@ -7,22 +7,7 @@ module CourseCrawler::Crawlers
 class McuBaseCrawler < CourseCrawler::Base
   include ::CourseCrawler::DSL
 
-  PERIODS = {
-    "01" =>  1,
-    "02" =>  2,
-    "03" =>  3,
-    "04" =>  4,
-    "20" =>  5,
-    "05" =>  6,
-    "06" =>  7,
-    "07" =>  8,
-    "08" =>  9,
-    "09" => 10,
-    "40" => 11,
-    "50" => 12,
-    "60" => 13,
-    "70" => 14,
-  }
+  PERIODS = CoursePeriod.find('MCU').code_map
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
