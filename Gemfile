@@ -82,7 +82,8 @@ gem 'redis-namespace'
 # Use Puma as the app server
 gem 'puma'
 
-gem 'remote_syslog_logger'
+# Log formatter for streaming to CloudWatch Logs
+gem "lograge"
 
 gem 'rack-mini-profiler', require: false
 
