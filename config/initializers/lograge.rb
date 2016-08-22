@@ -5,8 +5,8 @@ Rails.application.configure do
 
     extra_logs = {
       params:     event.payload[:params].except(*exceptions),
-      remote_ip:  event.payload[:headers]["REMOTE_ADDR"],
-      user_agent: event.payload[:headers]["HTTP_USER_AGENT"],
+      remote_ip:  event.payload[:remote_ip],
+      user_agent: event.payload[:user_agent],
       time:       event.time,
       host:       Socket.gethostname
     }
