@@ -95,6 +95,7 @@
               td
                 div= link_to "View Changes", changes_crawler_task_path(@crawler, task)
                 div= link_to "Download Snapshot[#{course_versions_count(task)}]", snapshot_crawler_task_path(@crawler, task), method: :post
+                div= link_to "View Potential Errors[#{error_course_versions_count(task)}]", changes_crawler_task_path(@crawler, task, errors_only: true)
                 div= link_to "Download Snapshot[#{error_course_versions_count(task)}](Potential Errors Only)", snapshot_crawler_task_path(@crawler, task, errors_only: true), method: :post
 
       / Rufus Jobs Table
