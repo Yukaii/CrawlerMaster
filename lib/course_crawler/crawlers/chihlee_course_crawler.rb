@@ -12,7 +12,7 @@ class ChihleeCourseCrawler < CourseCrawler::Base
     "五" => 5,
     "六" => 6,
     "日" => 7
-    }
+  }
 
 # 星期六的上課時間與平日不同
 # http://140.131.78.101/CSSystem/generalDesc/timeKH.aspx
@@ -57,12 +57,7 @@ class ChihleeCourseCrawler < CourseCrawler::Base
         course_days, course_periods, course_locations = [], [], []
         course_time_location.each do |day, period, loc|
           course_days << DAYS[day]
-          if DAYS[day] != 6
-            course_periods << PERIODS[period]
-          else
-            period = PERIODS[period]+14
-            course_periods << period
-          end
+          course_periods << PERIODS[period]
           course_locations << loc
         end
         puts "data crawled : " + data[7]
