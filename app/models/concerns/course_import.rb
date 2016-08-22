@@ -17,7 +17,7 @@ module CourseImport
           course_periods   = legacy_course.course_periods
           course_locations = legacy_course.course_locations
 
-          next if course_days.count == 0
+          next if course_days.reject(&:nil?).reject(&:zero?).count == 0
 
           # map coures attributes
           period        = periods.find { |p| p.order == course_periods[0] }
