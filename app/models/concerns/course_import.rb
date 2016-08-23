@@ -69,6 +69,7 @@ module CourseImport
         course_credits:  legacy_course.credits,
         course_url:      legacy_course.url,
         course_required: legacy_course.required,
+        course_type:     'official',
         course_code:     legacy_course.code,
 
         location:        location,
