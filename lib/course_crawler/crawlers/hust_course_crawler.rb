@@ -39,6 +39,7 @@ class HustCourseCrawler < CourseCrawler::Base
 
       course_days, course_periods, course_locations = [], [], []
       (data[13].to_i..data[14].to_i).each do |period|
+        next if period > 15 # 跳過在職班的
         next if period == 0
         course_days << data[12].to_i
         course_periods << period

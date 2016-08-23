@@ -9,6 +9,9 @@ class CtuCourseCrawler < CourseCrawler::Base
 
   CLASS = [ '1', '2', '3', '4', '5', '6' ]
 
+  PERIODS_WEEKDAY = Hash[CoursePeriod.find('CTU').periods.select { |p| 1 <= p.order && p.order <= 14 }.map { |p| [p.code, p.order] }]
+  PERIODS_WEEKEND = Hash[CoursePeriod.find('CTU').periods.select { |p| 15 <= p.order && p.order <= 30 }.map { |p| [p.code, p.order] }]
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
     @year = year
     @term = term
@@ -62,16 +65,24 @@ class CtuCourseCrawler < CourseCrawler::Base
       course_periods = []
       course_locations = []
 
-      day_course = datas[7].text.split(/(..)/)
-      day_course.each do |course|
-      #  binding.pry
-        next if course.size == 0
+      next if datas[7].nil?
+      next if datas[2].css('a')[0].nil?
 
-        course_days      << course[0]
-        course_periods   << course[1]
+      day_course = datas[7].text.split(/(..)/).map { |s| s.gsub(/[\u0020\u00a0]/, '') }.reject(&:empty?)
+      day_course.each do |course|
+        day = course[0].to_i
+
+        course_days << day
+        course_periods << if day <= 5 # week day
+                            PERIODS_WEEKDAY[course[1]]
+                          else
+                            PERIODS_WEEKEND[course[1]]
+                          end
         course_locations << datas[8].text.strip
       end
+
       puts "data crawled : " + datas[2].css('a')[0].text.strip
+
       course = {
         :name         => datas[2].css('a')[0].text.strip,
         :year         => @year,
