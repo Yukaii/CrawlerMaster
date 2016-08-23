@@ -11,4 +11,10 @@ namespace :course_crawler do
     )
   end
 
+  desc 'Sync course data to course, ex: rake course_crawler:sync[ntust,2016,1]'
+  task :sync, [:organization_code, :year, :term] => :environment do |_, args|
+    Course.import_to_course(args.organization_code.upcase, args.year, args.term)
+    CourseCacheGenerateJob.perform_now(args.organization_code.upcase, args.year, args.term)
+  end
+
 end
