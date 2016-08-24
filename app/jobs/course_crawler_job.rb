@@ -70,9 +70,10 @@ class CourseCrawlerJob
           Course::COLUMN_NAMES.each { |column| new_course.send(:"#{column}=", crawl_course[column]) }
         end
 
-        task.course_versions << course.versions.last if course.new_record?
-        course.save!
+        new_record = course.new_record?
         task.course_versions << course.versions.last if course.changed?
+        course.save!
+        task.course_versions << course.versions.last if new_record
 
         course.id
       end
