@@ -10,8 +10,6 @@ module CourseImport
       periods       = CoursePeriod.find!(organization_code)
 
       transaction do
-        existing_courses = Colorgy::Course.where("data -> 'course_year' = '#{course_year}' AND data -> 'course_term' = '#{course_term}'").where(calendar_id: calendar.id).root
-
         where(organization_code: organization_code, year: course_year, term: course_term).find_each do |legacy_course|
           course_days      = legacy_course.course_days.reject(&:nil?)
           course_periods   = legacy_course.course_periods
@@ -51,7 +49,16 @@ module CourseImport
             )
           end
 
-          course = existing_courses.where("data -> 'course_code' = '#{legacy_course.code}'").first_or_initialize
+          # FIXME
+          # => N + 1 query
+          # => if the new course set is smaller than the existing, some courses will not be updated
+          course = Colorgy::Course.where(<<-sql
+              data -> 'course_year' = '#{course_year}' AND
+              data -> 'course_term' = '#{course_term}' AND
+              data -> 'course_lecturer' = '#{legacy_course.lecturer}' AND
+              data -> 'course_code' = '#{legacy_course.code}'
+            sql
+          ).where(calendar_id: calendar.id, name: legacy_course.name).root.first_or_initialize
 
           # destroy all sub_courses and re-create them
           course.sub_courses.destroy_all

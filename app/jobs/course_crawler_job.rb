@@ -33,9 +33,9 @@ class CourseCrawlerJob
     term = @crawler_klass_instance.term
 
     @crawler_klass_instance.worker = self
-    courses = @crawler_klass_instance.courses
+    crawl_courses = @crawler_klass_instance.courses
 
-    if courses.empty?
+    if crawl_courses.empty?
       # TODO: Log if results are empty
       puts 'no courses crawled' if $PROGRAM_NAME =~ /rake$/
       Rails.logger.info('no courses crawled')
@@ -45,49 +45,44 @@ class CourseCrawlerJob
 
     if options[:save_json]
       file_path = Rails.root.join('tmp', "#{organization_code.downcase}_courses_#{Time.zone.now.to_i}.json")
-      File.write(file_path, Oj.dump(courses, indent: 2, mode: :compat))
+      File.write(file_path, Oj.dump(crawl_courses, indent: 2, mode: :compat))
 
       puts "courses crawled results generate at: #{file_path}" if $PROGRAM_NAME =~ /rake$/
     end
 
     return unless crawler_record.save_to_db || options[:save_to_db]
 
-    task       = CrawlTask.create(organization_code: organization_code, course_year: year, course_term: term, type: :crawler)
-    db_courses = Course.where(organization_code: organization_code, year: year, term: term)
+    task = CrawlTask.create(organization_code: organization_code, course_year: year, course_term: term, type: :crawler)
 
-    # diff courses set
-    crawl_course_codes     = courses.map { |course| course[:code] }
-    existing_course_codes  = db_courses.pluck(:code)
-
-    # calculate intersect and union
-    course_codes_to_update = crawl_course_codes & existing_course_codes
-    course_codes_to_delete = existing_course_codes - course_codes_to_update
-    course_codes_to_insert = crawl_course_codes - course_codes_to_update
-
-    insert_courses = courses.select { |course| course_codes_to_insert.include?(course[:code]) }
-    delete_courses = db_courses.where(code: course_codes_to_delete)
-    update_courses = db_courses.where(code: course_codes_to_update)
-
-    course_updates_hash = prepare_course_updates_hash(courses, course_codes_to_update)
-
+    # insert each crawled course by its attributes
     ActiveRecord::Base.transaction do
-      # insert courses
-      insert_courses.each do |course|
-        course = Course.create!(course_params(course, organization_code))
-        task.course_versions << course.versions.last
+      course_ids = crawl_courses.map do |crawl_course|
+        course = Course.where(
+          year: crawl_course[:year],
+          term: crawl_course[:term],
+          organization_code: organization_code,
+          code: crawl_course[:code],
+          lecturer: crawl_course[:lecturer],
+          name: crawl_course[:name]
+        ).first_or_initialize.tap do |new_course|
+          crawl_course[:ucode] = "#{organization_code}-#{crawl_course[:code]}"
+          crawl_course[:organization_code] = organization_code
+          Course::COLUMN_NAMES.each { |column| new_course.send(:"#{column}=", crawl_course[column]) }
+        end
+
+        new_record = course.new_record?
+        task.course_versions << course.versions.last if course.changed?
+        course.save!
+        task.course_versions << course.versions.last if new_record
+
+        course.id
       end
 
-      # delete courses
-      delete_courses.find_each do |course|
+      Course.where(organization_code: organization_code, year: year, term: term).where.not(id: course_ids).each do |course|
         course.destroy!
         task.course_versions << course.versions.last
       end
 
-      # update courses
-      update_courses.find_each do |course|
-        course.update!(course_updates_hash[course[:code]])
-        task.course_versions << course.versions.last if course.changed?
-      end
     end
 
     if Course.where(organization_code: organization_code).group(:ucode).having('COUNT(courses.ucode) > 1').any?
@@ -99,25 +94,5 @@ class CourseCrawlerJob
 
     # fix counter_cache because we insert courses through sql directly
     Crawler.reset_counters(crawler_record.id, :courses)
-  end
-
-  private
-
-  def course_params(course, organization_code)
-    course.slice(*Course::COLUMN_NAMES).merge(
-      ucode: "#{organization_code}-#{course[:code]}",
-      organization_code: organization_code
-    )
-  end
-
-  def prepare_course_updates_hash(courses, course_codes_to_update)
-    Hash[
-      course_codes_to_update.map do |code|
-        [
-          code,
-          courses.find { |course| course[:code] == code }.slice(*Course::COLUMN_NAMES)
-        ]
-      end
-    ]
   end
 end

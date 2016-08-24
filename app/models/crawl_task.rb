@@ -75,34 +75,35 @@ class CrawlTask < ActiveRecord::Base
     )
 
     sheet = Spreadsheet.open(path).worksheet(0)
-    course_updates_hash = Hash[
-      sheet.each_with_index.map do |row|
-        [
-          row[Course::COLUMN_NAMES.index(:code)],
-          Hash[
-            Course::COLUMN_NAMES.each_with_index.map do |key, column_index|
-              if key.to_s.include?('period')
-                [key, code_map[row[column_index]]]
-              else
-                [key, row[column_index]]
-              end
+
+    ActiveRecord::Base.transaction do
+      sheet.each_with_index do |row, row_index|
+        next if row_index.zero?
+        course = Course.where(
+          year: row[Course::COLUMN_NAMES.index(:year)],
+          term: row[Course::COLUMN_NAMES.index(:term)],
+          organization_code: organization_code,
+          code: row[Course::COLUMN_NAMES.index(:code)],
+          lecturer: row[Course::COLUMN_NAMES.index(:lecturer)],
+          name: row[Course::COLUMN_NAMES.index(:name)]
+        ).first_or_initialize.tap do |new_course|
+          Course::COLUMN_NAMES.each_with_index do |key, column_index|
+            if key.to_s.include?('period')
+              new_course.send(:"#{key}=", code_map[row[column_index]])
+            else
+              new_course.send(:"#{key}=", row[column_index])
             end
-          ]
-        ]
+          end
+        end
+
+        new_record = course.new_record?
+        task.course_versions << course.versions.last if course.changed?
+        course.save!
+        task.course_versions << course.versions.last if new_record
       end
-    ].except("code") # remove header
 
-    Course.where(
-      code: course_updates_hash.keys,
-      year: course_year,
-      term: course_term,
-      organization_code: organization_code
-    ).find_each do |course|
-      course.update!(course_updates_hash[course.code])
-      task.course_versions << course.versions.last if course.changed?
+      task.update(finished_at: Time.zone.now)
     end
-
-    task.update(finished_at: Time.zone.now)
 
     yield(task)
   end
