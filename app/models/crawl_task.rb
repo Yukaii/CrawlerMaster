@@ -96,10 +96,10 @@ class CrawlTask < ActiveRecord::Base
           end
         end
 
-        new_record = course.new_record?
-        task.course_versions << course.versions.last if course.changed?
-        course.save!
-        task.course_versions << course.versions.last if new_record
+        if course.new_record? || course.changed?
+          course.save!
+          task.course_versions << course.versions.last
+        end
       end
 
       task.update(finished_at: Time.zone.now)
