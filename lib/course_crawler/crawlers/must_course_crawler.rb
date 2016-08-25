@@ -1,5 +1,9 @@
 # 明新科技大學
 # 課程查詢網址：https://sss.must.edu.tw/cosinfo/qry_cosbyname.asp
+#
+# curl有改過，因為先前的連不上去，改程直接複製整個bash
+#
+
 
 module CourseCrawler::Crawlers
 class MustCourseCrawler < CourseCrawler::Base
@@ -42,7 +46,8 @@ class MustCourseCrawler < CourseCrawler::Base
     doc = Nokogiri::HTML(r)
 
     doc.css('select[name="DiviList"] option').map{|opt| opt[:value]}.each do |divi|
-      r = %x(curl -s '#{@query_url}qry_cosbyname.asp' --data 'YearList=#{@year-1911}&SmtrList=#{@term}&DiviList=#{divi}&CosName=+' --compressed)
+      #r = %x(curl -s '#{@query_url}qry_cosbyname.asp' --data 'YearList=#{@year-1911}&SmtrList=#{@term}&DiviList=#{divi}&CosName=%AD%5E%A4%E5%28%A4%40%29' --compressed)
+      r = %x(curl -s 'https://sss.must.edu.tw/cosinfo/qry_cosbyname.asp' -H 'Pragma: no-cache' -H 'Origin: https://sss.must.edu.tw' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Cache-Control: no-cache' -H 'Referer: https://sss.must.edu.tw/cosinfo/qry_cosbyname.asp' -H 'Cookie: ASPSESSIONIDSSBRRSBT=JGNJMEEAAIKKOACHLANCDFOG; sto-id=FNAAAAAK; ASPSESSIONIDSQDSTQAT=LGFOOJKCPHIIAFLFBNILJHOJ; ASPSESSIONIDQSBSQTBT=HPMLGGCDOOFKPBDBIJGIJDNB' -H 'Connection: keep-alive' --data 'YearList=105&SmtrList=1&DiviList=1&CosName=+' --compressed)
       # r = RestClient.post(@query_url+"qry_cosbyname.asp" , {
       #   "YearList"  =>  "105" ,
       #   "SmtrList"  =>  "1"   ,
@@ -51,7 +56,6 @@ class MustCourseCrawler < CourseCrawler::Base
       # })
 
       doc = Nokogiri::HTML(@ic.iconv(r))
-
 
       puts "data crawled : " + divi
       doc.css('body > center table tr:nth-child(n+2)').each do |tr|

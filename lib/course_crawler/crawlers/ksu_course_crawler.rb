@@ -1,6 +1,7 @@
 ##
 # 崑山科大
 # http://120.114.50.49/TPS_Outline/Default.aspx
+# 他只限魚爬取一開始default的學年度，其餘學念度無法查詢
 
 module CourseCrawler::Crawlers
 class KsuCourseCrawler < CourseCrawler::Base

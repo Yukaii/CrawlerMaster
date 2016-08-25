@@ -14,6 +14,7 @@ class KyuCourseCrawler < CourseCrawler::Base
     "日" => 7
     }
 # 周一至周五
+# 新增9和10，但是課表的時間節次查詢沒有，但是查出來的課表有，要多注意
   PERIODS = {
     "1" => 1,
     "2" => 2,
@@ -24,10 +25,12 @@ class KyuCourseCrawler < CourseCrawler::Base
     "6" => 7,
     "7" => 8,
     "8" => 9,
-    "A" => 10,
-    "B" => 11,
-    "C" => 12,
-    "D" => 13
+    "9" => 10,
+    "10" => 11,
+    "A" => 12,
+    "B" => 13,
+    "C" => 14,
+    "D" => 15
     }
 # 六日
 # PERIODS2的值在後方會再加13, 所以 1 => 1+13=14, ... , E => 18+13=31
@@ -75,7 +78,7 @@ class KyuCourseCrawler < CourseCrawler::Base
     count = 1
     doc.css('table[id="ctl00_ContentPlaceHolder1_ListView1_itemPlaceholderContainer"] tr:nth-child(n+2)').each do |tr|
       data = tr.css('td').map{|td| td.text}
-      puts "data crawled : " + count.to_s
+      puts "data crawled : " + count.to_s + " #{data[2]}"
       count += 1
       course_id += 1
 
@@ -85,18 +88,19 @@ class KyuCourseCrawler < CourseCrawler::Base
       course_time.each do |day, period|
         period.split(",").each do |perd|
           if DAYS[day] < 6
-            (PERIODS[perd.split('~')[0]]..PERIODS[perd.split('~')[-1]]).each do |p|
+            (PERIODS[perd.split(/[~,]/)[0]]..PERIODS[perd.split(/[~,]/)[-1]]).each do |p|
               course_days << DAYS[day]
               course_periods << p
               course_locations << data[11]
-            end
+            end #if
           else
             (PERIODS2[perd.split('~')[0]]..PERIODS2[perd.split('~')[-1]]).each do |p|
               course_days << DAYS[day]
               course_periods << p+13
               course_locations << data[11]
-            end
+            end #else
           end
+
         end
       end
 

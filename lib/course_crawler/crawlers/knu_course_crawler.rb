@@ -3,6 +3,10 @@
 
 # 有課程資料可以下載真好
 # http://portal.knu.edu.tw/info/Application/COU/COU200M_01v1.aspx
+
+#Spreadsheet open file 之後不能把檔案刪掉 , 它會顯示 [Errno::ETXTBSY: Text file busy @ unlink_internal]
+#所以暫時先把detele註解掉
+
 module CourseCrawler::Crawlers
 class KnuCourseCrawler < CourseCrawler::Base
 

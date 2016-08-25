@@ -9,8 +9,8 @@ class NiuCourseCrawler < CourseCrawler::Base
 
   QUERY_URLS = {
     "1041" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADUAMAAvAFQASwBFADUAMAAxADAAXwAwADEALgBhAHMAcAB4AD8AQQBZAEUAQQBSAFMATQBTAD0AMQAwADQAMQA=",
-    "1042" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFAAUgBHAC8AUABSAEcAMQAxADAAMABfADAAMQAuAGEAcwBwAHgAPwBhAHkAZQBhAHIAcwBtAHMAPQAxADAANAAyAA==",
-    "1051" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADUAMAAvAFQASwBFADUAMAAxADAAXwAwADEALgBhAHMAcAB4AD8AYQB5AGUAYQByAHMAbQBzAD0AMQAwADUAMQA=&GUID="
+    "1042" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFAAUgBHAC8AUABSAEcAMQAxADAAMABfADAAMQAuAGEAcwBwAHgAPwBhAHkAZQBhAHIAcwBtAHMAPQAxADAANAAyAA==" ,
+    "1051" => "https://acade.niu.edu.tw/NIU/outside.aspx?mainPage=LwBBAHAAcABsAGkAYwBhAHQAaQBvAG4ALwBUAEsARQAvAFQASwBFADMAMgAvAFQASwBFADMAMgAxADAAXwAwADEALgBhAHMAcAB4AD8AYQB5AGUAYQByAHMAbQBzAD0AMQAwADUAMQA=&GUID="
   }
 
   PERIODS = CoursePeriod.find('NIU').code_map
@@ -68,10 +68,15 @@ class NiuCourseCrawler < CourseCrawler::Base
 			# puts row[2]+index.to_s
 
 			course_days, course_periods, course_locations = [], [], []
+
 			row[10].to_s.split(',').each_with_index do |period, i|
-        location = row[11].split(',')[0]
-        if row[11].split(',').length > 1
-          location = row[11].split(',')[i]
+        #binding.pr
+        #
+        # 這邊row[11]因為有些教室是只有數字，EX : 0426，如果沒有row[11].to_s，它會自動把它變程FLOAT，導致split無法使用
+        #
+        location = row[11].to_s.split(',')[0]
+        if row[11].to_s.split(',').length > 1
+          location = row[11].to_s.split(',')[i]
         end
 				course_days << period[0].to_i
 				course_periods << PERIODS[period[1..2]]
@@ -79,7 +84,7 @@ class NiuCourseCrawler < CourseCrawler::Base
 			end
 
       next if row[1].nil?
-      puts "data crawled : " + row[2]
+      puts "data crawled : " + row[2] +" -> " + row[0].split(",")[0]
 			course ={
         department:   row[0].split(","),
         name:         row[2],

@@ -15,7 +15,7 @@ class CtuCourseCrawler < CourseCrawler::Base
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
     @year = year
     @term = term
-    @count = 1
+
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
@@ -57,8 +57,8 @@ class CtuCourseCrawler < CourseCrawler::Base
   end
 
   def parse_course doc
-    index = doc.css('table').css('tr')
-    index[3..-2].each do |row|
+    index = doc.css('table[id="DataGrid1"]').css('tr')
+    index[1..-1].each do |row|
       datas = row.css('td')
 
       course_days = []
@@ -80,15 +80,14 @@ class CtuCourseCrawler < CourseCrawler::Base
                           end
         course_locations << datas[8].text.strip
       end
-
       puts "data crawled : " + datas[2].css('a')[0].text.strip
 
       course = {
         :name         => datas[2].css('a')[0].text.strip,
         :year         => @year,
         :term         => @term,
-        :code         => "#{@year}-#{@term}-#{datas[0].text.strip}-#{@count}",
-        :general_code => datas[0].text.strip+"-#{@count}",
+        :code         => "#{@year}-#{@term}-#{datas[0].text.strip}",
+        :general_code => datas[0].text.strip,
         :degree       => datas[1].text.strip,
         :credits      => datas[3].text.strip,
         :lecturer     => datas[6].text.strip,
@@ -120,7 +119,7 @@ class CtuCourseCrawler < CourseCrawler::Base
         :location_8   => course_locations[7],
         :location_9   => course_locations[8],
       }
-      @count += 1
+
       @after_each_proc.call(course: course) if @after_each_proc
       @courses << course
 

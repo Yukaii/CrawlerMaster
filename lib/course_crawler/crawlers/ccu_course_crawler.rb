@@ -59,9 +59,6 @@ class CcuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    #區分general_code
-    @code_count = 1
-
     @download_path = "https://kiki.ccu.edu.tw/~ccmisp06/Course/zipfiles/"
     @filename = "#{@year-1911}#{@term}.tgz"
 
@@ -106,9 +103,8 @@ class CcuCourseCrawler < CourseCrawler::Base
               location =  datas[10] && datas[10].text
               group_code = datas[3] && datas[3].text
 
-              code         = datas[3] && "#{@year}-#{@term}-#{datas[2].text}-#{group_code}-#{@code_count}"
-              general_code = "#{datas[2].text}-#{group_code}-#{@code_count}"
-              @code_count += 1
+              code         = datas[3] && "#{@year}-#{@term}-#{datas[2].text}-#{group_code}"
+              general_code = "#{datas[2].text}-#{group_code}"
               name         = datas[4] && datas[4].text && datas[4].text.strip
               lecturer     = datas[5] && datas[5].text && datas[5].text.strip
               credits      = datas[7] && datas[7].text && datas[7].text.to_i
@@ -119,9 +115,8 @@ class CcuCourseCrawler < CourseCrawler::Base
               location     = datas[9] && datas[9].text
               group_code   = datas[2] && datas[2].text
 
-              code         = datas[2] && "#{@year}-#{@term}-#{datas[1].text}-#{group_code}-#{@code_count}"
-              general_code = "#{datas[1].text}-#{group_code}-#{@code_count}"
-              @code_count += 1
+              code         = datas[2] && "#{@year}-#{@term}-#{datas[1].text}-#{group_code}"
+              general_code = "#{datas[1].text}-#{group_code}"
               name         = datas[3] && datas[3].text && datas[3].text.strip
               lecturer     = datas[4] && datas[4].text && datas[4].text.strip
               credits      = datas[6] && datas[6].text && datas[6].text.to_i
