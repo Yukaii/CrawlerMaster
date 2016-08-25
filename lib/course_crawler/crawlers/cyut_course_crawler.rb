@@ -9,23 +9,7 @@ class CyutCourseCrawler < CourseCrawler::Base
   H_SECID = [ '1', '2', '3' ]
   H_SUBID = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'Y', 'Z' ]
 
-  PERIODS = {
-    "1"    => 1,
-    "2"    => 2,
-    "3"    => 3,
-    "4"    => 4,
-    "中午" => 5,
-    "5"    => 6,
-    "6"    => 7,
-    "7"    => 8,
-    "8"    => 9,
-    "9"    => 10,
-    "A"    => 11,
-    "B"    => 12,
-    "C"    => 13,
-    "D"    => 14,
-    "E"    => 15
-  }
+  PERIODS = CoursePeriod.find('CYUT').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
     @year = year || current_year

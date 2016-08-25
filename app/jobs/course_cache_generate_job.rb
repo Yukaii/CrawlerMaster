@@ -18,8 +18,19 @@ class CourseCacheGenerateJob < ActiveJob::Base
     file_name = "#{course_year}_#{course_term}_#{organization.code}_#{Time.zone.now.getutc.iso8601.gsub(/[-:]/, '')}.json"
     tempfile = Tempfile.new(file_name)
 
+    # generate gzip file name
+    gz_file_name = "#{file_name}.gz"
+    gztempfile = Tempfile.new(gz_file_name)
+
     begin
+      # write json string to tempfile
       tempfile.write(courses_json_string)
+
+      # write json string to gzip tempfile
+      Zlib::GzipWriter.open(gztempfile.path) do |gz|
+        gz.write(courses_json_string)
+      end
+
     ensure
       s3 = Aws::S3::Resource.new
 
@@ -35,7 +46,15 @@ class CourseCacheGenerateJob < ActiveJob::Base
 
       tempfile.close
       tempfile.unlink
+
+      obj = s3.bucket(ENV['S3_BUCKET']).object("course-cache/#{gz_file_name}")
+      obj.upload_file(gztempfile.path, acl: 'public-read')
+
+      gztempfile.close
+      gztempfile.unlink
     end
+
+    Crawler.find_by!(organization_code: organization_code).update!(last_sync_at: Time.zone.now)
   end
 
 end

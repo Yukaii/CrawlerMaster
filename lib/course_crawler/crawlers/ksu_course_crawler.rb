@@ -16,6 +16,8 @@ class KsuCourseCrawler < CourseCrawler::Base
     "日" => 7,
   }
 
+  PERIODS = CoursePeriod.find('KSU').code_map
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year || current_year
@@ -101,7 +103,7 @@ class KsuCourseCrawler < CourseCrawler::Base
         day_period.match(/週(?<d>[#{DAYS.keys.join}])\((?<p>.+)\)/) do |m|
           m[:p].split('、').each do |p|
             course_days << DAYS[m[:d]]
-            course_periods << p.to_i
+            course_periods << PERIODS[p]
             course_locations << location
           end
         end

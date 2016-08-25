@@ -4,22 +4,7 @@
 module CourseCrawler::Crawlers
 class HfuCourseCrawler < CourseCrawler::Base
 
-  PERIODS = {
-    "早" => 1,
-    "1" => 2,
-    "2" => 3,
-    "3" => 4,
-    "4" => 5,
-    "5" => 6,
-    "6" => 7,
-    "7" => 8,
-    "8" => 9,
-    "9" => 10,
-    "10" => 11,
-    "11" => 12,
-    "12" => 13,
-    "13" => 14
-    }
+  PERIODS = CoursePeriod.find('HFU').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -74,15 +59,15 @@ class HfuCourseCrawler < CourseCrawler::Base
         data = tr.css('td').map{|td| td.text}
         syllabus_url = tr.css('a').map{|a| a[:href]}[0]
 
-        course_days, course_periods, course_locations = [], [], []
+        course_days = []
+        course_periods = []
+        course_locations = []
         (14..20).each do |day|
-          data[day].scan(/(?<period>([\d早]\,)+)(\((?<location>\S+)\))?/).each do |period, location|
-            period.split(',').each do |p|
-              next if p == nil
-              course_days << day - 13
-              course_periods << PERIODS[p]
-              course_locations << location
-            end
+          location = (m = data[day].match(/\((?<location>\S+)\)/)) && m[:location]
+          data[day].scan(/((?<period>[\d早\s]{1,2}),)/).flatten.map { |p| PERIODS[p.strip] }.each do |period|
+            course_days << day - 13
+            course_periods << period
+            course_locations << location
           end
         end
 

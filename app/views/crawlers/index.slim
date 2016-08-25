@@ -1,12 +1,15 @@
 = render partial: 'partials/navbar'
 
 .col-lg-8.col-lg-offset-2.col-md-10.col-md-offset-1.col-s-12
+  = render partial: 'partials/flash_messages'
   h3 Crawler List
   .table-responsive
     table.table.table-hover
       form action=batch_run_crawlers_path method="post"
         = hidden_field_tag :authenticity_token, form_authenticity_token
-        button class="btn btn-default" style="margin: 10px;" 批次開始
+
+        = submit_tag '批次開始', class: 'btn btn-default', style: 'margin: 10px'
+        = submit_tag '批次同步', name: 'batch_sync', class: 'btn btn-default'
 
         tr
           th

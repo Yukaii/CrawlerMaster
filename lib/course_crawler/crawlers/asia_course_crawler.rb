@@ -29,27 +29,10 @@ class AsiaCourseCrawler < CourseCrawler::Base
     "四" => 4,
     "五" => 5,
     "六" => 6,
-    "日" => 7,
-    }
+    "日" => 7
+  }
 
-  PERIODS = {
-    "M" => 1,
-    "1" => 2,
-    "2" => 3,
-    "3" => 4,
-    "4" => 5,
-    "N" => 6,
-    "5" => 7,
-    "6" => 8,
-    "7" => 9,
-    "8" => 10,
-    "9" => 11,
-    "E" => 12,
-    "A" => 13,
-    "B" => 14,
-    "C" => 15,
-    "D" => 16,
-    }
+  PERIODS = CoursePeriod.find('ASIA').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -66,17 +49,17 @@ class AsiaCourseCrawler < CourseCrawler::Base
 
     puts "get url ..."
     begin
-        r =
-        RestClient::Request.execute(
-        :method => :post,
-        :url => "#{@query_url}courselist.asp",
-        :timeout => 600,
-        :payload => {
-          "cos_setyear_q" => @year - 1911,
-          "cos_setterm_q" => @term,
-          "Qry" => "送出查詢",
-        }
-      )
+      r = RestClient::Request.execute(
+            :method => :post,
+            :url => "#{@query_url}courselist.asp",
+            :timeout => 600,
+            :verify_ssl => false,
+            :payload => {
+              "cos_setyear_q" => @year - 1911,
+              "cos_setterm_q" => @term,
+              "Qry" => "送出查詢",
+            }
+          )
 
     rescue Exception => e
       r = e.response.follow_redirection

@@ -12,18 +12,9 @@ class MhchcmCourseCrawler < CourseCrawler::Base
     "五" => 5,
     "六" => 6,
     "日" => 7
-    }
+  }.freeze
 
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "5" => 5,
-    "6" => 6,
-    "7" => 7,
-    "8" => 8,
-    }
+  PERIODS = CoursePeriod.find('MHCHCM').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 

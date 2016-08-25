@@ -27,7 +27,12 @@ module CourseCrawler
     end
 
     def http_client
-      @http_clnt ||= HTTPClient.new
+      return @http_clnt if @http_clnt
+
+      @http_clnt = HTTPClient.new
+      @http_clnt.send_timeout = 1800
+      @http_clnt.receive_timeout = 1800
+      @http_clnt
     end
 
     def power_strip(str)

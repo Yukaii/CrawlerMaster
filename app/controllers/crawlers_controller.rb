@@ -9,6 +9,7 @@ class CrawlersController < ApplicationController
 
   def show
     @title = "#{@crawler.name} | CrawlerMaster"
+    @duplicate_counts = Course.where(organization_code: params[:id]).group(:ucode, :code).having('COUNT(courses.ucode) > 1').size.values.inject(:+)
   end
 
   def setting
@@ -42,8 +43,14 @@ class CrawlersController < ApplicationController
 
   def batch_run
     Crawler.where(organization_code: params[:run_crawler]).find_each do |crawler|
-      crawler.run_up(:in, {})
+      if params[:batch_sync]
+        crawler.sync_to_core
+      else
+        crawler.run_up(:in, {})
+      end
     end
+
+    flash[:warning] = "No crawler provided" unless params[:run_crawler]
 
     redirect_to crawlers_path
   end

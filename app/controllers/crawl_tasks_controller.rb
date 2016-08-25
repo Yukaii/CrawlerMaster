@@ -3,7 +3,17 @@ class CrawlTasksController < ApplicationController
 
   def changes
     @task = @crawler.crawl_tasks.find(params[:id])
-    @versions = @task.course_versions.page(params[:page]).per(params[:paginate_by])
+    unless params[:errors_only]
+      @versions = @task.course_versions.page(params[:page]).per(params[:paginate_by])
+
+    else
+      @versions = PaperTrail::Version.where(
+        id: CourseTaskRelation.joins(:version, :course_errors) \
+                              .where('versions.id in (?)', @task.course_versions.pluck(:id)) \
+                              .where(task_id: @task.id)
+                              .group('course_errors.relation_id, course_task_relations.version_id') \
+                              .having('COUNT(course_errors.relation_id) > 0').pluck(:version_id)).page(params[:page]).per(params[:paginate_by])
+    end
   end
 
   def snapshot

@@ -26,7 +26,7 @@
             span
               button.btn.btn-success style="margin: 0 1em;" type="submit" Sync
 
-      = link_to "Duplicate Courses", duplicate_courses_crawler_path(@crawler)
+      = link_to "Duplicate Courses[#{@duplicate_counts}]", duplicate_courses_crawler_path(@crawler)
 
       h4 Status
       table.table
@@ -95,6 +95,7 @@
               td
                 div= link_to "View Changes", changes_crawler_task_path(@crawler, task)
                 div= link_to "Download Snapshot[#{course_versions_count(task)}]", snapshot_crawler_task_path(@crawler, task), method: :post
+                div= link_to "View Potential Errors[#{error_course_versions_count(task)}]", changes_crawler_task_path(@crawler, task, errors_only: true)
                 div= link_to "Download Snapshot[#{error_course_versions_count(task)}](Potential Errors Only)", snapshot_crawler_task_path(@crawler, task, errors_only: true), method: :post
 
       / Rufus Jobs Table

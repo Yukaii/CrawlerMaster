@@ -6,23 +6,7 @@
 module CourseCrawler::Crawlers
 class NkfustCourseCrawler < CourseCrawler::Base
 
-  PERIODS = {
-    "Ｘ" =>  1,
-    "１" =>  2,
-    "２" =>  3,
-    "３" =>  4,
-    "４" =>  5,
-    "５" =>  6,
-    "６" =>  7,
-    "７" =>  8,
-    "８" =>  9,
-    "９" => 10,
-    "Ａ" => 11,
-    "Ｂ" => 12,
-    "Ｃ" => 13,
-    "Ｄ" => 14,
-    "Ｅ" => 15
-  }
+  PERIODS = CoursePeriod.find('NKFUST').code_map
 
   TERM = {
     1 => "上",

@@ -4,25 +4,8 @@
 module CourseCrawler::Crawlers
 class NcnuCourseCrawler < CourseCrawler::Base
 
-  # PERIODS = {
-  #   "x" => 1,
-  #   "y" => 2,
-  #   "a" => 3,
-  #   "b" => 4,
-  #   "c" => 5,
-  #   "d" => 6,
-  #   "z" => 7,
-  #   "e" => 8,
-  #   "f" => 9,
-  #   "g" => 10,
-  #   "h" => 11,
-  #   "i" => 12,
-  #   "j" => 13,
-  #   "k" => 14,
-  #   "l" => 15,
-  #   "m" => 16
-  #   }
   PERIODS = CoursePeriod.find('NCNU').code_map
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year
@@ -63,21 +46,22 @@ class NcnuCourseCrawler < CourseCrawler::Base
       doc = %x(curl -s '#{@query_url}webservice/csvDepartOpenCourses.aspx?year=#{@year-1911}#{@term}&uid=#{dept[0]}' --compressed)
 
       doc[1..-4].split("\"\r\n\"")[1..-1].each do |line|
+        next if data[8].nil? # do not save course without period data
+
         course_id += 1
         # "學期別","開課系所","課程綱要(general_code)","課程名稱","開課教師","部別","年級","學分","時間","地點"
         data = line.split("\",\"")
         syllabus_url = "#{@query_url}webservice/csvDepartOpenCourseSyllabus.aspx?year=#{@year-1911}#{@term}&courseid=#{data[2]}"
 
-        course_days, course_periods, course_locations = [], [], []
-        if data[8] != nil
-          course_time = Hash[ data[8].scan(/((?<day>\d)(?<period>\w+))+?/) ]
+        course_days = []
+        course_periods = []
+        course_locations = []
 
-          course_time.each do |day, period|
-            period.split('').each do |p|
-              course_days << day[0].to_i
-              course_periods << PERIODS[p[0]]
-              course_locations << data[9]
-            end
+        data[8].scan(/(\d)([a-z]+)/).each do |day, period|
+          period.chars.each do |p|
+            course_days << day.to_i
+            course_periods << PERIODS[p]
+            course_locations << data[9]
           end
         end
 

@@ -12,35 +12,12 @@ class ChihleeCourseCrawler < CourseCrawler::Base
     "五" => 5,
     "六" => 6,
     "日" => 7
-    }
+  }
 
 # 星期六的上課時間與平日不同
 # http://140.131.78.101/CSSystem/generalDesc/timeKH.aspx
 # 星期六的節次 : A01 => 1+14 = 15 , ... , A04 => 4+14 = 18, ... , C08 => 12+14 = 26
-  PERIODS = {
-    "A01" => 1,
-    "A02" => 2,
-    "A03" => 3,
-    "A04" => 4,
-    "A05" => 5,
-    "A06" => 6,
-    "A07" => 7,
-    "A08" => 8,
-    "A09" => 9,
-    "X01" => 10,
-    "B01" => 11,
-    "B02" => 12,
-    "B03" => 13,
-    "B04" => 14,
-    "C01" => 19,
-    "C02" => 20,
-    "C03" => 21,
-    "C04" => 22,
-    "C05" => 23,
-    "C06" => 24,
-    "C07" => 25,
-    "C08" => 26
-    }
+  PERIODS = CoursePeriod.find('CHIHLEE').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -80,12 +57,7 @@ class ChihleeCourseCrawler < CourseCrawler::Base
         course_days, course_periods, course_locations = [], [], []
         course_time_location.each do |day, period, loc|
           course_days << DAYS[day]
-          if DAYS[day] != 6
-            course_periods << PERIODS[period]
-          else
-            period = PERIODS[period]+14
-            course_periods << period
-          end
+          course_periods << PERIODS[period]
           course_locations << loc
         end
         puts "data crawled : " + data[7]

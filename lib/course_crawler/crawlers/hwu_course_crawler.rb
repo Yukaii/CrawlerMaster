@@ -52,7 +52,6 @@ class HwuCourseCrawler < CourseCrawler::Base
         })
         cookie = r.cookies
     rescue Exception => e
-
        r = e.response.follow_redirection
        cookie = r.cookies
     end

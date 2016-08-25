@@ -68,6 +68,7 @@ gem 'rubyXL'
 # image processing library
 gem 'rtesseract',   require: false
 gem 'rmagick',      require: false
+gem 'mini_magick',  require: false
 
 # Task runner
 gem 'sidekiq', '~> 4.0'
@@ -81,7 +82,8 @@ gem 'redis-namespace'
 # Use Puma as the app server
 gem 'puma'
 
-gem 'remote_syslog_logger'
+# Log formatter for streaming to CloudWatch Logs
+gem "lograge"
 
 gem 'rack-mini-profiler', require: false
 
