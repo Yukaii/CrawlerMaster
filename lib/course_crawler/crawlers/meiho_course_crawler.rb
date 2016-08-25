@@ -5,6 +5,8 @@
 module CourseCrawler::Crawlers
 class MeihoCourseCrawler < CourseCrawler::Base
 
+  PERIODS = CoursePeriod.find('MEIHO').code_map
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year
@@ -52,7 +54,7 @@ class MeihoCourseCrawler < CourseCrawler::Base
           course_days, course_periods, course_locations = [], [], []
           data[8].scan(/\d\d/).each do |period|
             course_days << data[7][1].to_i
-            course_periods << period.to_i+1
+            course_periods << PERIODS[period]
             # course_locations << nil # 上課地點在班級課表裡面...
           end
 

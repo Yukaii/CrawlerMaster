@@ -1,7 +1,7 @@
 ##
 # 明道大學
 # http://isc.mdu.edu.tw/net/cosinfo/pubinfomain.asp
-#
+# 節次資料： http://www.mdu.edu.tw/~oaa/CD/selectclass/ht3post/1051/1051.pdf
 
 module CourseCrawler::Crawlers
 class MduCourseCrawler < CourseCrawler::Base
@@ -50,14 +50,18 @@ class MduCourseCrawler < CourseCrawler::Base
       course_locations = []
 
       datas[13..19].each do |days|
-        if(days.text.to_s.size > 1)
-          course_T = days.text.split /(?<per>\d)(?<loc>\(.\d\d\d\))/
-          1.upto((course_T.size)/3) do |periods|
-            course_days << (datas.index(days).to_i-12).to_i
-            course_periods << course_T[3*periods-2].to_i
-            course_locations << course_T[3*periods-1]
-          end
+        next if days.text.empty?
+
+        # days.text => 2(開101),3(開101),4(開101)
+        # course_t => [["2", "開101"], ["3", "開101"], ["4", "開101"]]
+        course_t = days.text.scan(/(?<per>\d+)\((?<loc>.\d\d\d)\)/)
+
+        course_t.each do |period_data|
+          course_days << datas.index(days).to_i - 12
+          course_periods << period_data[0].to_i
+          course_locations << period_data[1]
         end
+
       end
 
       course = {

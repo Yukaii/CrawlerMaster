@@ -4,6 +4,9 @@
 
 module CourseCrawler::Crawlers
 class McutCourseCrawler < CourseCrawler::Base
+
+  PERIODS = CoursePeriod.find('MCUT').code_map
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year || current_year
@@ -44,7 +47,7 @@ class McutCourseCrawler < CourseCrawler::Base
       @courses[general_code][:course_locations] ||= []
 
       # ex: 第1.0節~第1.0節
-      beg, endd = datas[1].text.split('~').map{|s| s.match(/第(.+)節/)[1].to_i }
+      beg, endd = datas[1].text.split('~').map { |s| PERIODS[s.match(/第(.+)節/)[1]] }
       (beg..endd).each do |p|
         @courses[general_code][:course_days]      << datas[0].text.to_i
         @courses[general_code][:course_periods]   << p
