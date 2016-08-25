@@ -87,7 +87,7 @@ class KuasCourseCrawler < CourseCrawler::Base
 
         doc.css('table[border="1"]:nth-child(2) tr:nth-child(n+2)').map{|tr| tr}.each do |tr|
           data = tr.css('td:not(:last-child)').map{|td| td.text}
-
+          #scan那邊有問題，先註解
           #syllabus_url = "http://140.127.113.224/kuas/ag_pro/ag451.jsp?year=#{@year - 1911}&sms=#{@term}&dvs=all&dgr=all&unt=all&cls=#{dep_c}&sub=#{tr.css('td:last-child').map{|a| a[:onclick]}[0].scan(/\,(\w+)\./)[0][0]}&empidno=all"
           syllabus_url = "url : error"
           time_period_regex = /(?<day>[一二三四五六日])\)(?<period>(\w+)\-?\,?(\w+)?\,?\-?(\w+)?\-?(\w+)?)/

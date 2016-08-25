@@ -79,7 +79,7 @@ class CtustCourseCrawler < CourseCrawler::Base
       doc = Nokogiri::HTML(r)
       hidden = Hash[Nokogiri::HTML(r).css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
       cookie = r.cookies if cookie == nil
-      binding.pry
+
       r = RestClient.get(@query_url+"crpcm2.aspx", {:cookies => cookie})
       doc = Nokogiri::HTML(r)
 

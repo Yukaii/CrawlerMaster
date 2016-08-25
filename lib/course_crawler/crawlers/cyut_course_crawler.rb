@@ -33,7 +33,7 @@ class CyutCourseCrawler < CourseCrawler::Base
     #@post_url = "https://admin.cyut.edu.tw/crsinfo/"
     @update_progress_proc = update_progress
     @after_each_proc = after_each
-    @count = 1
+
     @ic = Iconv.new('utf-8//IGNORE', 'big5') #
   end
 
@@ -79,8 +79,8 @@ class CyutCourseCrawler < CourseCrawler::Base
                 name:         datas[1].text.strip,
                 year:         @year,
                 term:         @term,
-                code:         "#{@year}-#{@term}-#{datas[0].text.strip}-#{@count}",
-                general_code: datas[0].text.strip+"#{@count}",
+                code:         "#{@year}-#{@term}-#{datas[0].text.strip}",
+                general_code: datas[0].text.strip,
                 class_no:     datas[9] && datas[9].text.strip,
                 credits:      datas[4] && datas[4].text.strip && datas[4].text.strip.to_i,
                 lecturer:     datas[8] && datas[8].text.strip,

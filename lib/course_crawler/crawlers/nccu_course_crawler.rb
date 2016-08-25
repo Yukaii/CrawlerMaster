@@ -50,36 +50,40 @@ class NccuCourseCrawler < CourseCrawler::Base
 
     visit @query_url
     puts "get url ..."
-    inst_h = Hash[@doc.css('select[name="t_colLB"] option:not(:first-child)').map{|opt| [opt[:value], opt.text.split('　')[0]]}]
-
-    post_hash = {
-      "yyssDDL" => "#{@year-1911}#{@term}",
-      "coursenameTB" => nil,
-      "instructorTB" => nil,
-    }
-
-    inst_h.keys.each do |inst|
-      visit @query_url
-      puts "data crawled : " + inst
-
-      r = RestClient.post(@query_url, post_hash.merge(get_view_state).merge({
-        "__EVENTTARGET" => 't_colLB',
-        "t_colLB" => inst
-      }), cookies: @cookies) { |response, request, result, &block|
-        if [301, 302, 307].include? response.code
-          response.follow_redirection(request, result, &block)
-        else
-          response.return!(request, result, &block)
-        end
-      }
-      @doc = Nokogiri::HTML(r.force_encoding(r.encoding))
-
-      r = RestClient.post @query_url, post_hash.merge(get_view_state).merge({
+     inst_h = Hash[@doc.css('select[name="t_colLB"] option:not(:first-child)').map{|opt| [opt[:value], opt.text.split('　')[0]]}]
+    #
+    #  post_hash = {
+    #   "yyssDDL" => "#{@year-1911}#{@term}",
+    #   "coursenameTB" => nil,
+    #    "instructorTB" => nil,
+    #  }
+     r = RestClient.post(@query_url, get_view_state.merge({
+       "yyssDDL" => "#{@year-1911}#{@term}",
         "__EVENTTARGET" => 'searchA',
-        "t_colLB" => inst
-      }), cookies: @cookies
-
+        "languageCBL$0" => "on" ,
+        "languageCBL$1" => "on" ,
+        "languageCBL$2" => "on" ,
+        "lang" => "1"
+      }))
+      doc = Nokogiri::HTML(r.force_encoding(r.encoding))
+    #
+    # inst_h.keys.each do |inst|
+    #   visit @query_url
+    #   puts "data crawled : " + inst
+    #
+    #   r = RestClient.post(@query_url, post_hash.merge(get_view_state).merge({
+    #     "__EVENTTARGET" => 't_colLB',
+    #     "t_colLB" => inst
+    #   }), cookies: @cookies)
+    #   @doc = Nokogiri::HTML(r.force_encoding(r.encoding))
+    #
+    #   r = RestClient.post(@query_url, post_hash.merge(get_view_state).merge({
+    #     "__EVENTTARGET" => 'searchA',
+    #     "t_colLB" => inst
+    #   }), cookies: @cookies)
+    #  binding.pry
       loop do
+
         doc = Nokogiri::HTML(r.force_encoding(r.encoding))
         rows = doc.css('.maintain_profile_content_table tr').select{|tr| !tr[:id].nil?}
         (0..rows.count-1).step(2).each do |i|
@@ -109,7 +113,7 @@ class NccuCourseCrawler < CourseCrawler::Base
           datas_2 = rows[i+1].css('td')
           name = datas_2[0] && datas_2[0].text.strip
           url = !datas_2.css('a').empty? && "#{@query_url}#{datas_2.css('a')[0][:href]}"
-
+          puts "data crawled : " + name ;
           course = {
             year: @year,
             term: @term,
@@ -165,16 +169,16 @@ class NccuCourseCrawler < CourseCrawler::Base
         if doc.css('#nextLB')[0][:href].nil?
           break
         else
-          r = RestClient.post "#{@query_url}qryScheduleResult.aspx", post_hash.merge(get_view_state(doc: doc)).merge({
+          r = RestClient.post "#{@query_url}qryScheduleResult.aspx", get_view_state(doc: doc).merge({
             "__EVENTTARGET" => 'nextLB',
-            "t_colLB" => inst,
+            # "t_colLB" => inst,
             "numberpageRBL" => 20,
             "numberpageRBL2" => 20,
             "language" => 'zh-TW',
           }), cookies: @cookies
         end
       end # loop do end
-    end
+    #end
 
     ThreadsWait.all_waits(*@threads)
     puts "Project finished !!!"

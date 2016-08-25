@@ -28,15 +28,21 @@ class HwuCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    @query_url = 'http://120.102.129.71/hwc/'
+    @query_url = 'https://campus.hwu.edu.tw/hwc/'
+    #@query_url = 'http://120.102.129.71/hwc/'
   end
 
   def courses
     @courses = []
     course_id = 0
     puts "get url ..."
+    #
     # SSL 客戶憑證問題
+    # 不能使用 http://120.102.129.71/hwc/
+    # 改而使用 https://campus.hwu.edu.tw/hwc/
+    #
      begin
+
         r = RestClient.post(@query_url+"perchk.jsp", {
         "uid" => "guest",
         "pwd" => "123",
@@ -44,8 +50,9 @@ class HwuCourseCrawler < CourseCrawler::Base
         "myway" => "yes",
         "sys_kind" => "01",
         })
+        cookie = r.cookies
     rescue Exception => e
-      binding.pry
+
        r = e.response.follow_redirection
        cookie = r.cookies
     end
@@ -56,7 +63,7 @@ class HwuCourseCrawler < CourseCrawler::Base
     doc.css('select[id="unt_id"] option:nth-child(n+2)').map{|opt| opt[:value]}.each do |unt|
       r = %x(curl -s '#{@query_url}ag_pro/ag203_1.jsp' -H 'Cookie: JSESSIONID=#{cookie["JSESSIONID"]}' --data 'yms_yms=#{@year-1911}%23#{@term}&dgr_id=%25&unt_id=#{unt}&clyear=&sub_name=&teacher=&ls_choiceYN=N' --compressed)
       doc = Nokogiri::HTML(r)
-      puts "data crawled : " + unt.text
+      puts "data crawled : " + unt
       doc.css('table:nth-child(5) tr:nth-child(n+2)').each do |tr|
         data = tr.css('td').map{|td| td.text.gsub(/[\s ]/,"")}
         course_id += 1

@@ -58,7 +58,7 @@ class DilaCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    @count = 1
+
     @query_url = 'http://ecampus.dila.edu.tw/ddb/'
   end
 
@@ -111,8 +111,8 @@ class DilaCourseCrawler < CourseCrawler::Base
             name:         data[3],    # 課程名稱
             lecturer:     lecturer,    # 授課教師
             credits:      data[6].to_i,    # 學分數
-            code:         "#{@year}-#{@term}-#{dept_c}_#{data[0].scan(/\w+/)[0]}-#{@count}",
-            general_code: data[0].scan(/\w+/)[0]+"-#{@count}",
+            code:         "#{@year}-#{@term}-#{dept_c}_#{data[0].scan(/\w+/)[0]}",
+            general_code: data[0].scan(/\w+/)[0],
             url:          nil,    # 課程大綱之類的連結(不能直接從外部連結，會顯示登入逾時)
             required:     data[5].include?('必'),    # 必修或選修
             department:   data[1],    # 開課系所
@@ -146,8 +146,6 @@ class DilaCourseCrawler < CourseCrawler::Base
             location_8:   course_locations[7],
             location_9:   course_locations[8],
           }
-          @count += 1
-
           @after_each_proc.call(course: course) if @after_each_proc
 
           @courses << course

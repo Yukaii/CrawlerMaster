@@ -74,7 +74,7 @@ class NdhuCourseCrawler < CourseCrawler::Base
           "btnCourse" => "查詢(中文)"
           }) )
         doc = Nokogiri::HTML(r)
-        puts "data crawled : " + dept_n
+        puts "data crawled : " + dept_n.split("::")[0]
         doc.css('table[id="GridView1"] tr:nth-child(n+2)').each do |tr|
           data = tr.css('td').map{|td| td.text.gsub(/[\r\n\s　]/,"")}
           next if data.length < 6

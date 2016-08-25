@@ -6,25 +6,25 @@ require_relative './nctu_course_crawler/nctu_course'
 module CourseCrawler::Crawlers
 class NctuCourseCrawler < CourseCrawler::Base
 
-  # PERIODS = {
-  #   "M" => 1,
-  #   "N" => 2,
-  #   "A" => 3,
-  #   "B" => 4,
-  #   "C" => 5,
-  #   "D" => 6,
-  #   "X" => 7,
-  #   "E" => 8,
-  #   "F" => 9,
-  #   "G" => 10,
-  #   "H" => 11,
-  #   "Y" => 12,
-  #   "I" => 13,
-  #   "J" => 14,
-  #   "K" => 15,
-  #   "L" => 16,
-  # }
-  PERIODS = CoursePeriod.find('NCTU').code_map
+  PERIODS = {
+    "M" => 1,
+    "N" => 2,
+    "A" => 3,
+    "B" => 4,
+    "C" => 5,
+    "D" => 6,
+    "X" => 7,
+    "E" => 8,
+    "F" => 9,
+    "G" => 10,
+    "H" => 11,
+    "Y" => 12,
+    "I" => 13,
+    "J" => 14,
+    "K" => 15,
+    "L" => 16,
+  }
+  #PERIODS = CoursePeriod.find('NCTU').code_map
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
     @year = year || current_year

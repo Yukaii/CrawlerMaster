@@ -15,7 +15,7 @@ class CuteCourseCrawler < CourseCrawler::Base
     @after_each_proc = after_each
 
     @query_url = "http://192.192.78.80/acad_curr/T_CourseInfo.aspx"
-    @count = 1
+
   end
 
   def courses
@@ -52,10 +52,10 @@ class CuteCourseCrawler < CourseCrawler::Base
         :name         => name,
         :lecturer     => datas[4].text.strip,
         :credits      => datas[6].text.strip.to_i,
-        :general_code => general_code+"-#{@count}",
-        :code         => "#{@year}-#{@term}-#{general_code}-#{@count}"
+        :general_code => general_code,
+        :code         => "#{@year}-#{@term}-#{general_code}"
       }
-      @count += 1
+
      end
      puts "Project finished !!!"
     @courses
