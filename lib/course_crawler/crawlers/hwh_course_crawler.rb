@@ -4,11 +4,9 @@
 # 無法選擇學年度與學期
 module CourseCrawler::Crawlers
 class HwhCourseCrawler < CourseCrawler::Base
-# 時間有分進修跟非進修
-# 以下為非進修
 
-  #抓節次
-  PERIODS = CoursePeriod.find('HWH').code_map
+  PERIODS = Hash[CoursePeriod.find('HWH').periods.select { |p| 1 <= p.order && p.order <= 15 }.map { |p| [p.code, p.order] }]
+  PERIODS_WEEKEND = Hash[CoursePeriod.find('HWH').periods.select { |p| 16 <= p.order && p.order <= 33 }.map { |p| [p.code, p.order] }]
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -27,9 +25,13 @@ class HwhCourseCrawler < CourseCrawler::Base
     r = RestClient.get(@query_url)
     doc = Nokogiri::HTML(r)
     puts "get url ..."
-    hidden = Hash[doc.css('input[type="hidden"]').map{|hidden| [hidden[:name], hidden[:value]]}]
 
-    doc.css('select[id="classList"] option:nth-child(n+2)').map{|opt| [opt[:value],opt.text]}.each do |dept_v,dept_n|
+    hidden = Hash[doc.css('input[type="hidden"]').map { |input| [input[:name], input[:value]] }]
+
+    doc.css('select[id="classList"] option:nth-child(n+2)')
+       .map { |opt| [opt[:value], opt.text] }
+       .each do |dept_v, dept_n|
+
       r = RestClient.post(@query_url, hidden.merge({
         "ScriptManager" => "ScriptManager|queryButton",
         "__EVENTTARGET" => "queryButton",
@@ -42,7 +44,7 @@ class HwhCourseCrawler < CourseCrawler::Base
 
       count = 1
       doc.css('table[id="GridView"] tr[align="center"]:nth-child(n+2)').each do |tr|
-        data = tr.css('td').map{|td| td.text.gsub(/[\r\n\s]/,"")}
+        data = tr.css('td').map{ |td| td.text.gsub(/[\r\n\s]/, "") }
         next if data[2] == " "
         syllabus_url = "http://campus.hwh.edu.tw/Public/_courseComment.aspx?yrterm=#{@year-1911}#{@term}&cur_no=#{data[2]}"
         puts "Department :" + dept_n +" , data crawled : " + count.to_s
@@ -51,11 +53,18 @@ class HwhCourseCrawler < CourseCrawler::Base
 
         course_time = data[10..16]
 
-        course_days, course_periods, course_locations = [], [], []
+        course_days = []
+        course_periods = []
+        course_locations = []
         (1..course_time.length).each do |day|
           course_time[day-1].scan(/\w/).each do |p|
             course_days << day
-            course_periods << PERIODS[p]
+            course_periods << if dept_n.include?('進') || dept_n.include?('夜') || dept_n.include?('職專') ||
+                                 dept_n.include?('企管80學分專班')
+                                PERIODS_WEEKEND[p]
+                              else
+                                PERIODS[p]
+                              end
             course_locations << data[9]
           end
         end
@@ -99,7 +108,7 @@ class HwhCourseCrawler < CourseCrawler::Base
           location_7: course_locations[6],
           location_8: course_locations[7],
           location_9: course_locations[8],
-          }
+        }
 
         @after_each_proc.call(course: course) if @after_each_proc
 
