@@ -39,7 +39,7 @@ module Colorgy
     end
 
     def to_rrule_string(datetime)
-      Time.zone.parse(datetime.to_s).getutc.iso8601.gsub(/[-:]/, '')
+      Time.zone.parse(datetime.strftime("%Y-%m-%dT00:00:00z")).getutc.iso8601.gsub(/[-:]/, '')
     end
   end
 
