@@ -40,17 +40,16 @@ class NcnuCourseCrawler < CourseCrawler::Base
       end
     end
 
-    course_id = 0
-
     depts.each do |dept|
       doc = %x(curl -s '#{@query_url}webservice/csvDepartOpenCourses.aspx?year=#{@year-1911}#{@term}&uid=#{dept[0]}' --compressed)
 
       doc[1..-4].split("\"\r\n\"")[1..-1].each do |line|
+
+        # "學期別","開課系所","課程綱要(general_code)","課程名稱","開課教師","部別","年級","學分","時間","地點"
+
+        data = line.split("\",\"")
         next if data[8].nil? # do not save course without period data
 
-        course_id += 1
-        # "學期別","開課系所","課程綱要(general_code)","課程名稱","開課教師","部別","年級","學分","時間","地點"
-        data = line.split("\",\"")
         syllabus_url = "#{@query_url}webservice/csvDepartOpenCourseSyllabus.aspx?year=#{@year-1911}#{@term}&courseid=#{data[2]}"
 
         course_days = []
@@ -71,7 +70,7 @@ class NcnuCourseCrawler < CourseCrawler::Base
           name: data[3],    # 課程名稱
           lecturer: data[5],    # 授課教師
           credits: data[8].to_i,    # 學分數
-          code: "#{@year}-#{@term}-#{course_id}_#{data[2]}",
+          code: "#{@year}-#{@term}-#{data[2]}",
           general_code: data[2],    # 選課代碼
           url: syllabus_url,    # 課程大綱之類的連結
           required: required.include?(data[3]),    # 必修或選修
