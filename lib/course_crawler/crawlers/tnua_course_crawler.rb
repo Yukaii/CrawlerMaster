@@ -14,23 +14,7 @@ class TnuaCourseCrawler < CourseCrawler::Base
     "日" => 7,
     }
 
-  PERIODS = {
-    "X" => 1,
-    "1" => 2,
-    "2" => 3,
-    "3" => 4,
-    "4" => 5,
-    "N" => 6,
-    "5" => 7,
-    "6" => 8,
-    "7" => 9,
-    "8" => 10,
-    "9" => 11,
-    "A" => 12,
-    "B" => 13,
-    "C" => 14,
-    "D" => 15,
-    }
+  PERIODS = CoursePeriod.find('TNUA').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
