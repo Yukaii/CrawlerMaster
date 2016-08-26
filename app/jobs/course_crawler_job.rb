@@ -6,6 +6,7 @@
 #
 # The instance CourseCrawler::Crawler::NtustCourseCrawler will be created
 # and call its default crawler method "courses"
+require 'csv'
 
 class CourseCrawlerJob
   include Sidekiq::Worker
@@ -34,6 +35,10 @@ class CourseCrawlerJob
 
     @crawler_klass_instance.worker = self
     crawl_courses = @crawler_klass_instance.courses
+
+    CSV.open("tmp/#{organization_code.downcase}_period_set.csv", 'w') do |csv|
+      @crawler_klass_instance.period_set.to_a.map {|p| csv << [p] }
+    end
 
     if crawl_courses.empty?
       # TODO: Log if results are empty

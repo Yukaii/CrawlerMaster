@@ -10,7 +10,7 @@ module CourseCrawler
     include DateMixin
 
     attr_reader   :year, :term
-    attr_accessor :worker
+    attr_accessor :worker, :period_set
 
     def set_progress(progress)
       Sidekiq.redis do |conn|
