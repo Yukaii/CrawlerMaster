@@ -24,7 +24,7 @@ class NkutCourseCrawler < CourseCrawler::Base
     @update_progress_proc = update_progress
     @after_each_proc = after_each
 
-    @query_url = 'http://163.22.232.41/nkc/'
+    @query_url = 'http://163.22.228.71/nkc/'
   end
 
   def courses
