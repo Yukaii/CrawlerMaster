@@ -25,24 +25,7 @@ class NtnuCourseCrawler < CourseCrawler::Base
     "R" => 4
   }
 
-  PERIODS = {
-    "0" => 1,
-    "1" => 2,
-    "2" => 3,
-    "3" => 4,
-    "4" => 5,
-    "5" => 6,
-    "6" => 7,
-    "7" => 8,
-    "8" => 9,
-    "9" => 10,
-    "10" => 11,
-    "A" => 12,
-    "B" => 13,
-    "C" => 14,
-    "D" => 15,
-    "X" => 11,
-  }
+  PERIODS = CoursePeriod.find('NTNU').code_map
 
   DEPARTMENTS = {
     "GU" => "通識",
@@ -366,10 +349,10 @@ class NtnuCourseCrawler < CourseCrawler::Base
           # 二3；請洽系所辦。五34；請洽系所辦。
           course["time_inf"].scan(/(?<d>[#{DAYS.keys.join}])(?<p>[#{PERIODS.keys.join}]+)；(?<loc>.+)。/).each do |m|
 
-            m[1].split('').each do |p|
-              course_days << DAYS[m[0]]
+            m[:p].chars.each do |p|
+              course_days << DAYS[m[:d]]
               course_periods << PERIODS[p]
-              course_locations << m[2]
+              course_locations << m[:loc]
             end
           end
 
@@ -377,9 +360,9 @@ class NtnuCourseCrawler < CourseCrawler::Base
           # R2(RB-707)、R3(RB-707)、R4(RB-707) 多麼熟悉！
           course["time_inf"].split('、').each do |time_i|
             time_i.match(/(?<d>[#{NTUST_DAYS.keys.join}])(?<p>\d)\((?<loc>.*)\)/) do |m|
-              course_days << NTUST_DAYS[m[0]]
-              course_periods << PERIODS[m[1]]
-              course_locations << m[2]
+              course_days << NTUST_DAYS[m[:d]]
+              course_periods << PERIODS[m[:p]]
+              course_locations << m[:loc]
             end
           end
 
@@ -389,7 +372,7 @@ class NtnuCourseCrawler < CourseCrawler::Base
             time_info.match(/(?<d>[#{DAYS.keys.join}])\ (?<p>[\d\-#{PERIODS.keys.join}]+)\ (?<loc>.*)/) do |m|
               if !m[:p].include?('-')
                 course_days << DAYS[m[:d]]
-                course_periods << PERIODS[p]
+                course_periods << PERIODS[m[:p]]
                 course_locations << m[:loc]
               else
                 ps = m[:p].split('-')

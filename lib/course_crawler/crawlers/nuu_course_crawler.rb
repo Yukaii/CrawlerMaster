@@ -19,14 +19,14 @@ class NuuCourseCrawler < CourseCrawler::Base
     @courses = []
 
     # 課程時間地點
-    r = %x{curl #{@query_url}search_post.php?seaco=}
+    r = %x{curl -s #{@query_url}search_post.php?seaco=}
     data1 = Nokogiri::HTML(r).css('p')[0].text.split("z")
     # 選課代碼
     data2 = ""
     (1..data1.count).each do |i|
       data2 += "#{i}c"
     end
-    r = %x{curl #{@query_url}listpost.php?data=#{data2}&department=%E7%84%A1%E7%8F%AD%E7%B4%9A%E7%84%A1%E7%8F%AD%E7%B4%9A}
+    r = %x{curl -s #{@query_url}listpost.php?data=#{data2}&department=%E7%84%A1%E7%8F%AD%E7%B4%9A%E7%84%A1%E7%8F%AD%E7%B4%9A}
     data2 = Nokogiri::HTML(r).css('table tr:nth-child(n+2) td:nth-child(4)').map{|td| td.text}
 
     (0..data1.count-1).each do |i|
@@ -37,7 +37,7 @@ class NuuCourseCrawler < CourseCrawler::Base
       course_days, course_periods, course_locations = [], [], []
       course_time.each do |day, period|
         course_days << day.to_i
-        course_periods << period.to_i
+        course_periods << period.to_i + 1
         course_locations << data[5]
       end
 

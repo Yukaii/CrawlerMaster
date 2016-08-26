@@ -34,6 +34,8 @@ class NkuhtCourseCrawler < CourseCrawler::Base
         periods, location = data[4].split('/').map(&:strip)
         course_days, course_periods, course_locations = [], [], []
 
+        next if periods.delete("\u00a0").empty?
+
         periods.split(' ').each do |period_raw|
           course_days << period_raw[0].to_i
           course_periods << period_raw[1..2].to_i
