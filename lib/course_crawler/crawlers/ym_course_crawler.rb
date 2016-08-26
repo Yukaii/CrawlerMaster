@@ -30,6 +30,8 @@ class YmCourseCrawler < CourseCrawler::Base
     @after_each_proc = after_each
 
     @query_url = "https://portal.ym.edu.tw/course/CSCS/CSCS01S01"
+
+    @period_set = Set.new
   end
 
   def courses
@@ -60,6 +62,7 @@ class YmCourseCrawler < CourseCrawler::Base
             next if v.scan(/\w+/)[0] == nil
             v.scan(/\w+/)[0].scan(/\w/).each do |period|
               course_days << k
+              @period_set |= [period]
               course_periods << PERIODS[period]
               course_locations << v.scan(/\w+(\S+)/)[0][0] if v.scan(/\w+(\S+)/)[0] != nil
             end
