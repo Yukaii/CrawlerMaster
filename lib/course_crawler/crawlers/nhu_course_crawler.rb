@@ -16,21 +16,7 @@ class NhuCourseCrawler < CourseCrawler::Base
     "日" => 7,
     }
 
-  PERIODS = {
-    "1"  => 1,
-    "2"  => 2,
-    "3"  => 3,
-    "4"  => 4,
-    "5"  => 5,
-    "6"  => 6,
-    "7"  => 7,
-    "8"  => 8,
-    "9"  => 9,
-    "10" => 10,
-    "11" => 11,
-    "12" => 12,
-    "13" => 13,
-    }
+  PERIODS = CoursePeriod.find('NHU').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -125,7 +111,7 @@ class NhuCourseCrawler < CourseCrawler::Base
             location_8:   course_locations[7],
             location_9:   course_locations[8],
           }
-        
+
           @after_each_proc.call(course: course) if @after_each_proc
 
           @courses << course
