@@ -5,24 +5,7 @@
 # 5451.355 sec
 module CourseCrawler::Crawlers
 class NtouCourseCrawler < CourseCrawler::Base
-
-  PERIODS = {
-    "00" => 1,
-    "01" => 2,
-    "02" => 3,
-    "03" => 4,
-    "04" => 5,
-    "05" => 6,
-    "06" => 7,
-    "07" => 8,
-    "08" => 9,
-    "09" => 10,
-    "10" => 11,
-    "11" => 12,
-    "12" => 13,
-    "13" => 14,
-    "14" => 15
-    }
+  PERIODS = CoursePeriod.find('NTOU').code_map
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
