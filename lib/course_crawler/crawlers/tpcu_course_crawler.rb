@@ -7,7 +7,7 @@
 module CourseCrawler::Crawlers
 class TpcuCourseCrawler < CourseCrawler::Base
 
-  DAYS = {
+    DAYS = {
     "一" => 1,
     "二" => 2,
     "三" => 3,
@@ -46,7 +46,7 @@ class TpcuCourseCrawler < CourseCrawler::Base
       doc.css('table:nth-child(5) tr:nth-child(n+2)').each do |tr|
         data = tr.css('td').map{|td| td.text.gsub(/[\s ]/,"")}
         course_id += 1
-
+		data[10] = data[10].gsub('K','10')
         course_time = data[10].scan(/([一二三四五六日])\)([\w\-\,]+)/)
 
         course_days, course_periods, course_locations = [], [], []
