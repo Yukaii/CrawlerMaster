@@ -7,22 +7,7 @@ class TtuCourseCrawler < CourseCrawler::Base
 
   DAYS = [6, 5, 4, 3, 2, 1]
 
-  PERIODS = {
-    "一" => 1,
-    "二" => 2,
-    "三" => 3,
-    "四" => 4,
-    "午" => 5,
-    "五" => 6,
-    "六" => 7,
-    "七" => 8,
-    "八" => 9,
-    "晚" => 10,
-    "九" => 11,
-    "十" => 12,
-    "十一" => 13,
-    "十二" => 14
-  }
+  PERIODS = CoursePeriod.find('TTU').code_map
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil
 
