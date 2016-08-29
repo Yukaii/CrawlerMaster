@@ -5,13 +5,13 @@ module CourseCrawler::Crawlers
 class NcutCourseCrawler < CourseCrawler::Base
 
   DAYS = {
-    '一' => '1',
-    '二' => '2',
-    '三' => '3',
-    '四' => '4',
-    '五' => '5',
-    '六' => '6',
-    '日' => '7'
+    '一' => 1,
+    '二' => 2,
+    '三' => 3,
+    '四' => 4,
+    '五' => 5,
+    '六' => 6,
+    '日' => 7
   }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
@@ -54,33 +54,34 @@ class NcutCourseCrawler < CourseCrawler::Base
         course_periods = []
         course_locations = []
 
-        if(datas[8].text.size > 1)
-          course_T = datas[8].text.split(',')
+        if datas[8].text.size > 1
+          course_t = datas[8].text.split(',')
 
-          course_T[0..-1].each do |_class|
-            tempCourse =_class.split /(?<days>.)(?<periods>\d\d-\d\d)(?<location>.*)/
-            start_course = tempCourse[2][0..1].to_i
-            end_course = tempCourse[2][3..4].to_i
+          course_t[0..-1].each do |klass|
+            temp_course = klass.split(/(?<days>.)(?<periods>\d\d-\d\d)(?<location>.*)/)
+            start_course = temp_course[2][0..1].to_i
+            end_course = temp_course[2][3..4].to_i
 
-            start_course.upto(end_course) do |_period|
-            course_days << DAYS[tempCourse[1]]
-            course_periods << _period.to_s
-            course_locations << tempCourse[3]
+            next if DAYS[temp_course[1]] > 5 # 先不處裡假日的
 
+            start_course.upto(end_course) do |period|
+              course_days << DAYS[temp_course[1]]
+              course_periods << period.to_i
+              course_locations << temp_course[3]
             end
           end
         end
 
         course = {
-          name:         "#{datas[1].text.strip}",
+          name:         datas[1].text.strip,
           year:         @year,
           term:         @term,
           code:         "#{@year}-#{@term}-#{datas[0].text.strip}",
           general_code: datas[0].text.strip,
-          class_no:     "#{datas[5].text.strip}",
+          class_no:     datas[5].text.strip,
           department:   deparment_name,
-          credits:      "#{datas[2].text.strip}",
-          lecturer:     "#{datas[4].text.strip}",
+          credits:      datas[2].text.strip,
+          lecturer:     datas[4].text.strip,
           day_1:        course_days[0],
           day_2:        course_days[1],
           day_3:        course_days[2],
@@ -107,7 +108,7 @@ class NcutCourseCrawler < CourseCrawler::Base
           location_6:   course_locations[5],
           location_7:   course_locations[6],
           location_8:   course_locations[7],
-          location_9:   course_locations[8],
+          location_9:   course_locations[8]
         }
 
         @after_each_proc.call(course: course) if @after_each_proc
@@ -116,6 +117,7 @@ class NcutCourseCrawler < CourseCrawler::Base
       end
     end
     puts "Project finished !!!"
+
     @courses
   end
 end
