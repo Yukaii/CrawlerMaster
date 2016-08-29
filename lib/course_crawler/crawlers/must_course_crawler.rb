@@ -40,7 +40,6 @@ class MustCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-    course_id = 0
     puts "get url ..."
     r = RestClient.get(@query_url+"qry_cosbyname.asp")
     doc = Nokogiri::HTML(r)
@@ -61,8 +60,6 @@ class MustCourseCrawler < CourseCrawler::Base
       doc.css('body > center table tr:nth-child(n+2)').each do |tr|
         data = tr.css('td').map{|td| td.text}
         syllabus_url = "#{@query_url}#{tr.css('a').map{|a| a[:value]}[0]}" if tr.css('a').map{|a| a[:value]}[0] != nil
-
-        course_id += 1
 
         course_days, course_periods, course_locations = [], [], []
         course_time = data[11].scan(/(?<day>\d)\-\-?(?<period>\d+)/)
@@ -100,7 +97,7 @@ class MustCourseCrawler < CourseCrawler::Base
           name: data[1],    # 課程名稱
           lecturer: data[9],    # 授課教師
           credits: data[4].to_i,    # 學分數
-          code: "#{@year}-#{@term}-#{course_id}_#{data[0].gsub(/\r/,'')}",
+          code: "#{@year}-#{@term}-#{data[0].gsub(/\r/, '')}",
           general_code: data[0].gsub(/\r/,''),    # 選課代碼
           url: syllabus_url,    # 課程大綱之類的連結
           required: data[6].include?('必'),    # 必修或選修
@@ -133,7 +130,7 @@ class MustCourseCrawler < CourseCrawler::Base
           location_7: course_locations[6],
           location_8: course_locations[7],
           location_9: course_locations[8],
-          }
+        }
 
         @after_each_proc.call(course: course) if @after_each_proc
 
