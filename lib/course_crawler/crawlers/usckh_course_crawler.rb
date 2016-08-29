@@ -15,23 +15,7 @@ class UsckhCourseCrawler < CourseCrawler::Base
     "日" => 7,
   }
 
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "N" => 5,
-    "5" => 6,
-    "6" => 7,
-    "7" => 8,
-    "8" => 9,
-    "9" => 10,
-    "10" => 11,
-    "11" => 12,
-    "12" => 13,
-    "13" => 14,
-    "14" => 15,
-  }
+  PERIODS = CoursePeriod.find('USCKH').code_map
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
 
@@ -92,6 +76,7 @@ class UsckhCourseCrawler < CourseCrawler::Base
       match_raws.each do |mat|
         begin
           mat["periods"].split(',').each do |period|
+            next if period.empty?
             course_days << DAYS[mat["day"]]
             course_periods << PERIODS[period]
             course_locations << mat["classroom"]

@@ -4,15 +4,17 @@
 module CourseCrawler::Crawlers
 class NcueCourseCrawler < CourseCrawler::Base
 
-    DAYS = {
-      "一" => 1,
-      "二" => 2,
-      "三" => 3,
-      "四" => 4,
-      "五" => 5,
-      "六" => 6,
-      "日" => 7,
-    }
+  DAYS = {
+    "一" => 1,
+    "二" => 2,
+    "三" => 3,
+    "四" => 4,
+    "五" => 5,
+    "六" => 6,
+    "日" => 7
+  }.freeze
+
+  PERIODS = CoursePeriod.find('NCUE').code_map
 
   def initialize  year: nil, term: nil, update_progress: nil, after_each: nil # initialize 94建構子
     @year = year || current_year
@@ -29,44 +31,29 @@ class NcueCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
+
     puts "get url ..."
+
     # start write your crawler here:
     r = RestClient.get @query_url
     doc = Nokogiri::HTML(r)
 
-    # doc = Nokogiri::HTML(@ic.iconv(r))
-
-    # doc.css('select[name="WebDep67"] option')
-    # doc.css('select[name="WebDep67"] option')[0][:value]
-    # doc.css('select[name="WebDep67"] option')[0].text
-
-    # doc.css('select[name="WebDep67"] option').map{|opt| opt[:value]}
-
-    # h = {"abc"=>123, 0=>"asdf", :symbol=>"asdf"}
-    # h.each { |k, v| puts "key is #{k}, value is #{v}" }
-
-    # (0..4).each {|i| puts i}
-    # [1, 2, 3, 4, 5].each do |i|
-    #   puts i
-    # end
-
-    # {"a" => 1}
-    # {:a => 1}
-    # {a: 1}
-
-    post_dept_values = doc.css('select[name="sel_cls_id"] option').map{|opt| opt[:value] }[1..-1]
-    dept_names = doc.css('select[name="sel_cls_id"] option').map{|opt| opt.text }[1..-1] #也要存資料用的，也可以當辨識
+    post_dept_values = doc.css('select[name="sel_cls_id"] option').map { |opt| opt[:value] }[1..-1]
+    dept_names = doc.css('select[name="sel_cls_id"] option').map(&:text)[1..-1] # 也要存資料用的，也可以當辨識
 
     post_dept_values.each_with_index do |dept_value, index|
       set_progress "#{index+1} / #{post_dept_values.count}\n"
 
-      r = RestClient::Request.execute(method: :post, url: @post_url, timeout: 600, payload: {
-        "sel_cls_branch" => "D",
-        "sel_yms_year" => @year-1911,
-        "sel_yms_smester" => @term,
-        "sel_cls_id" => dept_value,
-        "X-Requested-With" => "XMLHttpRequest"
-      })
+      r = RestClient::Request.execute(method: :post,
+                                      url: @post_url,
+                                      timeout: 600,
+                                      payload: {
+                                        "sel_cls_branch" => "D",
+                                        "sel_yms_year" => @year - 1911,
+                                        "sel_yms_smester" => @term,
+                                        "sel_cls_id" => dept_value,
+                                        "X-Requested-With" => "XMLHttpRequest"
+                                      })
 
       department = dept_names[index]
       doc = Nokogiri::HTML(r)
@@ -74,34 +61,31 @@ class NcueCourseCrawler < CourseCrawler::Base
       doc.css('tr')[1..-1].each do |row|
         columns = row.css('td')
 
-        period_raw_data = columns[10].text.strip
-        reg = /\((?<day>[一二三四五六日])\) (?<s>\d{2})(\-(?<e>\d{2}))? (?<loc>.+)/
         course_days = []
         course_periods = []
         course_locations = []
 
-        # m = period_raw_data.match(reg)
-        # if !!m
-        #   m[:day]
-        # end
-          period_raw_data.match(reg) do |m|
+        period_raw_data = columns[11].text.strip
+        period_raw_data.match(/\((?<day>[一二三四五六日])\) (?<s>\d{2})(\-(?<e>\d{2}))? (?<loc>.+)/) do |m|
 
-            day = DAYS[m[:day]]
+          day = DAYS[m[:day]]
 
-            start_period = m[:s].to_i
-            end_period = m[:e].to_i
-            end_period = start_period if end_period == 0
+          start_period = PERIODS[m[:s]]
+          end_period = PERIODS[m[:e]]
 
-            location = m[:loc]
+          end_period = start_period if m[:e].nil?
 
-            (start_period..end_period).each do |period|
-              course_days << day
-              course_periods << period
-              course_locations << location
-            end
+          location = m[:loc]
+
+          (start_period..end_period).each do |period|
+            course_days << day
+            course_periods << period
+            course_locations << location
           end
+        end
 
-          puts "data crawled : " + columns[3].text
+        puts "data crawled : " + columns[3].text
+
         course = {
           department:   columns[2].text,
           name:         columns[3].text,
@@ -109,9 +93,9 @@ class NcueCourseCrawler < CourseCrawler::Base
           term:         @term,
           code:         "#{@year}-#{@term}-#{columns[1].text}", # #{這個裡面放變數}
           general_code: columns[1].text,
-          credits:      columns[8].text,
+          credits:      columns[9].text,
           required:     columns[6].text.include?('必'),
-          lecturer:     columns[9].text.strip,
+          lecturer:     columns[10].text.strip,
           day_1:        course_days[0],
           day_2:        course_days[1],
           day_3:        course_days[2],
@@ -138,7 +122,7 @@ class NcueCourseCrawler < CourseCrawler::Base
           location_6:   course_locations[5],
           location_7:   course_locations[6],
           location_8:   course_locations[7],
-          location_9:   course_locations[8],
+          location_9:   course_locations[8]
         }
 
         @after_each_proc.call(course: course) if @after_each_proc

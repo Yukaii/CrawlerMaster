@@ -54,6 +54,8 @@ class NkutCourseCrawler < CourseCrawler::Base
         course_time.each do |day, period|
           period.scan(/[\w\-]+/).each do |perd|
             (perd.scan(/\w+/)[0].to_i..perd.scan(/\w+/)[-1].to_i).each do |p|
+              next if p > 8 # 先不管進修部的
+
               course_days << DAYS[day]
               course_periods << p
               course_locations << data[9]

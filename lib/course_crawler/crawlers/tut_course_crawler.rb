@@ -1,3 +1,5 @@
+# 臺南應用科技大學
+
 module CourseCrawler::Crawlers
 class TutCourseCrawler < CourseCrawler::Base
   # 從網頁直接複製下來，極致極限霸氣
@@ -41,6 +43,9 @@ class TutCourseCrawler < CourseCrawler::Base
       time_table.css('tr font[size="3"]').text.match(/(?<year>\d+)學年度第(?<term>\d)學期/) do |m|
         year = m[:year].to_i + 1911
         term = m[:term].to_i
+
+        @year = year
+        @term = term
       end
 
       course_list_table.css('tr:nth-child(n+3)').each do |row|
@@ -61,6 +66,7 @@ class TutCourseCrawler < CourseCrawler::Base
         course_days, course_periods, course_locations = [], [], []
         datas[8].text.scan(%r{星期([#{DAYS.keys.join}])第(.+?)節}).each do |m|
           m[1].split(',').map(&:to_i).each do |p|
+            next if p > 8 # 不處裡進修部的
             course_days << DAYS[m[0]]
             course_periods << p
             course_locations << location
