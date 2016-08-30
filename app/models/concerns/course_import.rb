@@ -52,12 +52,19 @@ module CourseImport
           # FIXME
           # => N + 1 query
           # => if the new course set is smaller than the existing, some courses will not be updated
-          course = Colorgy::Course.where(<<-sql
-              data -> 'course_year' = '#{course_year}' AND
-              data -> 'course_term' = '#{course_term}' AND
-              data -> 'course_lecturer' = '#{legacy_course.lecturer}' AND
-              data -> 'course_code' = '#{legacy_course.code}'
-            sql
+          sql = <<-sql
+            data -> 'course_year' = ? AND
+            data -> 'course_term' = ? AND
+            data -> 'course_lecturer' = ? AND
+            data -> 'course_code' = ?
+          sql
+
+          course = Colorgy::Course.where(
+            sql,
+            course_year,
+            course_term,
+            legacy_course.lecturer,
+            legacy_course.code
           ).where(calendar_id: calendar.id, name: legacy_course.name).root.first_or_initialize
 
           # destroy all sub_courses and re-create them
