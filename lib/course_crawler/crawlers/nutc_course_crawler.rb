@@ -12,7 +12,7 @@ class NutcCourseCrawler < CourseCrawler::Base
     "五" => 5,
     "六" => 6,
     "日" => 7
-    }
+  }
 
   PERIODS = {
     "１" => 1,
@@ -29,7 +29,7 @@ class NutcCourseCrawler < CourseCrawler::Base
     "１２" => 12,
     "１３" => 13,
     "１４" => 14
-    }
+  }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -46,33 +46,32 @@ class NutcCourseCrawler < CourseCrawler::Base
     course_id_temp = {}
 
     # 先抓取全部的course_id
-    doc = URI.decode(RestClient.get(@query_url+"subject_list.js"))
+    js_string = RestClient.get("#{@query_url}subject_list.js").to_s
 
-    course_code_data = []
-    (doc.gsub(/[\"\s\n]/,"").split(";").count-1).downto(1) do |y_t|
-      if doc.gsub(/[\"\s\n]/,"").split(";")[y_t][9..19].include?("#{@year-1911}#{@term}")
-        course_code_data += doc.gsub(/[\"\s\n]/,"").split(";")[y_t].split("=[[")[1][0..-3].split("],[")
-      else
-        break
-      end
-    end
+    course_code_data = js_string.scan(/g_Subject\['.+?'\]\s=\s\[\[.+\]\]/).inject([]) do |prev, raw_string|
+      _, js_array_raw = raw_string.split('=').map(&:strip)
+      prev.concat(JSON.parse(js_array_raw).map { |arr| arr[0] })
+    end.uniq
 
     # 分日間部&夜間部跑
-    ["day","nig"].each do |d_n|
+    %w(day nig).each do |d_n|
 
       course_code_data.each do |course_id|
-        r = RestClient.get(@query_url+"#{d_n}/course_list.aspx?sem=#{@year-1911}#{@term}&subject=#{course_id.scan(/\w+/)[0]}")
+        r = RestClient.get("#{@query_url}#{d_n}/course_list.aspx?sem=#{@year-1911}#{@term}&subject=#{course_id.scan(/\w+/)[0]}")
         doc = Nokogiri::HTML(r)
 
         doc.css('table[class="grid_view empty_html"] tr:nth-child(n+2)').each do |tr|
-          data = tr.css('td').map{|td| td.text}
+          data = tr.css('td').map(&:text)
           next if course_id_temp[data[1]]
 
           course_time_location = data[5].scan(/(?<day>[一二三四五六日])第(?<period>[１２３４５６７８９０、]+)節\s\((?<loc>\w+)/)
 
-          course_days, course_periods, course_locations = [], [], []
+          course_days = []
+          course_periods = []
+          course_locations = []
           course_time_location.each do |day, period, loc|
             period.split("、").each do |p|
+              next if PERIODS[p] > 8 # 不要算進修部的
               course_days << DAYS[day]
               course_periods << PERIODS[p]
               course_locations << loc
