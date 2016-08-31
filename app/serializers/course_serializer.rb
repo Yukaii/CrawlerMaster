@@ -57,8 +57,4 @@ class CourseSerializer < ActiveModel::Serializer
   attribute :created_at
   attribute :updated_at
 
-  def course_type
-    object.course_type || object.check_course_type
-  end
-
 end

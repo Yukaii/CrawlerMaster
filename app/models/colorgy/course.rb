@@ -40,18 +40,6 @@ module Colorgy
 
     accepts_nested_attributes_for :sub_courses, allow_destroy: true
 
-    def check_course_type
-      if calendar.owner_type == 'Organization'
-        'official'
-      elsif calendar.owner_type == 'User'
-        if reference_id.nil?
-          'custom'
-        else
-          'modified'
-        end
-      end
-    end
-
     def flatten_with_sub_courses
       [self] + sub_courses
     end
