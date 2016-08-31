@@ -33,6 +33,7 @@ class CourseSerializer < ActiveModel::Serializer
   attribute :id
   attribute :name
   attribute :description
+  attribute :color_hex
   attribute :location
   attribute :start_time
   attribute :end_time
