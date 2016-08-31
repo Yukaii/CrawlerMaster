@@ -4,9 +4,6 @@
 # 有課程資料可以下載真好
 # http://portal.knu.edu.tw/info/Application/COU/COU200M_01v1.aspx
 
-#Spreadsheet open file 之後不能把檔案刪掉 , 它會顯示 [Errno::ETXTBSY: Text file busy @ unlink_internal]
-#所以暫時先把detele註解掉
-
 module CourseCrawler::Crawlers
 class KnuCourseCrawler < CourseCrawler::Base
 
@@ -18,7 +15,7 @@ class KnuCourseCrawler < CourseCrawler::Base
     "五" => 5,
     "六" => 6,
     "日" => 7
-    }
+  }
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -32,36 +29,32 @@ class KnuCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-    course_id = 0
 
     r = RestClient.get(@query_url+"Application/COU/COU200M_01v1.aspx")
     doc = Nokogiri::HTML(r)
     puts "get url ..."
 
-    url = doc.css('table[class="sortable"] tr:nth-child(n+2)').map{|tr| tr}
-    (0..url.count-1).each do |u|
-      if url[u].text.include?("#{@year-1911}#{@term}")
-        url = @query_url+url[u].css('a')[0][:href][6..-1]
+    url = doc.css('table[class="sortable"] tr:nth-child(n+2)')
+    url.count.times do |u|
+      if url[u].text.include?("#{@year - 1911}#{@term}")
+        url = "#{@query_url}#{url[u].css('a')[0][:href][6..-1]}"
         break
       end
     end
 
-    r = %x(curl -s '#{url}' --compressed)
+    r = `curl -s '#{url}' --compressed`
 
-    doc = File.new("knu_course_data_temp","w")
-    doc.write(r)
-    doc = Spreadsheet.open "knu_course_data_temp"
-    ##  Errno::ETXTBSY: Text file busy @ unlink_internal , 所以先暫時註解掉
-    #File.delete("knu_course_data_temp")
-    ##
-    count = 1
-    doc.worksheets[0].map{|row| row}[1..-1].each do |data|
-      course_id += 1
-      puts "data crawled : " + count.to_s
-      count += 1
-      course_time_location = data[11].scan(/週(?<day>[一二三四五六日])(?<period>\d+)(?<loc>\w+)/)
+    xls_file = Tempfile.new('knu_course_data_temp.xls')
+    xls_file.write(r)
 
-      course_days, course_periods, course_locations = [], [], []
+    doc = Spreadsheet.open(xls_file.path)
+
+    doc.worksheets[0].map { |row| row }[1..-1].each do |data|
+      course_time_location = data[11].scan(/週(?<day>[#{DAYS.keys.join}])(?<period>\d+)(?<loc>\w+)/)
+
+      course_days = []
+      course_periods = []
+      course_locations = []
       course_time_location.each do |day, period, loc|
         course_days << DAYS[day]
         course_periods << period.to_i
@@ -74,7 +67,7 @@ class KnuCourseCrawler < CourseCrawler::Base
         name: "#{data[4]} #{data[3]}",    # 課程名稱
         lecturer: data[7],    # 授課教師
         credits: data[6].to_i,    # 學分數
-        code: "#{@year}-#{@term}-#{course_id}_#{data[2]}",
+        code: "#{@year}-#{@term}-#{data[2]}",
         general_code: data[2],    # 選課代碼
         url: nil,    # 課程大綱之類的連結
         required: data[10].include?('必'),    # 必修或選修
@@ -106,8 +99,8 @@ class KnuCourseCrawler < CourseCrawler::Base
         location_6: course_locations[5],
         location_7: course_locations[6],
         location_8: course_locations[7],
-        location_9: course_locations[8],
-        }
+        location_9: course_locations[8]
+      }
 
       @after_each_proc.call(course: course) if @after_each_proc
 
