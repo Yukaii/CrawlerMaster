@@ -6,22 +6,8 @@ require 'capybara/dsl'
 module CourseCrawler::Crawlers
   class NtueCourseCrawler < CourseCrawler::Base
     include Capybara::DSL
-    PERIODS = {
-      "01" => 1,
-      "02" => 2,
-      "03" => 3,
-      "04" => 4,
-      "0N" => 5,
-      "05" => 6,
-      "06" => 7,
-      "07" => 8,
-      "08" => 9,
-      "0E" => 10,
-      "09" => 11,
-      "10" => 12,
-      "11" => 13,
-      "12" => 14
-    }.freeze
+
+    PERIODS = CoursePeriod.find('NTUE').code_map
 
     def initialize(year: nil, term: nil, update_progress: nil, after_each: nil)
       @year = year || current_year
@@ -51,6 +37,7 @@ module CourseCrawler::Crawlers
         sleep 1
         find("#A0425SMenu_ddlSYSE option[value='#{@year - 1911}#{@term}']").select_option
         sleep 1
+        click_on '查詢'
         page_num = 1
         course_parse(html)
         loop do
