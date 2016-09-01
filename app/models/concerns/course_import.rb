@@ -61,8 +61,8 @@ module CourseImport
 
           course = Colorgy::Course.where(
             sql,
-            course_year,
-            course_term,
+            course_year.to_s,
+            course_term.to_s,
             legacy_course.lecturer,
             legacy_course.code
           ).where(calendar_id: calendar.id, name: legacy_course.name).root.first_or_initialize
