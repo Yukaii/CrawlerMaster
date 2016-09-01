@@ -92,6 +92,8 @@ class VnuCourseCrawler < CourseCrawler::Base
         period_time_table.css('tr:nth-child(n+3)').each do |row|
           tds = row.css('td')
 
+          next if tds[2].text.strip[1..-1].to_i > 8 # 不處裡進修部
+
           course_days      << tds[2].text.strip[0].to_i
           course_periods   << tds[2].text.strip[1..-1].to_i
           course_locations << tds[0].text.strip
