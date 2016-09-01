@@ -43,9 +43,11 @@ class TcuCourseCrawler < CourseCrawler::Base
         # 把 course_time_location 轉成資料庫可以儲存的格式
         course_days, course_periods, course_locations = [], [], []
         course_time_location.each do |k, v|
-          for i in v.split(/[～∼]/)[0].to_i..v.split(/[～∼]/)[1].to_i
+          (v.split(/[～∼]/)[0].to_i..v.split(/[～∼]/)[1].to_i).each do |i|
+            next if i > 8 # 不要處裡進修部
+
             course_days << k[0].to_i
-            course_periods << i    # 1~12
+            course_periods << i # 1~12
             course_locations << data[7]
           end
         end
