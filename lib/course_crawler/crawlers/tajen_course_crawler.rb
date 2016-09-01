@@ -1,6 +1,7 @@
 # 大仁科技大學
 # 課程查詢網址：http://a04.tajen.edu.tw/files/14-1004-53797,r31-1.php
 
+# 節次資料：http://www.tajen.edu.tw/files/14-1000-22281,r19-1.php?Lang=zh-tw
 # 檔案是XLSX,用rubyXL解
 require 'rubyXL'
 
@@ -15,25 +16,10 @@ class TajenCourseCrawler < CourseCrawler::Base
     "五" => 5,
     "六" => 6,
     "日" => 7
-    }
-
-  PERIODS = {
-    "1" => 1,
-    "2" => 2,
-    "3" => 3,
-    "4" => 4,
-    "午休" => 5,
-    "5" => 6,
-    "6" => 7,
-    "7" => 8,
-    "8" => 9,
-    "9" => 10,
-    "10" => 11,
-    "11" => 12,
-    "12" => 13,
-    "13" => 14,
-    "14" => 15,
   }
+
+  PERIODS_WEEKDAY = Hash[CoursePeriod.find('TAJEN').periods.select { |p| 1 <= p.order && p.order <= 17 }.map { |p| [p.code, p.order] }]
+  PERIODS_WEEKEND = Hash[CoursePeriod.find('TAJEN').periods.select { |p| 18 <= p.order && p.order <= 35 }.map { |p| [p.code, p.order] }]
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
@@ -47,7 +33,6 @@ class TajenCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-    course_id = 0
 
     r = %x(curl -s '#{@query_url}' --compressed)
     doc = File.new("tajen_course_data_temp","w")
@@ -55,18 +40,24 @@ class TajenCourseCrawler < CourseCrawler::Base
     doc = RubyXL::Parser.parse("tajen_course_data_temp")
     File.delete("tajen_course_data_temp")
 
-    doc.worksheets[0].map{|row| row.cells}[1..-1].each do |cells|
-      data = cells.map{|cell| cell.value}
+    doc.worksheets[0].map(&:cells)[1..-1].each do |cells|
+      data = cells.map(&:value)
 
-      course_id += 1
+      next if data[1].include?("夜") # 不處裡進修部
 
       course_time = data[14].scan(/(?<day>[一二三四五六日])\((?<period>[\d,]+)/)
 
-      course_days, course_periods, course_locations = [], [], []
+      course_days = []
+      course_periods = []
+      course_locations = []
       course_time.each do |day, period|
         period.split(",").each do |p|
           course_days << DAYS[day]
-          course_periods << PERIODS[p]
+          course_periods << if DAYS[day] > 5
+                              PERIODS_WEEKEND[p]
+                            else
+                              PERIODS_WEEKDAY[p]
+                            end
           course_locations << data[13]
         end
       end
@@ -77,7 +68,7 @@ class TajenCourseCrawler < CourseCrawler::Base
         name: data[8],    # 課程名稱
         lecturer: data[9],    # 授課教師
         credits: data[10],    # 學分數
-        code: "#{@year}-#{@term}-#{course_id}_#{data[7]}",
+        code: "#{@year}-#{@term}-#{data[7]}",
         general_code: data[7],    # 選課代碼
         url: nil,    # 課程大綱之類的連結
         required: data[0].include?('必'),    # 必修或選修
