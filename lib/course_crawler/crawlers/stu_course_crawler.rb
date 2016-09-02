@@ -14,24 +14,7 @@ class StuCourseCrawler < CourseCrawler::Base
     "日" => 7
     }
 
-  PERIODS = {
-    '1' => 1,
-    '2' => 2,
-    '3' => 3,
-    '4' => 4,
-    'N' => 5,
-    '午' => 5,
-    '5' => 6,
-    '6' => 7,
-    '7' => 8,
-    '8' => 9,
-    'E' => 10,
-    '傍' => 10,
-    'A' => 11,
-    'B' => 12,
-    'C' => 13,
-    'D' => 14,
-  }
+  PERIODS = CoursePeriod.find('STU').code_map.merge('午' => 5, '傍' => 10)
 
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
