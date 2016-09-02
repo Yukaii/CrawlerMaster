@@ -16,6 +16,8 @@ class StustCourseCrawler < CourseCrawler::Base
     "日" => 7
     }
 
+  PERIODS = CoursePeriod.find('STUST').code_map
+
   def initialize year: nil, term: nil, update_progress: nil, after_each: nil
 
     @year = year
@@ -28,7 +30,6 @@ class StustCourseCrawler < CourseCrawler::Base
 
   def courses
     @courses = []
-    course_id = 0
 
     r = RestClient.get(@query_url+"NextCourse.aspx")
     doc = Nokogiri::HTML(r)
@@ -63,7 +64,6 @@ class StustCourseCrawler < CourseCrawler::Base
             # course_class = doc.css('table[style="width:100%"]> tr:nth-child(2) tr span')[0].text
             teacher = tr.css('td span')[1].text
 
-            course_id += 1
 
             time_period_regex = /週(?<day>[一二三四五六日])第(?<period>\w+)節\((?<loc>([\w\-]+)?)\)/
             course_time_location = doc.css('table[style="width:100%"]> tr:nth-child(2) tr span')[11].text.scan(time_period_regex)
@@ -71,7 +71,7 @@ class StustCourseCrawler < CourseCrawler::Base
             course_days, course_periods, course_locations = [], [], []
             course_time_location.each do |day, period, location|
               course_days << DAYS[day]
-              course_periods << period.to_i
+              course_periods << PERIODS[period]
               course_locations << location
             end
 
@@ -81,7 +81,7 @@ class StustCourseCrawler < CourseCrawler::Base
               name: data1[1],    # 課程名稱
               lecturer: teacher,    # 授課教師
               credits: data1[4].to_i,    # 學分數
-              code: "#{@year}-#{@term}-#{course_id}_#{data1[0]}",
+              code: "#{@year}-#{@term}-#{data1[0]}",
               general_code: data1[0],    # 選課代碼
               url: syllabus_url,    # 課程大綱之類的連結
               required: data1[3].include?('必'),    # 必修或選修
@@ -120,7 +120,6 @@ class StustCourseCrawler < CourseCrawler::Base
 
             @courses << course
 
-# puts "#{course_id} / #{dept_v}_#{cla}_#{page}"
           end
         end
       end
