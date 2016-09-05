@@ -20,6 +20,8 @@ class CourseCrawler::SchoolSystem::Fju
   def crawl(params)
     visit "http://140.136.251.210/student/Account/Login"
 
+    return if params[:UserID].length > 9 # invalid username
+
     fill_in 'UserID', with: params[:UserID]
     fill_in 'Password', with: params[:Password]
 
@@ -41,7 +43,7 @@ class CourseCrawler::SchoolSystem::Fju
         }
       end
 
-      return course_datas
+      return course_datas # or using yield
     end
   end
 end
