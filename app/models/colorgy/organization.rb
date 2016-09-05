@@ -19,5 +19,7 @@
 module Colorgy
   class Organization < ColorgyRecord
     self.table_name = 'organizations'
+    has_many :users, class_name: '::Colorgy::User', primary_key: :code, foreign_key: :organization_code
+    has_many :user_school_system_data, class_name: '::Colorgy::UserSchoolSystemDatum'
   end
 end
